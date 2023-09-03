@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const mysql = require("mysql2/promise");
 
 const app = express();
 
@@ -8,6 +9,29 @@ var corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+// Create a MySQL connection pool
+const pool = mysql.createPool({
+    host: 'localhost',
+    user: 'root',
+    port: 3306,
+    password: 'junweiLAM99',
+    database: 'mydb',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+});
+
+app.get('/data', async (req, res) => {
+    try{
+        const [rows, fields] = await pool.execute('SELECT * FROM USER_TABLE');
+        res.json(rows);
+    }catch(error){
+        console.log(error);
+        res.status(500).json({ message: "Internal server error"});
+        
+    }
+});
 
 // Parse requests of content-type - application/json
 app.use(express.json());
