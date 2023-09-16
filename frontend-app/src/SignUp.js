@@ -1,13 +1,19 @@
-import React, { useState } from 'react';
+import React, { useId, useState } from 'react';
+import { Navigate } from 'react-router-dom';
+import { registerUser } from './features/apiCalls';
+
+const BASE_API_URL = "http://localhost:8081";
+
 
 const SignUp = () => {
   // State to hold form input values
   const [formData, setFormData] = useState({
+    id: 2,
     firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    // lastName: '',
+    // email: '',
+    // password: '',
+    // confirmPassword: '',
   });
 
   // Handle form input changes
@@ -20,13 +26,22 @@ const SignUp = () => {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Perform validation here (e.g., check for password match)
 
     // Once validated, you can send the data to your backend or perform any desired actions
     console.log(formData);
+    try{
+      let formValues = {FIRST_NAME : formData.firstName};
+      const success = await registerUser(formValues, formData.id);
+      if (success){
+        console.log("added into database");
+      }
+    }catch(err){
+      console.log(err);
+    }
   };
 
   return (
