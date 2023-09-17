@@ -10,10 +10,10 @@ const SignUp = () => {
   const [formData, setFormData] = useState({
     id: 2,
     firstName: '',
-    // lastName: '',
-    // email: '',
-    // password: '',
-    // confirmPassword: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
   });
 
   // Handle form input changes
@@ -34,7 +34,7 @@ const SignUp = () => {
     // Once validated, you can send the data to your backend or perform any desired actions
     console.log(formData);
     try{
-      let formValues = {FIRST_NAME : formData.firstName};
+      let formValues = {LAST_NAME: formData.lastName, FIRST_NAME : formData.firstName, EMAIL : formData.email, PASSWORD : formData.password};
       const success = await registerUser(formValues, formData.id);
       if (success){
         console.log("added into database");
