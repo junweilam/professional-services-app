@@ -1,6 +1,6 @@
 import React, { useId, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { registerUser } from './features/apiCalls';
+import { registerUser } from '../features/apiCalls';
 
 // const BASE_API_URL = "http://localhost:8081";
 
