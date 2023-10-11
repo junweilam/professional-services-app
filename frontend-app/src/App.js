@@ -36,6 +36,8 @@ function App() {
         <Route path="/adminaddservices" element={<AdminAddServices />} />
         <Route path="/" element={<Home addToCart={addToCart} />} />
         <Route path="/*" element={<Navigate to="/signin" />} />
+        <Route path="/userhome" element={<UserHome/>} />
+        <Route path="/servicehome" element={<ServiceHome/>} />
       </Routes>
     </Router>
   );
