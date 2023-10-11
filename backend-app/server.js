@@ -41,6 +41,11 @@ app.get('/data', async (req, res) => {
     }
 });
 
+// Routes:
+// app.post('/registration/')
+// app.post('/signin/')
+
+//----------------------------------------------------- Routes ---------------------------------------------------------
 // Registration for users
 app.post('/registration/', async (req, res) => {
     try{
@@ -119,6 +124,8 @@ app.post('/signin/', async (req, res) => {
         });
     }
 })
+
+//----------------------------------------------------- Routes ---------------------------------------------------------
 
 // Parse requests of content-type - application/json
 app.use(express.json());
