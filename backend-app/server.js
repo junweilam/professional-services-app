@@ -44,16 +44,43 @@ app.get('/data', async (req, res) => {
 // Registration for users
 app.post('/registration/', async (req, res) => {
     try{
-        console.log(req.body);
-        const q = `insert into users(LastName, FirstName, Email, ContactNo, Address, Password, Authorization) VALUES(?)`;
-        const values = [...Object.values(req.body)];
-        console.log(values);
-        console.log("insert", values);
-        pool.query(q, [values], (err, data) => {
-            console.log(err,data);
-            if(err) return res.json({ error: "SQL Error"});
-            else return res.json({data});
-        });
+
+        var emailFlag = false;
+        var contactFlag = false;
+
+        const checkEmail = 'SELECT * FROM users WHERE Email = ?';
+        const checkContact = 'SELECT * FROM users WHERE ContactNo = ?';
+        
+        const [eResults, efields] = await pool.execute(checkEmail, [req.body.Email]);
+        const [cResults, cfields] = await pool.execute(checkContact, [req.body.ContactNo]);
+
+        if (eResults.length > 0 && cResults.length > 0){
+            emailFlag = true;
+            console.log("Email and contacts used");
+            res.status(401).json({ message: 'Email and contacts already used'});
+        }
+        else if (cResults.length > 0){
+            contactFlag = true;
+            console.log("Contact Number used");
+            res.status(402).json({ message: 'Contact Number already used'});
+        }
+        else if (eResults.length > 0){
+            console.log("Email used");
+            res.status(403).json({ message: 'Email already used'});
+        }
+        else{
+            console.log(req.body);
+            const q = `insert into users(LastName, FirstName, Email, ContactNo, Address, Password, Authorization) VALUES(?)`;
+            const values = [...Object.values(req.body)];
+            console.log(values);
+            console.log("insert", values);
+            pool.query(q, [values], (err, data) => {
+                console.log(err,data);
+                if(err) return res.json({ error: "SQL Error"});
+                else return res.json({data});
+            });
+        }
+
     }catch(error){
         console.log(error);
         res.status(500).json({

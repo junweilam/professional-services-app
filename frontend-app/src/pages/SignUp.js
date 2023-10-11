@@ -6,6 +6,11 @@ import { registerUser } from '../features/apiCalls';
 
 
 const SignUp = () => {
+
+  const [emailStatus, setEmailStatus] = useState(true);
+  const [contactStatus, setContactStatus] = useState(true);
+
+
   // State to hold form input values
   const [formData, setFormData] = useState({
     firstName: '',
@@ -37,9 +42,22 @@ const SignUp = () => {
     console.log(formData);
     try{
       let formValues = {LastName: formData.lastName, FirstName : formData.firstName, Email : formData.email, ContactNo : formData.contactNo, Address : formData.address,Password : formData.password, Authorization : formData.authorization};
-      const success = await registerUser(formValues, formData.id);
-      if (success){
-        console.log("added into database");
+      const response = await registerUser(formValues, formData.id);
+
+      console.log(response);
+
+      if (response.error.response.status === 401) {
+        setEmailStatus(false);
+        setContactStatus(false);
+      } else if (response.error.response.status === 402) {
+        setEmailStatus(true);
+        setContactStatus(false);
+      } else if (response.error.response.status === 403) {
+        setEmailStatus(false);
+        setContactStatus(true);
+      } else {
+        setEmailStatus(true);
+        setContactStatus(true);
       }
     }catch(err){
       console.log(err);
@@ -86,7 +104,7 @@ const SignUp = () => {
               Contact Number
             </label>
             <input
-              className="w-full px-4 py-2 border rounded-lg outline-none focus:border-blue-500"
+              className={`${!contactStatus ? 'w-full px-4 py-2 border rounded-lg border-red-500' : `w-full px-4 py-2 border rounded-lg outline-none focus:border-blue-500`}`}
               type="tel"
               id="contactNo"
               name="contactNo"
@@ -95,13 +113,16 @@ const SignUp = () => {
               onChange={handleInputChange}
               required
             />
+            {!contactStatus && (
+              <p className="text-red-500 text-sm">Contact Number has been used</p>
+            )}
           </div>
-          <div className="mb-4">
+          <div className={`mb-4`}>
             <label className="block text-gray-600 text-sm font-medium mb-2" htmlFor="email">
               Email
             </label>
             <input
-              className="w-full px-4 py-2 border rounded-lg outline-none focus:border-blue-500"
+              className={`${!emailStatus ? 'w-full px-4 py-2 border rounded-lg border-red-500' : `w-full px-4 py-2 border rounded-lg outline-none focus:border-blue-500`}`}
               type="email"
               id="email"
               name="email"
@@ -110,6 +131,9 @@ const SignUp = () => {
               onChange={handleInputChange}
               required
             />
+            {!emailStatus && (
+              <p className="text-red-500 text-sm">Email has been used</p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block text-gray-600 text-sm font-medium mb-2" htmlFor="address">
