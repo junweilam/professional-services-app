@@ -37,15 +37,24 @@ const SignUp = () => {
     e.preventDefault();
 
     // Perform validation here (e.g., check for password match)
+    if(formData.password !== formData.confirmPassword){
+      alert("Password and Confirm Password do not match")
+      return
+    }
+
+    // passing confirm password to server
+
+
 
     // Once validated, you can send the data to your backend or perform any desired actions
     console.log(formData);
     try{
-      let formValues = {LastName: formData.lastName, FirstName : formData.firstName, Email : formData.email, ContactNo : formData.contactNo, Address : formData.address,Password : formData.password, Authorization : formData.authorization};
+      let formValues = {LastName: formData.lastName, FirstName : formData.firstName, Email : formData.email, ContactNo : formData.contactNo, Address : formData.address,Password : formData.password, Authorization : formData.authorization, ConfirmPassword : formData.confirmPassword};
       const response = await registerUser(formValues, formData.id);
 
       console.log(response);
 
+     
       if (response.error.response.status === 401) {
         setEmailStatus(false);
         setContactStatus(false);

@@ -43,6 +43,7 @@ const Home = () => {
           <ServiceCard key={service.id} service={service} addToCart={addToCart} />
         ))}
       </div>
+      <a href="/signup">signup </a>
     </div>
   );
 };

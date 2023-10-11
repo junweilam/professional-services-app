@@ -47,8 +47,15 @@ app.get('/data', async (req, res) => {
 
 //----------------------------------------------------- Routes ---------------------------------------------------------
 // Registration for users
+// 
 app.post('/registration/', async (req, res) => {
     try{
+
+        if(req.body.Password !== req.body.ConfirmPassword){
+            console.log("Password and Confirm Password do not match");
+            return res.status(400).json({message: "Password and Confirm Password do not match"})
+        }
+        
 
         var emailFlag = false;
         var contactFlag = false;
@@ -66,7 +73,7 @@ app.post('/registration/', async (req, res) => {
         }
         else if (cResults.length > 0){
             contactFlag = true;
-            console.log("Contact Number used");
+            console.log("Contact Number used1");
             res.status(402).json({ message: 'Contact Number already used'});
         }
         else if (eResults.length > 0){
