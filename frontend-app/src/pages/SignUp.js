@@ -8,12 +8,14 @@ import { registerUser } from '../features/apiCalls';
 const SignUp = () => {
   // State to hold form input values
   const [formData, setFormData] = useState({
-    id: 2,
     firstName: '',
     lastName: '',
     email: '',
+    contactNo: '',
+    address: '',
     password: '',
     confirmPassword: '',
+    authorization: '1',
   });
 
   // Handle form input changes
@@ -34,7 +36,7 @@ const SignUp = () => {
     // Once validated, you can send the data to your backend or perform any desired actions
     console.log(formData);
     try{
-      let formValues = {LAST_NAME: formData.lastName, FIRST_NAME : formData.firstName, EMAIL : formData.email, PASSWORD : formData.password};
+      let formValues = {LastName: formData.lastName, FirstName : formData.firstName, Email : formData.email, ContactNo : formData.contactNo, Address : formData.address,Password : formData.password, Authorization : formData.authorization};
       const success = await registerUser(formValues, formData.id);
       if (success){
         console.log("added into database");
@@ -80,6 +82,21 @@ const SignUp = () => {
             />
           </div>
           <div className="mb-4">
+            <label className="block text-gray-600 text-sm font-medium mb-2" htmlFor="contactno">
+              Contact Number
+            </label>
+            <input
+              className="w-full px-4 py-2 border rounded-lg outline-none focus:border-blue-500"
+              type="tel"
+              id="contactNo"
+              name="contactNo"
+              placeholder="Enter your contacts"
+              value={formData.contactNo}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+          <div className="mb-4">
             <label className="block text-gray-600 text-sm font-medium mb-2" htmlFor="email">
               Email
             </label>
@@ -90,6 +107,21 @@ const SignUp = () => {
               name="email"
               placeholder="Enter your email"
               value={formData.email}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-600 text-sm font-medium mb-2" htmlFor="address">
+              Address
+            </label>
+            <input
+              className="w-full px-4 py-2 border rounded-lg outline-none focus:border-blue-500"
+              type="textarea"
+              id="address"
+              name="address"
+              placeholder="Enter your address"
+              value={formData.address}
               onChange={handleInputChange}
               required
             />

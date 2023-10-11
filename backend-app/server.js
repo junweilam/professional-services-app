@@ -42,10 +42,10 @@ app.get('/data', async (req, res) => {
 });
 
 // Registration for users
-app.post('/registration/:userId', async (req, res) => {
+app.post('/registration/', async (req, res) => {
     try{
         console.log(req.body);
-        const q = `insert into users(LAST_NAME, FIRST_NAME, EMAIL, PASSWORD) VALUES(?)`;
+        const q = `insert into users(LastName, FirstName, Email, ContactNo, Address, Password, Authorization) VALUES(?)`;
         const values = [...Object.values(req.body)];
         console.log(values);
         console.log("insert", values);
