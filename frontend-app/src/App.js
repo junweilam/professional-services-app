@@ -1,11 +1,17 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate, BrowserRouter } from 'react-router-dom'; 
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom'; 
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 
 // Admin Imports
 import AdminHome from './pages/AdminHome';
 import AdminAddServices from './pages/AdminAddServices';
+
+// User Imports
+import UserHome from './pages/UserHome';
+
+//Service Imports
+import ServiceHome from './pages/ServiceHome';
 
 import Navbar from './component/Navbar';
 
@@ -20,6 +26,8 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/adminhome" element={<AdminHome/>} />
         <Route path="/adminaddservices" element={<AdminAddServices/>} />
+        <Route path="/userhome" element={<UserHome/>} />
+        <Route path="/servicehome" element={<ServiceHome/>} />
         <Route path="/*" element={<Navigate to="/signin" />} />
       </Routes>
     </Router>

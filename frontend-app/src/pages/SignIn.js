@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { logIn } from '../features/apiCalls';
 
+
+
 const SignIn = () => {
   const [formData, setFormData] = useState({
     email: '',
@@ -15,15 +17,23 @@ const SignIn = () => {
     });
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Add your form submission logic here
     console.log(formData);
     try{
       let formValues = {Email: formData.email, Password: formData.password}
-      const success = await logIn(formValues);
-      if(success){
-        console.log("sent to backend for login")
+      const response = await logIn(formValues);
+      console.log(response);
+      if (response.message === "Authentication Successful and AuthValue = 1"){
+        window.location.href = './adminhome';
+      }
+      else if (response.message === "Authentication Successful and AuthValue = 2"){
+        window.location.href = './servicehome';
+      }
+      else if (response.message === "Authentication Successful and AuthValue = 3"){
+        window.location.href = './userhome';
       }
     }catch(err){
       console.log(err);

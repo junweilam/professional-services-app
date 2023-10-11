@@ -20,7 +20,7 @@ const SignUp = () => {
     address: '',
     password: '',
     confirmPassword: '',
-    authorization: '1',
+    authorization: '3',
   });
 
   // Handle form input changes
