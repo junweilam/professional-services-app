@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { logIn } from '../features/apiCalls';
 
 const SignIn = () => {
   const [formData, setFormData] = useState({
@@ -14,10 +15,19 @@ const SignIn = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Add your form submission logic here
     console.log(formData);
+    try{
+      let formValues = {Email: formData.email, Password: formData.password}
+      const success = await logIn(formValues);
+      if(success){
+        console.log("sent to backend for login")
+      }
+    }catch(err){
+      console.log(err);
+    }
   };
 
   return (
