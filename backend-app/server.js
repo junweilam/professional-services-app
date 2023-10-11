@@ -74,24 +74,6 @@ app.post('/signin/', async (req, res) => {
         const q = "SELECT * FROM users WHERE Email = ? AND Password = ?";
         const params = [email, password];
 
-        // await pool.query(q, (err, results) => {
-        //     if (err) {
-        //         console.error('Database Query Error: ' + err.message);
-        //         res.status(500).json({ message: 'Server error'});
-        //         console.log("Database Error");
-        //     }
-        //     else{
-        //         if (results.length > 0){
-        //             res.status(200).json({ message: 'Authentication Successful'});
-        //             console.log("Success");
-        //         }
-        //         else{
-        //             res.status(401).json({ message: 'Authentication failed'});
-        //             console.log("Failed");
-        //         }
-        //     }
-        // });
-
         const [results, fields] = await pool.execute(q, params);
 
         if (results.length > 0){
