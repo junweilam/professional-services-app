@@ -5,6 +5,13 @@ import SignUp from './pages/SignUp';
 import Home from './pages/HomePage';
 import AdminHome from './pages/AdminHome';
 import AdminAddServices from './pages/AdminAddServices';
+
+// User Imports
+import UserHome from './pages/UserHome';
+
+//Service Imports
+import ServiceHome from './pages/ServiceHome';
+
 import Navbar from './component/Navbar';
 
 function App() {

@@ -41,6 +41,11 @@ app.get('/data', async (req, res) => {
     }
 });
 
+// Routes:
+// app.post('/registration/')
+// app.post('/signin/')
+
+//----------------------------------------------------- Routes ---------------------------------------------------------
 // Registration for users
 app.post('/registration/', async (req, res) => {
     try{
@@ -101,11 +106,24 @@ app.post('/signin/', async (req, res) => {
         const q = "SELECT * FROM users WHERE Email = ? AND Password = ?";
         const params = [email, password];
 
-        const [results, fields] = await pool.execute(q, params);
+        const auth = "SELECT Authorization FROM users WHERE Email = ? AND Password = ?";
 
-        if (results.length > 0){
-            res.status(200).json({ message: 'Authentication Successful'});
+        const [results, fields] = await pool.execute(q, params);
+        const [authResults, rFields] = await pool.execute(auth, params);
+
+        console.log(authResults[0].Authorization);
+
+        authorizationValue = authResults[0].Authorization;
+
+        if (results.length > 0 && authorizationValue == 1){
+            res.status(200).json({ message: 'Authentication Successful and AuthValue = 1'});
             console.log("Success");
+        }
+        else if (results.length > 0 && authorizationValue == 2){
+            res.status(201).json({ message: 'Authentication Successful and AuthValue = 2'});
+        }
+        else if (results.length > 0 && authorizationValue == 3){
+            res.status(202).json({ message: 'Authentication Successful and AuthValue = 3'});
         }
         else{
             res.status(401).json({ message: 'Authentication failed'});
@@ -119,6 +137,8 @@ app.post('/signin/', async (req, res) => {
         });
     }
 })
+
+//----------------------------------------------------- Routes ---------------------------------------------------------
 
 // Parse requests of content-type - application/json
 app.use(express.json());
