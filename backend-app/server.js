@@ -3,6 +3,7 @@ const cors = require("cors");
 const mysql = require("mysql2/promise");
 const bodyParser = require("body-parser");
 
+
 const app = express();
 
 var corsOptions = {
@@ -12,6 +13,7 @@ const whitelist = ["https://localhost:3000"]
 
 // app.use(cors(corsOptions));
 app.use(cors())
+
 
 // Create a MySQL connection pool
 const pool = mysql.createPool({
@@ -144,6 +146,12 @@ app.post('/signin/', async (req, res) => {
         });
     }
 })
+
+// Generate a random 6-digit OTP
+function generateOTP(){
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
 
 //----------------------------------------------------- Routes ---------------------------------------------------------
 
