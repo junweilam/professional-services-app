@@ -27,7 +27,14 @@ const SignIn = () => {
       const response = await logIn(formValues);
       console.log(response);
       if (response.message === "Authentication Successful and AuthValue = 1"){
-        window.location.href = './adminhome';
+        console.log(response)
+        if(response.token){
+          console.log(response)
+          console.log(response.token)
+          localStorage.setItem('token', response.token)
+          window.location.href = './adminhome';
+        }
+       
       }
       else if (response.message === "Authentication Successful and AuthValue = 2"){
         window.location.href = './servicehome';

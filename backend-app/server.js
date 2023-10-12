@@ -1,7 +1,11 @@
+
+
 const express = require("express");
 const cors = require("cors");
 const mysql = require("mysql2/promise");
 const bodyParser = require("body-parser");
+const jwt = require('jsonwebtoken');
+
 
 
 const app = express();
@@ -120,13 +124,19 @@ app.post('/signin/', async (req, res) => {
         const [results, fields] = await pool.execute(q, params);
         const [authResults, rFields] = await pool.execute(auth, params);
 
+        console.log(params)
+        console.log(fields)
+        console.log(rFields)
         console.log(authResults[0].Authorization);
 
         authorizationValue = authResults[0].Authorization;
 
         if (results.length > 0 && authorizationValue == 1){
-            res.status(200).json({ message: 'Authentication Successful and AuthValue = 1'});
+            // User is authenticated, generate JWT token
+            const token = jwt.sign({ email: params[0], authorization: authResults[0].Authorization }, 'your_secret_key', { expiresIn: '1h' });
+            res.status(200).json({ message: 'Authentication Successful and AuthValue = 1', token: token});
             console.log("Success");
+          
         }
         else if (results.length > 0 && authorizationValue == 2){
             res.status(201).json({ message: 'Authentication Successful and AuthValue = 2'});
@@ -135,6 +145,8 @@ app.post('/signin/', async (req, res) => {
             res.status(202).json({ message: 'Authentication Successful and AuthValue = 3'});
         }
         else{
+            // Invalid authorization value
+            res.status(402).json({ message: 'Invalid authorization value' });
             res.status(401).json({ message: 'Authentication failed'});
             console.log("Failed");
         }
