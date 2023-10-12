@@ -3,6 +3,7 @@ import { logIn } from '../features/apiCalls';
 
 
 
+
 const SignIn = () => {
   const [formData, setFormData] = useState({
     email: '',
@@ -27,10 +28,7 @@ const SignIn = () => {
       const response = await logIn(formValues);
       console.log(response);
       if (response.message === "Authentication Successful and AuthValue = 1"){
-        console.log(response)
         if(response.token){
-          console.log(response)
-          console.log(response.token)
           localStorage.setItem('token', response.token)
           window.location.href = './adminhome';
         }
@@ -41,6 +39,9 @@ const SignIn = () => {
       }
       else if (response.message === "Authentication Successful and AuthValue = 3"){
         window.location.href = './userhome';
+      }else {
+        // Handle other authentication cases (e.g., incorrect credentials)
+        console.log('Authentication failed');
       }
     }catch(err){
       console.log(err);
