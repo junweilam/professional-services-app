@@ -2,6 +2,10 @@ const express = require("express");
 const cors = require("cors");
 const mysql = require("mysql2/promise");
 const bodyParser = require("body-parser");
+// const {Novu} = require("@novu/node");
+// const novu = new Novu("82127c4dbb88cea831be3675f883fafa");
+
+const nodemailer = require('nodemailer');
 
 
 const app = express();
@@ -14,6 +18,26 @@ const whitelist = ["https://localhost:3000"]
 // app.use(cors(corsOptions));
 app.use(cors())
 
+// Create a Nodemailer transporter
+const transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+        user: 'ict3103.3203@gmail.com',
+        pass: 'axrp bpkx hvnp xfma',
+    }
+});
+
+// Function to send 2FA codes via email
+function sendEmail(email, code){
+    const mailOptions = {
+        from: 'ict3103.3203@gmail.com',
+        to: email,
+        subject: 'Your 2FA code',
+        text: `Your 2FA code is: ${code}`,
+    };
+
+    return transporter.sendMail(mailOptions);
+}
 
 // Create a MySQL connection pool
 const pool = mysql.createPool({
@@ -86,9 +110,10 @@ app.post('/registration/', async (req, res) => {
             console.log(req.body);
             const q = `insert into users(LastName, FirstName, Email, ContactNo, Address, Password, Authorization) VALUES(?)`;
             const values = [...Object.values(req.body)];
-            console.log(values);
-            console.log("insert", values);
-            pool.query(q, [values], (err, data) => {
+            const modifiedValues = values.slice(0, values.length -1);
+            console.log(modifiedValues);
+            console.log("insert", modifiedValues);
+            pool.query(q, [modifiedValues], (err, data) => {
                 console.log(err,data);
                 if(err) return res.json({ error: "SQL Error"});
                 else return res.json({data});
@@ -102,6 +127,9 @@ app.post('/registration/', async (req, res) => {
         });
     }
 })
+
+var otp;
+var authorizationValue;
 
 app.post('/signin/', async (req, res) => {
     try{
@@ -125,13 +153,19 @@ app.post('/signin/', async (req, res) => {
         authorizationValue = authResults[0].Authorization;
 
         if (results.length > 0 && authorizationValue == 1){
+            otp = generateOTP();
+            sendEmail(email, otp);
             res.status(200).json({ message: 'Authentication Successful and AuthValue = 1'});
             console.log("Success");
         }
         else if (results.length > 0 && authorizationValue == 2){
-            res.status(201).json({ message: 'Authentication Successful and AuthValue = 2'});
+            otp = generateOTP();
+            sendEmail(email, otp);
+            res.status(201).json({ message: 'Authentication Successful and AuthValue = 2'});       
         }
         else if (results.length > 0 && authorizationValue == 3){
+            otp = generateOTP();
+            sendEmail(email, otp);
             res.status(202).json({ message: 'Authentication Successful and AuthValue = 3'});
         }
         else{
@@ -139,6 +173,29 @@ app.post('/signin/', async (req, res) => {
             console.log("Failed");
         }
 
+    }catch(error){
+        console.log(error);
+        res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+})
+
+app.post('/2fa/', async (req, res) => {
+    try{
+        userOTP = req.body.OTP;
+        if (userOTP == otp && authorizationValue == 1){
+            res.status(201).json({ message: '2FA Success Admin'});
+        }
+        else if(userOTP == otp && authorizationValue == 2){
+            res.status(202).json({ message: '2FA Success Service'});
+        }
+        else if(userOTP == otp && authorizationValue == 3){
+            res.status(202).json({ message: '2FA Success User'});
+        }
+        else{
+            res.status(401).json({ message: '2FA Fail'});
+        }
     }catch(error){
         console.log(error);
         res.status(500).json({

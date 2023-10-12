@@ -25,3 +25,16 @@ export const logIn = async (user) => {
         };
     }
 }
+
+export const authLogIn = async (user) => {
+    try{
+        console.log(user);
+        const res = await axios.post("http://localhost:8080/2fa/", user);
+        return res.data;
+    }catch(err){
+        console.log(err);
+        return{
+            error: err
+        };
+    }
+}
