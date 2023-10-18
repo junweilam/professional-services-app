@@ -39,6 +39,13 @@ function sendEmail(email, code){
 
     return transporter.sendMail(mailOptions);
 }
+
+// Generate a random 6-digit OTP
+function generateOTP(){
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+
 // ------------------------------------------------------------------Functions-------------------------------------------------------------
 // Create a MySQL connection pool
 const pool = mysql.createPool({
@@ -205,10 +212,6 @@ app.post('/2fa/', async (req, res) => {
     }
 })
 
-// Generate a random 6-digit OTP
-function generateOTP(){
-    return Math.floor(100000 + Math.random() * 900000).toString();
-}
 
 
 //----------------------------------------------------- Routes ---------------------------------------------------------
