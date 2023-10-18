@@ -27,6 +27,7 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+// ------------------------------------------------------------------Functions-------------------------------------------------------------
 // Function to send 2FA codes via email
 function sendEmail(email, code){
     const mailOptions = {
@@ -38,7 +39,7 @@ function sendEmail(email, code){
 
     return transporter.sendMail(mailOptions);
 }
-
+// ------------------------------------------------------------------Functions-------------------------------------------------------------
 // Create a MySQL connection pool
 const pool = mysql.createPool({
     host: 'localhost',
