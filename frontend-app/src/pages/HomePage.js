@@ -29,7 +29,7 @@ const Home = () => {
   };
 
   const handleCheckout = () => {
-    navigate('/payment');
+    navigate('/cart', { state: { cart } });
   };
 
   const isCartEmpty = cart.length === 0;
@@ -42,18 +42,21 @@ const Home = () => {
         title: 'Web Development',
         description: 'Professional web development services',
         image: 'url-to-your-image-1.jpg',
+        price: 500,
       },
       {
         id: 2,
         title: 'Graphic Design',
         description: 'Custom graphic design solutions',
         image: 'url-to-your-image-2.jpg',
+        price: 500,
       },
       {
         id: 3,
         title: 'Digital Marketing',
         description: 'Boost your online presence with our marketing expertise',
         image: 'url-to-your-image-3.jpg',
+        price: 500,
       },
     ];
 
@@ -66,7 +69,7 @@ const Home = () => {
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-semibold mb-4">Services</h2>
           <div className="relative inline-block">
-            <button onClick={toggleCart} className="bg-blue-500 text-white py-2 px-4 rounded-md hover-bg-blue-600 transition duration-300">
+            <button onClick={toggleCart} className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-300">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 6a1 1 0 011 1h4a1 1 0 011 1M3 8h18M2 4l2-2h16l2 2"/>
               </svg>
@@ -87,9 +90,12 @@ const Home = () => {
                             <div>
                               {item.title}
                             </div>
+                            <div className="flex items-center ml-10">
+                              <span>Qty: {item.quantity}</span>
+                              <span className="ml-4">Price: ${item.price * item.quantity}</span>
+                            </div>
                           </div>
-                          <div className="flex items-center ml-10 mr-5">
-                            <span>Qty:{item.quantity}</span>
+                          <div className="flex items-center mr-5">
                             <button onClick={() => removeFromCart(item)} className="text-red-500 hover:text-red-600 ml-2">
                               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                 <path fillRule="evenodd" d="M6.293 6.293a1 1 0 011.414 0L10 8.586l2.293-2.293a1 1 0 111.414 1.414L11.414 10l2.293 2.293a1 1 0 01-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 01-1.414-1.414L8.586 10 6.293 7.707a1 1 0 010-1.414z" clipRule="evenodd"/>
@@ -102,7 +108,7 @@ const Home = () => {
                   </ul>
                 )}
                 {!isCartEmpty && (
-                  <button className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 mt-2" onClick= {handleCheckout}>Checkout</button>
+                  <button className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 mt-2" onClick={handleCheckout}>Checkout</button>
                 )}
               </div>
             )}

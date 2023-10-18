@@ -6,16 +6,17 @@ const ServiceCard = ({ service, addToCart }) => {
       <div className="flex-grow">
         <h3 className="text-lg font-semibold">{service.title}</h3>
         <p className="text-gray-600">{service.description}</p>
+        <p className="text-gray-600">Price: ${service.price}</p> 
         <button
-        onClick={() => addToCart(service)} // Call the addToCart function with the service
-        className="bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300"
-      >
-        Add to Cart
-      </button>
+          onClick={() => addToCart(service)}
+          className="bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300"
+        >
+          Add to Cart
+        </button>
       </div>
       <div className="w-16">
         <img
-          src="path/to/your/image.jpg"
+          src={service.image} 
           alt={service.title}
           className="h-16 w-16 object-cover rounded-md"
         />
