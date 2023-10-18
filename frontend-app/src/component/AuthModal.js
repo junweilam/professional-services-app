@@ -22,13 +22,13 @@ export const AuthModal = ({ isOpen, closeModal, isAuthenticated, setIsAuthentica
             let formValues = {OTP: formData.otp}
             const response = await authLogIn(formValues);
             if(response.message === "2FA Success Admin"){
-                window.location.href = './adminhome';
+                window.location.href = './ adminhome';
             }
             else if(response.message === "2FA Success Service"){
                 window.location.href = './servicehome';
             }
             else if(response.message === "2FA Success User"){
-                window.location.href = './userhome';
+                window.location.href = './homepage';
             }
             else if(response.message === "2FA Fail"){
                 setIsAuthenticated(false);

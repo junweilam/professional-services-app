@@ -38,3 +38,16 @@ export const authLogIn = async (user) => {
         };
     }
 }
+
+export const addServices = async (service) => {
+    try{
+        console.log(service);
+        const res = await axios.post("http://localhost:8080/adminaddservices/", service);
+        return res.data;
+    }catch(err){
+        console.log(err);
+        return{
+            error: err
+        };
+    }
+}
