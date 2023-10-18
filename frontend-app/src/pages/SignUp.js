@@ -77,6 +77,7 @@ const SignUp = () => {
         setEmailStatus(true);
         setContactStatus(true);
         setPasswordStatus(true);
+        return <Navigate to="/signin" />;
       }
     }catch(err){
       console.log(err);
