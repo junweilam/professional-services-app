@@ -219,6 +219,38 @@ app.post('/2fa/', async (req, res) => {
 
 // !!!Admin Route Codes Here!!!
 
+app.post('/adminaddservices/', async (req, res) => {
+    try{
+        console.log(req.body);
+
+        const checkServiceID = "SELECT * FROM services WHERE serviceID = ?";
+        const [results, fields] = await pool.execute(checkServiceID, [req.body.ServiceID]);
+
+
+        const q = 'INSERT INTO services(serviceID, ServiceName, ServiceDesc, ServiceAdd) VALUES (?)';
+        const values = [...Object.values(req.body)];
+
+        if (results.length > 0){
+            res.status(400).json({
+                message: "Service ID exist"
+            });
+        }
+        else{
+            pool.query(q, [values], (err, data) =>{
+                console.log(err,data);
+                if(err) return res.json({ error: "SQL Error"});
+                else return res.json({data});
+            })
+        }
+    }
+    catch(error){
+        console.log(error);
+        res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+})
+
 //----------------------------------------------------Admin-------------------------------------------------------------
 
 
