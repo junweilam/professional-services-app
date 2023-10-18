@@ -8,6 +8,10 @@ const secretKey = process.env.JWT_SECRET_KEY;
 const verifyToken = require("./middleware/AuthMiddleware")
 
 
+// const {Novu} = require("@novu/node");
+// const novu = new Novu("82127c4dbb88cea831be3675f883fafa");
+
+const nodemailer = require('nodemailer');
 
 
 const app = express();
@@ -20,7 +24,35 @@ const whitelist = ["https://localhost:3000"]
 // app.use(cors(corsOptions));
 app.use(cors())
 
+// Create a Nodemailer transporter
+const transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+        user: 'ict3103.3203@gmail.com',
+        pass: 'axrp bpkx hvnp xfma',
+    }
+});
 
+// ------------------------------------------------------------------Functions-------------------------------------------------------------
+// Function to send 2FA codes via email
+function sendEmail(email, code){
+    const mailOptions = {
+        from: 'ict3103.3203@gmail.com',
+        to: email,
+        subject: 'Your 2FA code',
+        text: `Your 2FA code is: ${code}`,
+    };
+
+    return transporter.sendMail(mailOptions);
+}
+
+// Generate a random 6-digit OTP
+function generateOTP(){
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+
+// ------------------------------------------------------------------Functions-------------------------------------------------------------
 // Create a MySQL connection pool
 const pool = mysql.createPool({
     host: 'localhost',
@@ -55,7 +87,8 @@ app.get('/data', async (req, res) => {
 
 //----------------------------------------------------- Routes ---------------------------------------------------------
 // Registration for users
-// 
+
+//----------------------------------------------------Registration/Sign In----------------------------------------------
 app.post('/registration/', async (req, res) => {
     try{
         console.log(req.body.Password)
@@ -93,9 +126,10 @@ app.post('/registration/', async (req, res) => {
             console.log(req.body);
             const q = `insert into users(LastName, FirstName, Email, ContactNo, Address, Password, Authorization) VALUES(?)`;
             const values = [...Object.values(req.body)];
-            console.log(values);
-            console.log("insert", values);
-            pool.query(q, [values], (err, data) => {
+            const modifiedValues = values.slice(0, values.length -1);
+            console.log(modifiedValues);
+            console.log("insert", modifiedValues);
+            pool.query(q, [modifiedValues], (err, data) => {
                 console.log(err,data);
                 if(err) return res.json({ error: "SQL Error"});
                 else return res.json({data});
@@ -112,6 +146,9 @@ app.post('/registration/', async (req, res) => {
 
 
 // JWT secret key to be more complex (future implementation)
+var otp;
+var authorizationValue;
+
 app.post('/signin/', async (req, res) => {
     try{
         console.log("In Sign in Route");
@@ -140,14 +177,20 @@ app.post('/signin/', async (req, res) => {
             // User is authenticated, generate JWT token
             // need to implement security for the secret key
             const token = jwt.sign({ email: params[0], authorization: authResults[0].Authorization }, secretKey, { expiresIn: '60s' });
+            otp = generateOTP();
+            sendEmail(email, otp);
             res.status(200).json({ message: 'Authentication Successful and AuthValue = 1', token: token, Login: true});
             console.log("Success");
           
         }
         else if (results.length > 0 && authorizationValue == 2){
-            res.status(201).json({ message: 'Authentication Successful and AuthValue = 2'});
+            otp = generateOTP();
+            sendEmail(email, otp);
+            res.status(201).json({ message: 'Authentication Successful and AuthValue = 2'});       
         }
         else if (results.length > 0 && authorizationValue == 3){
+            otp = generateOTP();
+            sendEmail(email, otp);
             res.status(202).json({ message: 'Authentication Successful and AuthValue = 3'});
         }
         else{
@@ -173,11 +216,82 @@ app.get('/checkAuth/',verifyToken, async(req, res) => {
 })
 
 
+app.post('/2fa/', async (req, res) => {
+    try{
+        userOTP = req.body.OTP;
+        if (userOTP == otp && authorizationValue == 1){
+            res.status(201).json({ message: '2FA Success Admin'});
+        }
+        else if(userOTP == otp && authorizationValue == 2){
+            res.status(202).json({ message: '2FA Success Service'});
+        }
+        else if(userOTP == otp && authorizationValue == 3){
+            res.status(202).json({ message: '2FA Success User'});
+        }
+        else{
+            res.status(401).json({ message: '2FA Fail'});
+        }
+    }catch(error){
+        console.log(error);
+        res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+})
 
-// Generate a random 6-digit OTP
-function generateOTP(){
-    return Math.floor(100000 + Math.random() * 900000).toString();
-}
+//----------------------------------------------------Registration/Sign In----------------------------------------------
+
+//----------------------------------------------------Admin-------------------------------------------------------------
+
+// !!!Admin Route Codes Here!!!
+
+app.post('/adminaddservices/', async (req, res) => {
+    try{
+        console.log(req.body);
+
+        const checkServiceID = "SELECT * FROM services WHERE serviceID = ?";
+        const [results, fields] = await pool.execute(checkServiceID, [req.body.ServiceID]);
+
+
+        const q = 'INSERT INTO services(serviceID, ServiceName, ServiceDesc, ServiceAdd) VALUES (?)';
+        const values = [...Object.values(req.body)];
+
+        if (results.length > 0){
+            res.status(400).json({
+                message: "Service ID exist"
+            });
+        }
+        else{
+            pool.query(q, [values], (err, data) =>{
+                console.log(err,data);
+                if(err) return res.json({ error: "SQL Error"});
+                else return res.json({data});
+            })
+        }
+    }
+    catch(error){
+        console.log(error);
+        res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+})
+
+//----------------------------------------------------Admin-------------------------------------------------------------
+
+
+//----------------------------------------------------Services----------------------------------------------------------
+
+// !!!Services Route Codes Here!!!
+
+//----------------------------------------------------Services----------------------------------------------------------
+
+//----------------------------------------------------Users-------------------------------------------------------------
+
+// !!!Users Route Codes Here!!!
+
+//----------------------------------------------------Users-------------------------------------------------------------
+
 
 
 //----------------------------------------------------- Routes ---------------------------------------------------------

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { logIn } from '../features/apiCalls';
+import { AuthModal } from '../component/AuthModal';
 
 
 
@@ -9,6 +10,8 @@ const SignIn = () => {
     email: '',
     password: '',
   });
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -37,15 +40,18 @@ const SignIn = () => {
           window.location.href = './adminhome';
         }
        
+        //window.location.href = './adminhome';
+        setIsModalOpen(true);        
       }
       else if (response.message === "Authentication Successful and AuthValue = 2"){
-        window.location.href = './servicehome';
+        setIsModalOpen(true);
       }
       else if (response.message === "Authentication Successful and AuthValue = 3"){
         window.location.href = './userhome';
       }else {
         // Handle other authentication cases (e.g., incorrect credentials)
         console.log('Authentication failed');
+        setIsModalOpen(true);
       }
     }catch(err){
       if (err.response && err.response.status === 401) {
@@ -105,8 +111,12 @@ const SignIn = () => {
           </button>
           <p className="text-gray-600 text-sm mt-2">Don't have an account? <a href="/signup" className="text-blue-500">Sign Up</a></p>
         </form>
+
+        <AuthModal isOpen={isModalOpen} closeModal={() => setIsModalOpen(false)} />
       </div>
+      
     </div>
+    
   );
 };
 

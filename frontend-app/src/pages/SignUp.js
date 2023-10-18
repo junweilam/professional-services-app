@@ -9,6 +9,7 @@ const SignUp = () => {
 
   const [emailStatus, setEmailStatus] = useState(true);
   const [contactStatus, setContactStatus] = useState(true);
+  const [passwordStatus, setPasswordStatus] = useState(true);
 
 
   // State to hold form input values
@@ -37,10 +38,10 @@ const SignUp = () => {
     e.preventDefault();
 
     // Perform validation here (e.g., check for password match)
-    if(formData.password !== formData.confirmPassword){
-      alert("Password and Confirm Password do not match")
-      return
-    }
+    // if(formData.password !== formData.confirmPassword){
+    //   alert("Password and Confirm Password do not match")
+    //   return
+    // }
 
     // passing confirm password to server
 
@@ -58,15 +59,25 @@ const SignUp = () => {
       if (response.error.response.status === 401) {
         setEmailStatus(false);
         setContactStatus(false);
+        setPasswordStatus(true);
       } else if (response.error.response.status === 402) {
         setEmailStatus(true);
         setContactStatus(false);
+        setPasswordStatus(true);
       } else if (response.error.response.status === 403) {
         setEmailStatus(false);
         setContactStatus(true);
-      } else {
+        setPasswordStatus(true);
+      } else if(response.error.response.status === 400){
+        setPasswordStatus(false);
         setEmailStatus(true);
         setContactStatus(true);
+      }
+       else {
+        setEmailStatus(true);
+        setContactStatus(true);
+        setPasswordStatus(true);
+        return <Navigate to="/signin" />;
       }
     }catch(err){
       console.log(err);
@@ -179,7 +190,7 @@ const SignUp = () => {
               Confirm Password
             </label>
             <input
-              className="w-full px-4 py-2 border rounded-lg outline-none focus:border-blue-500"
+              className={`${!passwordStatus ? 'w-full px-4 py-2 border rounded-lg border-red-500' : `w-full px-4 py-2 border rounded-lg outline-none focus:border-blue-500`}`}
               type="password"
               id="confirmPassword"
               name="confirmPassword"
@@ -188,6 +199,9 @@ const SignUp = () => {
               onChange={handleInputChange}
               required
             />
+            {!passwordStatus && (
+              <p className="text-red-500 text-sm">Password do not match</p>
+            )}
           </div>
           <button
             className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300"
