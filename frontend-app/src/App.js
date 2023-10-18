@@ -5,6 +5,8 @@ import SignUp from './pages/SignUp';
 import HomePage from './pages/HomePage'
 import AdminHome from './pages/AdminHome';
 import AdminAddServices from './pages/AdminAddServices';
+import PaymentPage from './pages/PaymentPage';
+import CartPage from './pages/CartPage';
 
 // User Imports
 import UserHome from './pages/UserHome';
@@ -29,6 +31,8 @@ function App() {
         <Route path="/userhome" element={<UserHome />} />
         <Route path="/servicehome" element={<ServiceHome />} />
         <Route path="/homepage" element={<HomePage />} />
+        <Route path="/payment" element={<PaymentPage />} />
+        <Route path="/cart" element={<CartPage />} />
       </Routes>
     </Router>
   );

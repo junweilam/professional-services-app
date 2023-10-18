@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import ServiceCard from '../component/ServiceCard';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
+  const navigate = useNavigate();
   const [services, setServices] = useState([]);
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -24,6 +26,10 @@ const Home = () => {
   const removeFromCart = (item) => {
     const updatedCart = cart.filter((cartItem) => cartItem.id !== item.id);
     setCart(updatedCart);
+  };
+
+  const handleCheckout = () => {
+    navigate('/payment');
   };
 
   const isCartEmpty = cart.length === 0;
@@ -96,7 +102,7 @@ const Home = () => {
                   </ul>
                 )}
                 {!isCartEmpty && (
-                  <button className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 mt-2">Checkout</button>
+                  <button className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 mt-2" onClick= {handleCheckout}>Checkout</button>
                 )}
               </div>
             )}
