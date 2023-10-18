@@ -1,7 +1,13 @@
+require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
 const mysql = require("mysql2/promise");
 const bodyParser = require("body-parser");
+const jwt = require('jsonwebtoken');
+const secretKey = process.env.JWT_SECRET_KEY;
+const verifyToken = require("./middleware/AuthMiddleware")
+
+
 // const {Novu} = require("@novu/node");
 // const novu = new Novu("82127c4dbb88cea831be3675f883fafa");
 
@@ -85,7 +91,8 @@ app.get('/data', async (req, res) => {
 //----------------------------------------------------Registration/Sign In----------------------------------------------
 app.post('/registration/', async (req, res) => {
     try{
-
+        console.log(req.body.Password)
+        console.log(req.body.ConfirmPassword)
         if(req.body.Password !== req.body.ConfirmPassword){
             console.log("Password and Confirm Password do not match");
             return res.status(400).json({message: "Password and Confirm Password do not match"})
@@ -137,6 +144,8 @@ app.post('/registration/', async (req, res) => {
     }
 })
 
+
+// JWT secret key to be more complex (future implementation)
 var otp;
 var authorizationValue;
 
@@ -157,15 +166,22 @@ app.post('/signin/', async (req, res) => {
         const [results, fields] = await pool.execute(q, params);
         const [authResults, rFields] = await pool.execute(auth, params);
 
-        console.log(authResults[0].Authorization);
+        // console.log(params)
+        // console.log(fields)
+        // console.log(rFields)
+        // console.log(authResults[0].Authorization);
 
         authorizationValue = authResults[0].Authorization;
 
         if (results.length > 0 && authorizationValue == 1){
+            // User is authenticated, generate JWT token
+            // need to implement security for the secret key
+            const token = jwt.sign({ email: params[0], authorization: authResults[0].Authorization }, secretKey, { expiresIn: '60s' });
             otp = generateOTP();
             sendEmail(email, otp);
-            res.status(200).json({ message: 'Authentication Successful and AuthValue = 1'});
+            res.status(200).json({ message: 'Authentication Successful and AuthValue = 1', token: token, Login: true});
             console.log("Success");
+          
         }
         else if (results.length > 0 && authorizationValue == 2){
             otp = generateOTP();
@@ -178,6 +194,8 @@ app.post('/signin/', async (req, res) => {
             res.status(202).json({ message: 'Authentication Successful and AuthValue = 3'});
         }
         else{
+            // Invalid authorization value
+            res.status(402).json({ message: 'Invalid authorization value' });
             res.status(401).json({ message: 'Authentication failed'});
             console.log("Failed");
         }
@@ -189,6 +207,14 @@ app.post('/signin/', async (req, res) => {
         });
     }
 })
+
+
+
+app.get('/checkAuth/',verifyToken, async(req, res) => {
+    console.log(res.json)
+    
+})
+
 
 app.post('/2fa/', async (req, res) => {
     try{

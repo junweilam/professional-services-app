@@ -4,6 +4,7 @@ import { AuthModal } from '../component/AuthModal';
 
 
 
+
 const SignIn = () => {
   const [formData, setFormData] = useState({
     email: '',
@@ -23,13 +24,22 @@ const SignIn = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     // Add your form submission logic here
     console.log(formData);
     try{
+
+  
+
       let formValues = {Email: formData.email, Password: formData.password}
       const response = await logIn(formValues);
       console.log(response);
       if (response.message === "Authentication Successful and AuthValue = 1"){
+        if(response.token){
+          localStorage.setItem('token', response.token)
+          window.location.href = './adminhome';
+        }
+       
         //window.location.href = './adminhome';
         setIsModalOpen(true);        
       }
@@ -37,12 +47,26 @@ const SignIn = () => {
         setIsModalOpen(true);
       }
       else if (response.message === "Authentication Successful and AuthValue = 3"){
+        window.location.href = './userhome';
+      }else {
+        // Handle other authentication cases (e.g., incorrect credentials)
+        console.log('Authentication failed');
         setIsModalOpen(true);
       }
     }catch(err){
-      console.log(err);
+      if (err.response && err.response.status === 401) {
+        // Handle token expiration: clear token and redirect to login page
+        console.log('Authentication token expired. Logging out...');
+        localStorage.removeItem('token'); // Clear token from localStorage
+        window.location.href = '/signin'; // Redirect to the login page
+      } else {
+        console.error(err);
+      }
     }
   };
+
+
+  
 
   return (
     <div className="flex justify-center items-center min-h-screen">
