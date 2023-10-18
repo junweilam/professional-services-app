@@ -1,39 +1,30 @@
+require('dotenv').config();
 const jwt = require('jsonwebtoken');
+const secretKey = process.env.JWT_SECRET_KEY;
 
-// Secret key to sign the JWT tokens
-const secretKey = 'your_secret_key'; // Replace this with a secret key of your choice
+const verifyToken = (req, res, next) => {
+  const token = req.header('access-token');
+  console.log(token)
 
-function generateToken(user) {
-    const payload = {
-        userId: user.id,
-        username: user.username,
-        // Add more user data to the payload if needed
-    };
+  if (!token) {
+    return res.status(401).json({ message: 'Access Denied: No Token Provided' });
+  }
 
-    // Sign the token
-    const token = jwt.sign(payload, secretKey, { expiresIn: '1h' }); // Token expires in 1 hour
-
-    return token;
-}
-
-function verifyToken(req, res, next) {
-    const token = req.header('Authorization');
-
-    if (!token) {
-        return res.status(401).json({ message: 'Access denied. No token provided.' });
-    }
-
-    jwt.verify(token, secretKey, (err, user) => {
-        if (err) {
-            return res.status(403).json({ message: 'Invalid token.' });
-        }
-
-        req.user = user;
+  try {
+    jwt.verify(token, secretKey, (err, decoded) => {
+      if(err){
+        console.log(err)
+        res.status(400).json("Not Authenticated")
+      }else{
+        req.userId = decoded.id
+        res.status(200).json("authed")
         next();
-    });
-}
-
-module.exports = {
-    generateToken,
-    verifyToken,
+      }
+    }); // Verify the token using your secret key
+    next(); // Move to the next middleware or route handler
+  } catch (error) {
+    return res.status(403).json({ message: 'Invalid Token' });
+  }
 };
+
+module.exports = verifyToken;

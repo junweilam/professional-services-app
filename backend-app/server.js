@@ -1,8 +1,11 @@
+require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
 const mysql = require("mysql2/promise");
 const bodyParser = require("body-parser");
 const jwt = require('jsonwebtoken');
+const secretKey = process.env.JWT_SECRET_KEY;
+const verifyToken = require("./middleware/AuthMiddleware")
 
 
 
@@ -55,7 +58,8 @@ app.get('/data', async (req, res) => {
 // 
 app.post('/registration/', async (req, res) => {
     try{
-
+        console.log(req.body.Password)
+        console.log(req.body.ConfirmPassword)
         if(req.body.Password !== req.body.ConfirmPassword){
             console.log("Password and Confirm Password do not match");
             return res.status(400).json({message: "Password and Confirm Password do not match"})
@@ -106,6 +110,8 @@ app.post('/registration/', async (req, res) => {
     }
 })
 
+
+// JWT secret key to be more complex (future implementation)
 app.post('/signin/', async (req, res) => {
     try{
         console.log("In Sign in Route");
@@ -123,17 +129,18 @@ app.post('/signin/', async (req, res) => {
         const [results, fields] = await pool.execute(q, params);
         const [authResults, rFields] = await pool.execute(auth, params);
 
-        console.log(params)
-        console.log(fields)
-        console.log(rFields)
-        console.log(authResults[0].Authorization);
+        // console.log(params)
+        // console.log(fields)
+        // console.log(rFields)
+        // console.log(authResults[0].Authorization);
 
         authorizationValue = authResults[0].Authorization;
 
         if (results.length > 0 && authorizationValue == 1){
             // User is authenticated, generate JWT token
-            const token = jwt.sign({ email: params[0], authorization: authResults[0].Authorization }, 'your_secret_key', { expiresIn: '1h' });
-            res.status(200).json({ message: 'Authentication Successful and AuthValue = 1', token: token});
+            // need to implement security for the secret key
+            const token = jwt.sign({ email: params[0], authorization: authResults[0].Authorization }, secretKey, { expiresIn: '60s' });
+            res.status(200).json({ message: 'Authentication Successful and AuthValue = 1', token: token, Login: true});
             console.log("Success");
           
         }
@@ -157,6 +164,15 @@ app.post('/signin/', async (req, res) => {
         });
     }
 })
+
+
+
+app.get('/checkAuth/',verifyToken, async(req, res) => {
+    console.log(res.json)
+    
+})
+
+
 
 // Generate a random 6-digit OTP
 function generateOTP(){
