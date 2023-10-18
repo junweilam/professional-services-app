@@ -35,11 +35,7 @@ const SignIn = () => {
       const response = await logIn(formValues);
       console.log(response);
       if (response.message === "Authentication Successful and AuthValue = 1"){
-        if(response.token){
-          localStorage.setItem('token', response.token)
-          window.location.href = './adminhome';
-        }
-       
+        
         //window.location.href = './adminhome';
         setIsModalOpen(true);        
       }
@@ -47,11 +43,12 @@ const SignIn = () => {
         setIsModalOpen(true);
       }
       else if (response.message === "Authentication Successful and AuthValue = 3"){
-        window.location.href = './userhome';
+        setIsModalOpen(true);
+       
       }else {
         // Handle other authentication cases (e.g., incorrect credentials)
         console.log('Authentication failed');
-        setIsModalOpen(true);
+        
       }
     }catch(err){
       if (err.response && err.response.status === 401) {
