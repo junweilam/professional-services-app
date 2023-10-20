@@ -130,10 +130,8 @@ app.post('/registration/', async (req, res) => {
             console.log(req.body);
             const q = `insert into users(LastName, FirstName, Email, ContactNo, Address, Password, Authorization) VALUES(?)`;
             const values = [req.body.LastName, req.body.FirstName, req.body.Email, req.body.ContactNo, req.body.Address, hashedPassword, req.body.Authorization];
-            const modifiedValues = values.slice(0, values.length -1);
-            console.log(modifiedValues);
-            console.log("insert", modifiedValues);
-            pool.query(q, [modifiedValues], (err, data) => {
+            console.log("insert: "+ values);
+            pool.query(q, [values], (err, data) => {
                 console.log(err,data);
                 if(err) return res.json({ error: "SQL Error"});
                 else return res.json({data});
