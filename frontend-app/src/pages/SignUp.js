@@ -1,6 +1,7 @@
 import React, { useId, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { registerUser } from '../features/apiCalls';
+import { SuccessModal } from '../component/SuccessModal';
 
 // const BASE_API_URL = "http://localhost:8081";
 
@@ -10,6 +11,7 @@ const SignUp = () => {
   const [emailStatus, setEmailStatus] = useState(true);
   const [contactStatus, setContactStatus] = useState(true);
   const [passwordStatus, setPasswordStatus] = useState(true);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
 
   // State to hold form input values
@@ -33,6 +35,12 @@ const SignUp = () => {
     });
   };
 
+  // Close Success Modal and redirect to Sign In page
+  const closeSuccessModal = () => {
+    setShowSuccessModal(false);
+    window.location.href = './signin';
+  };
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,14 +56,14 @@ const SignUp = () => {
 
 
     // Once validated, you can send the data to your backend or perform any desired actions
-    console.log(formData);
+    
     try{
       let formValues = {LastName: formData.lastName, FirstName : formData.firstName, Email : formData.email, ContactNo : formData.contactNo, Address : formData.address,Password : formData.password, Authorization : formData.authorization, ConfirmPassword : formData.confirmPassword};
       const response = await registerUser(formValues, formData.id);
 
       console.log(response);
 
-     
+     if (response.error){
       if (response.error.response.status === 401) {
         setEmailStatus(false);
         setContactStatus(false);
@@ -73,12 +81,15 @@ const SignUp = () => {
         setEmailStatus(true);
         setContactStatus(true);
       }
+     }
        else {
         setEmailStatus(true);
         setContactStatus(true);
         setPasswordStatus(true);
-        return <Navigate to="/signin" />;
+        // window.location.href = './signin';
+        setShowSuccessModal(true);
       }
+
     }catch(err){
       console.log(err);
     }
@@ -211,6 +222,7 @@ const SignUp = () => {
           </button>
         </form>
       </div>
+      <SuccessModal show={showSuccessModal} onClose={closeSuccessModal} />
     </div>
   );
 };

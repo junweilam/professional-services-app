@@ -132,8 +132,9 @@ app.post('/registration/', async (req, res) => {
             pool.query(q, [modifiedValues], (err, data) => {
                 console.log(err,data);
                 if(err) return res.json({ error: "SQL Error"});
-                else return res.json({data});
+                // else return res.json({data});
             });
+            res.status(200).json({message: "Registered"});
         }
 
     }catch(error){
