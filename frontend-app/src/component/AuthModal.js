@@ -27,7 +27,7 @@ export const AuthModal = ({ isOpen, closeModal, isAuthenticated, setIsAuthentica
           localStorage.setItem('token', response.token)
         }
 
-        window.location.href = './ adminhome';
+        window.location.href = './adminhome';
       }
       else if (response.message === "2FA Success Service") {
 

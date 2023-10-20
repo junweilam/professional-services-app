@@ -172,14 +172,14 @@ app.post('/signin/', async (req, res) => {
         // console.log(authResults[0].Authorization);
 
         authorizationValue = authResults[0].Authorization;
+        console.log(authResults[0])
 
         if (results.length > 0 && authorizationValue == 1){
             // User is authenticated, generate JWT token
             // need to implement security for the secret key
-            const token = jwt.sign({ email: params[0], authorization: authResults[0].Authorization }, secretKey, { expiresIn: '60s' });
             otp = generateOTP();
             sendEmail(email, otp);
-            res.status(200).json({ message: 'Authentication Successful and AuthValue = 1', token: token, Login: true});
+            res.status(200).json({ message: 'Authentication Successful and AuthValue = 1'});
             console.log("Success");
           
         }
@@ -195,7 +195,6 @@ app.post('/signin/', async (req, res) => {
         }
         else{
             // Invalid authorization value
-            res.status(402).json({ message: 'Invalid authorization value' });
             res.status(401).json({ message: 'Authentication failed'});
             console.log("Failed");
         }
@@ -220,13 +219,16 @@ app.post('/2fa/', async (req, res) => {
     try{
         userOTP = req.body.OTP;
         if (userOTP == otp && authorizationValue == 1){
-            res.status(201).json({ message: '2FA Success Admin'});
+            const token = jwt.sign({authorization: authorizationValue}, secretKey, { expiresIn: '15m' });
+            res.status(201).json({ message: '2FA Success Admin', token});
         }
         else if(userOTP == otp && authorizationValue == 2){
-            res.status(202).json({ message: '2FA Success Service'});
+            const token = jwt.sign({authorization: authorizationValue,}, secretKey, { expiresIn: '15m' });
+            res.status(202).json({ message: '2FA Success Service', token});
         }
         else if(userOTP == otp && authorizationValue == 3){
-            res.status(202).json({ message: '2FA Success User'});
+            const token = jwt.sign({authorization: authorizationValue}, secretKey, { expiresIn: '15m' });
+            res.status(202).json({ message: '2FA Success User', token});
         }
         else{
             res.status(401).json({ message: '2FA Fail'});
