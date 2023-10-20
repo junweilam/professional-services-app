@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const jwt = require('jsonwebtoken');
 const secretKey = process.env.JWT_SECRET_KEY;
 const verifyToken = require("./middleware/AuthMiddleware")
-
+const argon2 = require('argon2'); 
 
 // const {Novu} = require("@novu/node");
 // const novu = new Novu("82127c4dbb88cea831be3675f883fafa");
@@ -98,6 +98,10 @@ app.post('/registration/', async (req, res) => {
             return res.status(400).json({message: "Password and Confirm Password do not match"})
         }
         
+        const password = req.body.Password;
+
+        // Hash the password using Argon2
+        const hashedPassword = await argon2.hash(password);
 
         var emailFlag = false;
         var contactFlag = false;
@@ -125,7 +129,7 @@ app.post('/registration/', async (req, res) => {
         else{
             console.log(req.body);
             const q = `insert into users(LastName, FirstName, Email, ContactNo, Address, Password, Authorization) VALUES(?)`;
-            const values = [...Object.values(req.body)];
+            const values = [req.body.LastName, req.body.FirstName, req.body.Email, req.body.ContactNo, req.body.Address, hashedPassword, req.body.Authorization];
             const modifiedValues = values.slice(0, values.length -1);
             console.log(modifiedValues);
             console.log("insert", modifiedValues);
