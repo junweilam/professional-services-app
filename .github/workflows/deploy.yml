@@ -1,0 +1,43 @@
+#  name: CI/CD
+#  
+#  on:
+#    push: 
+#      branches:
+#        - main
+#  jobs:
+#    build:
+#      runs-on: <the vm>
+#      steps:
+#        - name: git-checkout
+#          uses: actions/checkout@v2 #to get code
+#        - name: git-setup-node
+#          uses: actions/setup-node@v1 #setup node
+#          with:
+#            node-version: 12
+#        - run: npm ci #means install
+#        - run: npm test
+#        - run: npm run build
+#        - run: npm run deploy
+#        - name: Install all dependencies
+#          run: npm install
+#        - name: Build
+#          run: npm run build # The build command of your project
+#          
+#        - name: Set up Python
+#          uses: actions/setup-python@v4
+#          with:
+#            python-version: '3.10'
+#            cache: 'pip' # caching pip dependencies
+#  
+#        - name: Update pip
+#          run: pip install --upgrade pip
+#  
+#        - name: Install requirements.txt
+#          run: pip install -r requirements.txt
+#  
+#        - name: Install test requirements
+#          run: pip install pytest pytest-cov sanic-testing==22.12.0 aiosqlite==0.18.0
+#  
+#        - name: Test with pytest
+#          run: pytest tests
+#tbc
