@@ -180,19 +180,20 @@ app.post('/signin/', async (req, res) => {
             // need to implement security for the secret key
             otp = generateOTP();
             sendEmail(email, otp);
-            res.status(200).json({ message: 'Authentication Successful and AuthValue = 1'});
+            res.status(200).json({ message: 'Authentication Successful and AuthValue = 1', Email: email});
             console.log("Success");
           
         }
         else if (results.length > 0 && authorizationValue == 2){
             otp = generateOTP();
             sendEmail(email, otp);
-            res.status(201).json({ message: 'Authentication Successful and AuthValue = 2'});       
+            res.status(201).json({ message: 'Authentication Successful and AuthValue = 2', Email: email});       
         }
         else if (results.length > 0 && authorizationValue == 3){
             otp = generateOTP();
+            console.log(otp);
             sendEmail(email, otp);
-            res.status(202).json({ message: 'Authentication Successful and AuthValue = 3'});
+            res.status(202).json({ message: 'Authentication Successful and AuthValue = 3', Email: email});
         }
         else{
             // Invalid authorization value
@@ -219,16 +220,32 @@ app.get('/checkAuth/',verifyToken, async(req, res) => {
 app.post('/2fa/', async (req, res) => {
     try{
         userOTP = req.body.OTP;
+        email = req.body.Email;
+        console.log(email);
         if (userOTP == otp && authorizationValue == 1){
             const token = jwt.sign({authorization: authorizationValue}, secretKey, { expiresIn: '15m' });
+
+            const q = 'UPDATE users SET Token = ? WHERE Email = ?';
+            const params = [token, req.body.Email];
+
+            const [results, fields] = await pool.execute(q, params);
+
             res.status(201).json({ message: '2FA Success Admin', token});
         }
         else if(userOTP == otp && authorizationValue == 2){
             const token = jwt.sign({authorization: authorizationValue,}, secretKey, { expiresIn: '15m' });
+            const q = 'UPDATE users SET Token = ? WHERE Email = ?';
+            const params = [token, req.body.Email];
+
+            const [results, fields] = await pool.execute(q, params);
             res.status(202).json({ message: '2FA Success Service', token});
         }
         else if(userOTP == otp && authorizationValue == 3){
             const token = jwt.sign({authorization: authorizationValue}, secretKey, { expiresIn: '15m' });
+            const q = 'UPDATE users SET Token = ? WHERE Email = ?';
+            const params = [token, req.body.Email];
+
+            const [results, fields] = await pool.execute(q, params);            
             res.status(202).json({ message: '2FA Success User', token});
         }
         else{

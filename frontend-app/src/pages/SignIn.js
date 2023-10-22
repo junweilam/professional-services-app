@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { logIn } from '../features/apiCalls';
 import { AuthModal } from '../component/AuthModal';
-
+import { useEmail } from '../context/EmailContext';
 
 
 
@@ -12,6 +12,14 @@ const SignIn = () => {
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  const [emailValue, setEmailValue] = useState('');
+
+  // useEffect(() => {
+  //   // This code will run after the emailValue state has been updated
+  //   console.log("email value:",emailValue);
+  // }, [emailValue]);
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -28,9 +36,6 @@ const SignIn = () => {
     // Add your form submission logic here
     console.log(formData);
     try{
-
-  
-
       let formValues = {Email: formData.email, Password: formData.password}
       const response = await logIn(formValues);
       console.log(response);
@@ -48,8 +53,10 @@ const SignIn = () => {
       }else {
         // Handle other authentication cases (e.g., incorrect credentials)
         console.log('Authentication failed');
-        
       }
+      setEmailValue(`${response.Email}`);
+      console.log(`${response.Email}`);
+
     }catch(err){
       if (err.response && err.response.status === 401) {
         // Handle token expiration: clear token and redirect to login page
@@ -62,10 +69,8 @@ const SignIn = () => {
     }
   };
 
-
-  
-
   return (
+    
     <div className="flex justify-center items-center min-h-screen">
       <div className="bg-white p-8 shadow-md rounded-md">
         <h2 className="text-2xl font-semibold mb-4">Sign In</h2>
@@ -109,7 +114,7 @@ const SignIn = () => {
           <p className="text-gray-600 text-sm mt-2">Don't have an account? <a href="/signup" className="text-blue-500">Sign Up</a></p>
         </form>
 
-        <AuthModal isOpen={isModalOpen} closeModal={() => setIsModalOpen(false)} />
+        <AuthModal isOpen={isModalOpen} closeModal={() => setIsModalOpen(false)} email={emailValue} />
       </div>
       
     </div>
