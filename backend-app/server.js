@@ -6,7 +6,8 @@ const bodyParser = require("body-parser");
 const jwt = require('jsonwebtoken');
 const secretKey = process.env.JWT_SECRET_KEY;
 const verifyToken = require("./middleware/AuthMiddleware")
-
+const argon2 = require('argon2'); 
+const bcrypt = require('bcrypt');
 
 // const {Novu} = require("@novu/node");
 // const novu = new Novu("82127c4dbb88cea831be3675f883fafa");
@@ -15,6 +16,13 @@ const nodemailer = require('nodemailer');
 
 
 const app = express();
+
+
+// Hashing of secretKey
+const salt = bcrypt.genSaltSync(10);
+const hashedKey = bcrypt.hashSync(secretKey, salt);
+
+console.log('Hashed key:', hashedKey);
 
 var corsOptions = {
     origin: "http://localhost:8081"
@@ -98,6 +106,12 @@ app.post('/registration/', async (req, res) => {
             return res.status(400).json({message: "Password and Confirm Password do not match"})
         }
         
+        const password = req.body.Password;
+
+        // Hash the password using Argon2
+        const hashedPassword = await argon2.hash(password);
+
+        console.log(hashedPassword);
 
         var emailFlag = false;
         var contactFlag = false;
@@ -125,11 +139,9 @@ app.post('/registration/', async (req, res) => {
         else{
             console.log(req.body);
             const q = `insert into users(LastName, FirstName, Email, ContactNo, Address, Password, Authorization) VALUES(?)`;
-            const values = [...Object.values(req.body)];
-            const modifiedValues = values.slice(0, values.length -1);
-            console.log(modifiedValues);
-            console.log("insert", modifiedValues);
-            pool.query(q, [modifiedValues], (err, data) => {
+            const values = [req.body.LastName, req.body.FirstName, req.body.Email, req.body.ContactNo, req.body.Address, hashedPassword, req.body.Authorization];
+            console.log("insert: "+ values);
+            pool.query(q, [values], (err, data) => {
                 console.log(err,data);
                 if(err) return res.json({ error: "SQL Error"});
                 // else return res.json({data});
@@ -160,11 +172,13 @@ app.post('/signin/', async (req, res) => {
         console.log(password);
 
         const q = "SELECT * FROM users WHERE Email = ? AND Password = ?";
-        const params = [email, password];
+        const [results, fields] = await pool.execute(q, [email]);
+        // const params = [email, password];
 
-        const auth = "SELECT Authorization FROM users WHERE Email = ? AND Password = ?";
+        const auth = "SELECT Authorization FROM users WHERE Email = ? AND Password = ?"; 
 
-        const [results, fields] = await pool.execute(q, params);
+        
+        // const [results, fields] = await pool.execute(q, params);
         const [authResults, rFields] = await pool.execute(auth, params);
 
         // console.log(params)
@@ -172,43 +186,57 @@ app.post('/signin/', async (req, res) => {
         // console.log(rFields)
         // console.log(authResults[0].Authorization);
 
-        authorizationValue = authResults[0].Authorization;
-        console.log(authResults[0])
+        // authorizationValue = authResults[0].Authorization;
 
-        if (results.length > 0 && authorizationValue == 1){
-            // User is authenticated, generate JWT token
-            // need to implement security for the secret key
-            otp = generateOTP();
-            sendEmail(email, otp);
-            res.status(200).json({ message: 'Authentication Successful and AuthValue = 1', Email: email});
-            console.log("Success");
-          
-        }
-        else if (results.length > 0 && authorizationValue == 2){
-            otp = generateOTP();
-            sendEmail(email, otp);
-            res.status(201).json({ message: 'Authentication Successful and AuthValue = 2', Email: email});       
-        }
-        else if (results.length > 0 && authorizationValue == 3){
-            otp = generateOTP();
-            console.log(otp);
-            sendEmail(email, otp);
-            res.status(202).json({ message: 'Authentication Successful and AuthValue = 3', Email: email});
-        }
-        else{
-            // Invalid authorization value
-            res.status(401).json({ message: 'Authentication failed'});
-            console.log("Failed");
-        }
+        // if (results.length === 1) {
+            const hashedPassword = results[0].Password;
+            authorizationValue = results[0].Authorization;
+            
+            // Use argon2.verify to compare the user's input with the stored hash
+            const isPasswordValid = await argon2.verify(hashedPassword, password);
 
-    }catch(error){
+            if (isPasswordValid) {
+                // Password is correct, proceed with authentication
+
+                // User is authenticated, generate JWT token
+                // need to implement security for the secret key
+                if (results.length > 0 && authorizationValue === 1) {
+                    const token = jwt.sign({ email: params[0], authorization: authResults[0].Authorization }, hashedKey, { expiresIn: '60s' });
+                    otp = generateOTP();
+                    sendEmail(email, otp);
+                    res.status(200).json({ message: 'Authentication Successful and AuthValue = 1', token: token, Login: true});
+                    console.log("Success");
+                } 
+                else if (results.length > 0 && authorizationValue == 2) {
+                    otp = generateOTP();
+                    sendEmail(email, otp);
+                    res.status(201).json({ message: 'Authentication Successful and AuthValue = 2'});       
+                } 
+                else if (results.length > 0 && authorizationValue == 3) {
+                    otp = generateOTP();
+                    sendEmail(email, otp);
+                    res.status(202).json({ message: 'Authentication Successful and AuthValue = 3'});
+                } 
+                else {
+                    // Invalid authorization value
+                    res.status(401).json({ message: 'Authentication failed'});
+                    console.log("Failed");
+                }
+            
+        } else {
+                // Incorrect password
+                res.status(401).json({ message: 'Authentication failed: Incorrect password' });
+            }
+        
+    } catch (error){
         console.log(error);
         res.status(500).json({
-            message: "Internal server error"
-        });
-    }
-})
-
+            message: "Internal server error" });
+        }
+    
+});
+            
+        
 
 
 app.get('/checkAuth/',verifyToken, async(req, res) => {
