@@ -171,15 +171,17 @@ app.post('/signin/', async (req, res) => {
         console.log(email);
         console.log(password);
 
-        const q = "SELECT * FROM users WHERE Email = ? AND Password = ?";
+        const q = "SELECT * FROM users WHERE Email = ?";
         const [results, fields] = await pool.execute(q, [email]);
         // const params = [email, password];
 
-        const auth = "SELECT Authorization FROM users WHERE Email = ? AND Password = ?"; 
+        console.log(results);
+
+        const auth = "SELECT Authorization FROM users WHERE Email = ?"; 
 
         
         // const [results, fields] = await pool.execute(q, params);
-        const [authResults, rFields] = await pool.execute(auth, params);
+        const [authResults, rFields] = await pool.execute(auth, [email]);
 
         // console.log(params)
         // console.log(fields)
@@ -201,21 +203,21 @@ app.post('/signin/', async (req, res) => {
                 // User is authenticated, generate JWT token
                 // need to implement security for the secret key
                 if (results.length > 0 && authorizationValue === 1) {
-                    const token = jwt.sign({ email: params[0], authorization: authResults[0].Authorization }, hashedKey, { expiresIn: '60s' });
                     otp = generateOTP();
                     sendEmail(email, otp);
-                    res.status(200).json({ message: 'Authentication Successful and AuthValue = 1', token: token, Login: true});
+                    res.status(200).json({ message: 'Authentication Successful and AuthValue = 1', Email: email});
                     console.log("Success");
                 } 
                 else if (results.length > 0 && authorizationValue == 2) {
                     otp = generateOTP();
                     sendEmail(email, otp);
-                    res.status(201).json({ message: 'Authentication Successful and AuthValue = 2'});       
+                    res.status(201).json({ message: 'Authentication Successful and AuthValue = 2', Email: email});       
                 } 
                 else if (results.length > 0 && authorizationValue == 3) {
                     otp = generateOTP();
+                    console.log(otp);
                     sendEmail(email, otp);
-                    res.status(202).json({ message: 'Authentication Successful and AuthValue = 3'});
+                    res.status(202).json({ message: 'Authentication Successful and AuthValue = 3', Email: email});
                 } 
                 else {
                     // Invalid authorization value
@@ -225,7 +227,7 @@ app.post('/signin/', async (req, res) => {
             
         } else {
                 // Incorrect password
-                res.status(401).json({ message: 'Authentication failed: Incorrect password' });
+                res.status(402).json({ message: 'Authentication failed: Incorrect password' });
             }
         
     } catch (error){
