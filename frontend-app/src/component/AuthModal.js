@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { authLogIn } from '../features/apiCalls';
 
-export const AuthModal = ({ isOpen, closeModal, isAuthenticated, setIsAuthenticated }) => {
+export const AuthModal = ({ isOpen, closeModal, isAuthenticated, setIsAuthenticated, email }) => {
 
   const [formData, setFormData] = useState({
     otp: '',
   })
+
+  console.log(email);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -19,7 +21,7 @@ export const AuthModal = ({ isOpen, closeModal, isAuthenticated, setIsAuthentica
     e.preventDefault();
 
     try {
-      let formValues = { OTP: formData.otp }
+      let formValues = { OTP: formData.otp, Email: email }
       const response = await authLogIn(formValues);
       if (response.message === "2FA Success Admin") {
 
@@ -27,7 +29,7 @@ export const AuthModal = ({ isOpen, closeModal, isAuthenticated, setIsAuthentica
           localStorage.setItem('token', response.token)
         }
 
-        window.location.href = './ adminhome';
+        window.location.href = './adminhome';
       }
       else if (response.message === "2FA Success Service") {
 

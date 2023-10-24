@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import ServiceCard from '../component/ServiceCard';
 import { useNavigate } from 'react-router-dom';
+import { useEmail } from '../context/EmailContext';
 
 const Home = () => {
   const navigate = useNavigate();
   const [services, setServices] = useState([]);
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const { emailValue, setEmailValue } = useEmail();
+
+  useEffect(() => {
+    // This code will run after the emailValue state has been updated
+    console.log("email value:",emailValue);
+  }, [emailValue]);
+
 
   const addToCart = (service) => {
     const itemIndex = cart.findIndex((item) => item.id === service.id);

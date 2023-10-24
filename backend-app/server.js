@@ -134,8 +134,9 @@ app.post('/registration/', async (req, res) => {
             pool.query(q, [values], (err, data) => {
                 console.log(err,data);
                 if(err) return res.json({ error: "SQL Error"});
-                else return res.json({data});
+                // else return res.json({data});
             });
+            res.status(200).json({message: "Registered"});
         }
 
     }catch(error){
@@ -174,30 +175,30 @@ app.post('/signin/', async (req, res) => {
         // console.log(authResults[0].Authorization);
 
         authorizationValue = authResults[0].Authorization;
+        console.log(authResults[0])
 
         if (results.length > 0 && authorizationValue == 1){
             // User is authenticated, generate JWT token
             // need to implement security for the secret key
-            const token = jwt.sign({ email: params[0], authorization: authResults[0].Authorization }, secretKey, { expiresIn: '60s' });
             otp = generateOTP();
             sendEmail(email, otp);
-            res.status(200).json({ message: 'Authentication Successful and AuthValue = 1', token: token, Login: true});
+            res.status(200).json({ message: 'Authentication Successful and AuthValue = 1', Email: email});
             console.log("Success");
           
         }
         else if (results.length > 0 && authorizationValue == 2){
             otp = generateOTP();
             sendEmail(email, otp);
-            res.status(201).json({ message: 'Authentication Successful and AuthValue = 2'});       
+            res.status(201).json({ message: 'Authentication Successful and AuthValue = 2', Email: email});       
         }
         else if (results.length > 0 && authorizationValue == 3){
             otp = generateOTP();
+            console.log(otp);
             sendEmail(email, otp);
-            res.status(202).json({ message: 'Authentication Successful and AuthValue = 3'});
+            res.status(202).json({ message: 'Authentication Successful and AuthValue = 3', Email: email});
         }
         else{
             // Invalid authorization value
-            res.status(402).json({ message: 'Invalid authorization value' });
             res.status(401).json({ message: 'Authentication failed'});
             console.log("Failed");
         }
@@ -221,14 +222,33 @@ app.get('/checkAuth/',verifyToken, async(req, res) => {
 app.post('/2fa/', async (req, res) => {
     try{
         userOTP = req.body.OTP;
+        email = req.body.Email;
+        console.log(email);
         if (userOTP == otp && authorizationValue == 1){
-            res.status(201).json({ message: '2FA Success Admin'});
+            const token = jwt.sign({authorization: authorizationValue}, secretKey, { expiresIn: '15m' });
+
+            const q = 'UPDATE users SET Token = ? WHERE Email = ?';
+            const params = [token, req.body.Email];
+
+            const [results, fields] = await pool.execute(q, params);
+
+            res.status(201).json({ message: '2FA Success Admin', token});
         }
         else if(userOTP == otp && authorizationValue == 2){
-            res.status(202).json({ message: '2FA Success Service'});
+            const token = jwt.sign({authorization: authorizationValue,}, secretKey, { expiresIn: '15m' });
+            const q = 'UPDATE users SET Token = ? WHERE Email = ?';
+            const params = [token, req.body.Email];
+
+            const [results, fields] = await pool.execute(q, params);
+            res.status(202).json({ message: '2FA Success Service', token});
         }
         else if(userOTP == otp && authorizationValue == 3){
-            res.status(202).json({ message: '2FA Success User'});
+            const token = jwt.sign({authorization: authorizationValue}, secretKey, { expiresIn: '15m' });
+            const q = 'UPDATE users SET Token = ? WHERE Email = ?';
+            const params = [token, req.body.Email];
+
+            const [results, fields] = await pool.execute(q, params);            
+            res.status(202).json({ message: '2FA Success User', token});
         }
         else{
             res.status(401).json({ message: '2FA Fail'});
