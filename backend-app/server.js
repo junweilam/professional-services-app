@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const secretKey = process.env.JWT_SECRET_KEY;
 const verifyToken = require("./middleware/AuthMiddleware")
 const argon2 = require('argon2'); 
+const bcrypt = require('bcrypt');
 
 // const {Novu} = require("@novu/node");
 // const novu = new Novu("82127c4dbb88cea831be3675f883fafa");
@@ -15,6 +16,13 @@ const nodemailer = require('nodemailer');
 
 
 const app = express();
+
+
+// Hashing of secretKey
+const salt = bcrypt.genSaltSync(10);
+const hashedKey = bcrypt.hashSync(secretKey, salt);
+
+console.log('Hashed key:', hashedKey);
 
 var corsOptions = {
     origin: "http://localhost:8081"
@@ -192,7 +200,7 @@ app.post('/signin/', async (req, res) => {
                 // User is authenticated, generate JWT token
                 // need to implement security for the secret key
                 if (results.length > 0 && authorizationValue === 1) {
-                    const token = jwt.sign({ email: params[0], authorization: authResults[0].Authorization }, secretKey, { expiresIn: '60s' });
+                    const token = jwt.sign({ email: params[0], authorization: authResults[0].Authorization }, hashedKey, { expiresIn: '60s' });
                     otp = generateOTP();
                     sendEmail(email, otp);
                     res.status(200).json({ message: 'Authentication Successful and AuthValue = 1', token: token, Login: true});
