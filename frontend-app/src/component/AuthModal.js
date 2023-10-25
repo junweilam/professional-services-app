@@ -19,7 +19,7 @@ export const AuthModal = ({ isOpen, closeModal, isAuthenticated, setIsAuthentica
       const countdownInterval = setInterval(() => {
         setCountdown((prevCountdown) => prevCountdown -1);
       },1000);
-
+ 
       return () => {
         clearInterval(countdownInterval);
       };
