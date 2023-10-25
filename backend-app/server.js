@@ -59,6 +59,33 @@ function generateOTP(){
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
+function setOTPWithCountdown() {
+    // Display the initial OTP
+    
+    console.log(`Current OTP: ${otp}`);
+  
+    // Define the countdown duration in seconds (e.g., 60 seconds)
+    const countdownDuration = 10;
+  
+    // Initialize the countdown timer
+    let countdown = countdownDuration;
+  
+    // Create a function to update the countdown and set OTP to 0 when it reaches 0
+    function updateCountdown() {
+      if (countdown > 0) {
+        console.log(`OTP will reset in ${countdown} seconds.`);
+        countdown -= 1;
+        setTimeout(updateCountdown, 1000); // Update countdown every 1 second (1000 milliseconds)
+      } else {
+        otp = 0;
+        console.log('OTP has been reset to 0.');
+      }
+    }
+  
+    // Start the countdown
+    updateCountdown();
+  }
+
 
 // ------------------------------------------------------------------Functions-------------------------------------------------------------
 // Create a MySQL connection pool
@@ -202,19 +229,23 @@ app.post('/signin/', async (req, res) => {
 
                 // User is authenticated, generate JWT token
                 // need to implement security for the secret key
+                
                 if (results.length > 0 && authorizationValue === 1) {
                     otp = generateOTP();
                     sendEmail(email, otp);
+                    setOTPWithCountdown();
                     res.status(200).json({ message: 'Authentication Successful and AuthValue = 1', Email: email});
                     console.log("Success");
                 } 
                 else if (results.length > 0 && authorizationValue == 2) {
                     otp = generateOTP();
                     sendEmail(email, otp);
+                    setOTPWithCountdown();
                     res.status(201).json({ message: 'Authentication Successful and AuthValue = 2', Email: email});       
                 } 
                 else if (results.length > 0 && authorizationValue == 3) {
                     otp = generateOTP();
+                    setOTPWithCountdown();
                     console.log(otp);
                     sendEmail(email, otp);
                     res.status(202).json({ message: 'Authentication Successful and AuthValue = 3', Email: email});
@@ -238,7 +269,22 @@ app.post('/signin/', async (req, res) => {
     
 });
             
-        
+app.post('/resend2fa/', async (req, res) => {
+    try{
+        console.log("inside resend 2fa");
+        const email = (req.body.Email);
+        otp = generateOTP();
+        setOTPWithCountdown();
+        sendEmail(email, otp);
+        res.status(200).json({
+            message: "Resent"
+        });
+    }catch(error){
+        res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+})
 
 
 app.get('/checkAuth/',verifyToken, async(req, res) => {
@@ -272,11 +318,15 @@ app.post('/2fa/', async (req, res) => {
         }
         else if(userOTP == otp && authorizationValue == 3){
             const token = jwt.sign({authorization: authorizationValue}, secretKey, { expiresIn: '15m' });
+            console.log(otp);
             const q = 'UPDATE users SET Token = ? WHERE Email = ?';
             const params = [token, req.body.Email];
 
             const [results, fields] = await pool.execute(q, params);            
             res.status(202).json({ message: '2FA Success User', token});
+        }
+        else if(otp == 0){
+            res.status(400).json({ message: 'Expired'});
         }
         else{
             res.status(401).json({ message: '2FA Fail'});

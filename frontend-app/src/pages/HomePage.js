@@ -10,10 +10,6 @@ const Home = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { emailValue, setEmailValue } = useEmail();
 
-  useEffect(() => {
-    // This code will run after the emailValue state has been updated
-    console.log("email value:",emailValue);
-  }, [emailValue]);
 
 
   const addToCart = (service) => {

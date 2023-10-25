@@ -1,12 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { authLogIn } from '../features/apiCalls';
+import { resendOTP } from '../features/apiCalls';
 
 export const AuthModal = ({ isOpen, closeModal, isAuthenticated, setIsAuthenticated, email }) => {
+
 
   const [formData, setFormData] = useState({
     otp: '',
   })
 
+  const [is2FA, setIs2FA] = useState(true);
+  const [isResent, setIsResent] = useState(false);
+  const [isExpired, setIsExpired] = useState(false);
+  const [countdown, setCountdown] = useState(10);
+
+  useEffect(() => {
+    if(countdown > 0){
+      const countdownInterval = setInterval(() => {
+        setCountdown((prevCountdown) => prevCountdown -1);
+      },1000);
+
+      return () => {
+        clearInterval(countdownInterval);
+      };
+    }else{
+      setIsExpired(true);
+      setIs2FA(true);
+      setIsResent(false);
+    }
+  }, [countdown]);
+
+  const startCountdown = () => {
+    setCountdown(10); // Reset the countdown to 60 seconds
+  };
+
+  useEffect(() => {
+    if(isOpen){
+      startCountdown();
+    }
+  }, [isOpen]);
+
+  
   console.log(email);
 
   const handleInputChange = (e) => {
@@ -17,8 +51,32 @@ export const AuthModal = ({ isOpen, closeModal, isAuthenticated, setIsAuthentica
     });
   }
 
+  const handleResendOTP = async (e) => {
+    e.preventDefault();
+
+    try {
+      let OTPValues = { Email: email }
+      const response = await resendOTP(OTPValues);
+      if (response.message === "Resent") {
+        setIs2FA(true);
+        setIsResent(true);
+        setIsExpired(false);
+        setCountdown(10);
+        console.log(is2FA);
+        console.log(isResent);
+      }
+
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setIs2FA(true);
+    setIsResent(false);
+    setIsExpired(false);
 
     try {
       let formValues = { OTP: formData.otp, Email: email }
@@ -39,14 +97,19 @@ export const AuthModal = ({ isOpen, closeModal, isAuthenticated, setIsAuthentica
         window.location.href = './servicehome';
       }
       else if (response.message === "2FA Success User") {
-        
+
         if (response.token) {
           localStorage.setItem('token', response.token)
         }
         window.location.href = './homepage';
       }
-      else if (response.message === "2FA Fail") {
-        setIsAuthenticated(false);
+      else if (response.error.response.status === 401) {
+        setIs2FA(false);
+        setIsResent(false);
+        setIsExpired(false);
+      }
+      else if (response.error.response.status === 400){
+        setIsExpired(true);
       }
     } catch (err) {
       console.log(err);
@@ -74,6 +137,20 @@ export const AuthModal = ({ isOpen, closeModal, isAuthenticated, setIsAuthentica
                 />
               </div>
             </div>
+            <p>{countdown} seconds</p>
+            {!is2FA && (
+              <p className="text-red-500 text-sm">OTP is incorrect. Click <a onClick={handleResendOTP} className="text-blue-500 underline hover:cursor-pointer">Here</a> for new OTP</p>
+            )}
+            {
+              isResent && (
+                <p>New OTP is resent</p>
+              )
+            }
+            {
+              isExpired && (
+                <p className="text-red-500 text-sm">OTP has expired. Click <a onClick={handleResendOTP} className="text-blue-500 underline hover:cursor-pointer">Here</a> for new OTP</p>
+              )
+            }
             <button
               type="submit"
               className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300 center-horizontal mt-5"
