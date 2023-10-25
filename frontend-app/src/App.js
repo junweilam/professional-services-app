@@ -15,25 +15,29 @@ import UserHome from './pages/UserHome';
 import ServiceHome from './pages/ServiceHome';
 
 import Navbar from './component/Navbar';
+import { EmailProvider } from './context/EmailContext';
 
 function App() {
-  
+
 
   return (
     <Router>
       <Navbar/>
-      <Routes>
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/adminhome" element={<AdminHome />} />
-        <Route path="/adminaddservices" element={<AdminAddServices />} />
-        <Route path="/*" element={<Navigate to="/signin" />} />
-        <Route path="/userhome" element={<UserHome />} />
-        <Route path="/servicehome" element={<ServiceHome />} />
-        <Route path="/homepage" element={<HomePage />} />
-        <Route path="/payment" element={<PaymentPage />} />
-        <Route path="/cart" element={<CartPage />} />
-      </Routes>
+      
+        <Routes>
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/adminhome" element={<AdminHome />} />
+          <Route path="/adminaddservices" element={<AdminAddServices />} />
+          <Route path="/*" element={<Navigate to="/signin" />} />
+          <Route path="/userhome" element={<UserHome />} />
+          <Route path="/servicehome" element={<ServiceHome />} />
+          <Route path="/homepage" element={<HomePage />} />
+          <Route path="/payment" element={<PaymentPage />} />
+          <Route path="/cart" element={<CartPage />} />
+        </Routes>
+      
+
     </Router>
   );
 }

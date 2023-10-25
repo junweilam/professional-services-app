@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useEmail } from '../context/EmailContext';
 
 function Navbar() {
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { userEmail } = useEmail();
 
   const toggleUserDropdown = () => {
     setIsUserDropdownOpen(!isUserDropdownOpen);
@@ -35,7 +37,7 @@ function Navbar() {
           </span>
         </a>
         <div className="flex items-center md:order-2">
-          
+
           <button
             type="button"
             className="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
@@ -53,19 +55,22 @@ function Navbar() {
           </button>
           {/* Dropdown menu */}
           <div
-            className={`${
-              isUserDropdownOpen ? 'block' : 'hidden'
-            } absolute right-27 top-12 mt-2 w-48 bg-white text-gray-700 rounded-lg shadow-lg dark:bg-gray-700 dark:text-gray-400 z-50`}
+            className={`${isUserDropdownOpen ? 'block' : 'hidden'
+              } absolute right-27 top-12 mt-2 w-48 bg-white text-gray-700 rounded-lg shadow-lg dark:bg-gray-700 dark:text-gray-400 z-50`}
             id="user-dropdown"
           >
             <div className="px-4 py-3">
               {/* User Name */}
               <span className="block text-sm text-gray-900 dark:text-white">
-                User Name
+                email
               </span>
               {/* User Email */}
               <span className="block text-sm text-gray-500 truncate dark:text-gray-400">
-                User Email
+                {userEmail ? (
+                  <p>Welcome, {userEmail}</p>
+                ) : (
+                  <p>Welcome, Guest</p>
+                )}
               </span>
             </div>
             <ul className="py-2" aria-labelledby="user-menu-button">
@@ -131,9 +136,8 @@ function Navbar() {
           </button>
         </div>
         <div
-          className={`${
-            isMobileMenuOpen ? 'block' : 'hidden'
-          } items-center justify-between w-full md:flex md:w-auto md:order-1`}
+          className={`${isMobileMenuOpen ? 'block' : 'hidden'
+            } items-center justify-between w-full md:flex md:w-auto md:order-1`}
           id="navbar-user"
         >
           <ul
