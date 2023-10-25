@@ -16,6 +16,7 @@ export const AuthModal = ({ isOpen, closeModal, isAuthenticated, setIsAuthentica
 
   useEffect(() => {
     if(countdown > 0){
+      setIsExpired(false);
       const countdownInterval = setInterval(() => {
         setCountdown((prevCountdown) => prevCountdown -1);
       },1000);
@@ -137,7 +138,7 @@ export const AuthModal = ({ isOpen, closeModal, isAuthenticated, setIsAuthentica
                 />
               </div>
             </div>
-            <p>{countdown} seconds</p>
+            <p>OTP expires in {countdown} seconds</p>
             {!is2FA && (
               <p className="text-red-500 text-sm">OTP is incorrect. Click <a onClick={handleResendOTP} className="text-blue-500 underline hover:cursor-pointer">Here</a> for new OTP</p>
             )}
