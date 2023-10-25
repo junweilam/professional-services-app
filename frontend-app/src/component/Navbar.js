@@ -11,6 +11,14 @@ function Navbar() {
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
+
+
+  const handleSignout = () => {
+      localStorage.removeItem("token");
+      console.log("logged out")
+      window.location.href = './adminhome';
+    
+  }
   
   return (
     <nav className="bg-white border-gray-200 dark:bg-gray-900 relative">
@@ -89,6 +97,7 @@ function Navbar() {
                 <a
                   href="#"
                   className="block px-4 py-2 text-sm text-gray-700 hover-bg-gray-100 dark:hover-bg-gray-600 dark:text-gray-200 dark:hover-text-white"
+                  onClick={handleSignout}
                 >
                   Sign out
                 </a>
