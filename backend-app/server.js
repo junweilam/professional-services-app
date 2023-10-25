@@ -156,12 +156,19 @@ app.post('/registration/', async (req, res) => {
         }
         else if (cResults.length > 0){
             contactFlag = true;
-            console.log("Contact Number used1");
+            console.log("Contact Number used");
             res.status(402).json({ message: 'Contact Number already used'});
+        }
+        else if(cResults.length != 8){
+            console.log("contact 123")
+            res.status(405).json({ message: "Contact number have to be 8 number"})
         }
         else if (eResults.length > 0){
             console.log("Email used");
             res.status(403).json({ message: 'Email already used'});
+        }
+        else if(password.length < 7){
+            res.status(404).json({ message: "Password needs to be a minimum of 8 character" })
         }
         else{
             console.log(req.body);

@@ -10,6 +10,8 @@ const SignUp = () => {
 
   const [emailStatus, setEmailStatus] = useState(true);
   const [contactStatus, setContactStatus] = useState(true);
+  const [contactLengthStatus, setContactLengthStatus] = useState(true)
+  const [passwordLengthStatus, setPasswordLegnthStatus] = useState(true)
   const [passwordStatus, setPasswordStatus] = useState(true);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
@@ -67,25 +69,46 @@ const SignUp = () => {
       if (response.error.response.status === 401) {
         setEmailStatus(false);
         setContactStatus(false);
+        setContactLengthStatus(true)
         setPasswordStatus(true);
+        setPasswordLegnthStatus(true)
       } else if (response.error.response.status === 402) {
         setEmailStatus(true);
         setContactStatus(false);
+        setContactLengthStatus(true)
         setPasswordStatus(true);
+        setPasswordLegnthStatus(true)
       } else if (response.error.response.status === 403) {
         setEmailStatus(false);
         setContactStatus(true);
+        setContactLengthStatus(true)
         setPasswordStatus(true);
+        setPasswordLegnthStatus(true)
       } else if(response.error.response.status === 400){
         setPasswordStatus(false);
         setEmailStatus(true);
         setContactStatus(true);
+        setContactLengthStatus(true)
+        setPasswordLegnthStatus(true)
+      }else if(response.error.response.status === 404){
+        setPasswordStatus(true);
+        setEmailStatus(true);
+        setContactStatus(true);
+        setContactLengthStatus(true)
+        setPasswordLegnthStatus(false)
+      }else if (response.error.response.status === 405){
+        setPasswordStatus(true);
+        setEmailStatus(true);
+        setContactStatus(true);
+        setContactLengthStatus(false)
+        setPasswordLegnthStatus(true)
       }
      }
        else {
         setEmailStatus(true);
         setContactStatus(true);
         setPasswordStatus(true);
+        setPasswordLegnthStatus(true)
         // window.location.href = './signin';
         setShowSuccessModal(true);
       }
@@ -135,7 +158,7 @@ const SignUp = () => {
               Contact Number
             </label>
             <input
-              className={`${!contactStatus ? 'w-full px-4 py-2 border rounded-lg border-red-500' : `w-full px-4 py-2 border rounded-lg outline-none focus:border-blue-500`}`}
+              className={`${!contactStatus || !contactLengthStatus ? 'w-full px-4 py-2 border rounded-lg border-red-500' : `w-full px-4 py-2 border rounded-lg outline-none focus:border-blue-500`}`}
               type="tel"
               id="contactNo"
               name="contactNo"
@@ -146,6 +169,9 @@ const SignUp = () => {
             />
             {!contactStatus && (
               <p className="text-red-500 text-sm">Contact Number has been used</p>
+            )}
+            {!contactLengthStatus && (
+              <p className="text-red-500 text-sm">Contact Number have to be 8 number</p>
             )}
           </div>
           <div className={`mb-4`}>
@@ -186,7 +212,7 @@ const SignUp = () => {
               Password
             </label>
             <input
-              className="w-full px-4 py-2 border rounded-lg outline-none focus:border-blue-500"
+              className={`${!passwordLengthStatus ? 'w-full px-4 py-2 border rounded-lg outline-none focus:border-blue-500': `w-full px-4 py-2 border rounded-lg outline-none focus:border-blue-500`}`}
               type="password"
               id="password"
               name="password"
@@ -195,6 +221,9 @@ const SignUp = () => {
               onChange={handleInputChange}
               required
             />
+            {!passwordLengthStatus && (
+              <p className="text-red-500 text-sm">Password needs to be a minimum of 8 character</p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block text-gray-600 text-sm font-medium mb-2" htmlFor="confirmPassword">
