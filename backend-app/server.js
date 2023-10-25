@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const jwt = require('jsonwebtoken');
 const secretKey = process.env.JWT_SECRET_KEY;
 const verifyToken = require("./middleware/AuthMiddleware")
-const argon2 = require('argon2'); 
+const argon2 = require('argon2');
 const bcrypt = require('bcrypt');
 
 // const {Novu} = require("@novu/node");
@@ -43,7 +43,7 @@ const transporter = nodemailer.createTransport({
 
 // ------------------------------------------------------------------Functions-------------------------------------------------------------
 // Function to send 2FA codes via email
-function sendEmail(email, code){
+function sendEmail(email, code) {
     const mailOptions = {
         from: 'ict3103.3203@gmail.com',
         to: email,
@@ -55,36 +55,36 @@ function sendEmail(email, code){
 }
 
 // Generate a random 6-digit OTP
-function generateOTP(){
+function generateOTP() {
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
 function setOTPWithCountdown() {
     // Display the initial OTP
-    
+
     console.log(`Current OTP: ${otp}`);
-  
+
     // Define the countdown duration in seconds (e.g., 60 seconds)
     const countdownDuration = 10;
-  
+
     // Initialize the countdown timer
     let countdown = countdownDuration;
-  
+
     // Create a function to update the countdown and set OTP to 0 when it reaches 0
     function updateCountdown() {
-      if (countdown > 0) {
-        console.log(`OTP will reset in ${countdown} seconds.`);
-        countdown -= 1;
-        setTimeout(updateCountdown, 1000); // Update countdown every 1 second (1000 milliseconds)
-      } else {
-        otp = 0;
-        console.log('OTP has been reset to 0.');
-      }
+        if (countdown > 0) {
+            console.log(`OTP will reset in ${countdown} seconds.`);
+            countdown -= 1;
+            setTimeout(updateCountdown, 1000); // Update countdown every 1 second (1000 milliseconds)
+        } else {
+            otp = 0;
+            console.log('OTP has been reset to 0.');
+        }
     }
-  
+
     // Start the countdown
     updateCountdown();
-  }
+}
 
 
 // ------------------------------------------------------------------Functions-------------------------------------------------------------
@@ -101,18 +101,18 @@ const pool = mysql.createPool({
 });
 
 // Use bodyparser for frontend data transmission to backend
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Testing for route and server connection (Can Remove)
 app.get('/data', async (req, res) => {
-    try{
+    try {
         const [rows, fields] = await pool.execute('SELECT * FROM users');
         res.json(rows);
-    }catch(error){
+    } catch (error) {
         console.log(error);
-        res.status(500).json({ message: "Internal server error"});
-        
+        res.status(500).json({ message: "Internal server error" });
+
     }
 });
 
@@ -125,14 +125,14 @@ app.get('/data', async (req, res) => {
 
 //----------------------------------------------------Registration/Sign In----------------------------------------------
 app.post('/registration/', async (req, res) => {
-    try{
+    try {
         console.log(req.body.Password)
         console.log(req.body.ConfirmPassword)
-        if(req.body.Password !== req.body.ConfirmPassword){
+        if (req.body.Password !== req.body.ConfirmPassword) {
             console.log("Password and Confirm Password do not match");
-            return res.status(400).json({message: "Password and Confirm Password do not match"})
+            return res.status(400).json({ message: "Password and Confirm Password do not match" })
         }
-        
+
         const password = req.body.Password;
 
         // Hash the password using Argon2
@@ -145,16 +145,16 @@ app.post('/registration/', async (req, res) => {
 
         const checkEmail = 'SELECT * FROM users WHERE Email = ?';
         const checkContact = 'SELECT * FROM users WHERE ContactNo = ?';
-        
+
         const [eResults, efields] = await pool.execute(checkEmail, [req.body.Email]);
         const [cResults, cfields] = await pool.execute(checkContact, [req.body.ContactNo]);
 
-        if (eResults.length > 0 && cResults.length > 0){
+        if (eResults.length > 0 && cResults.length > 0) {
             emailFlag = true;
             console.log("Email and contacts used");
-            res.status(401).json({ message: 'Email and contacts already used'});
+            res.status(401).json({ message: 'Email and contacts already used' });
         }
-        else if (cResults.length > 0){
+        else if (cResults.length > 0) {
             contactFlag = true;
             console.log("Contact Number used");
             res.status(402).json({ message: 'Contact Number already used'});
@@ -165,28 +165,28 @@ app.post('/registration/', async (req, res) => {
         }
         else if (eResults.length > 0){
             console.log("Email used");
-            res.status(403).json({ message: 'Email already used'});
+            res.status(403).json({ message: 'Email already used' });
         }
-        else if(password.length < 7){
-            res.status(404).json({ message: "Password needs to be a minimum of 8 character" })
+        else if(password.length != 8){
+            res.status(404).json({ message: "Password needs to be 8 number" })
         }
         else{
             console.log(req.body);
             const q = `insert into users(LastName, FirstName, Email, ContactNo, Address, Password, Authorization) VALUES(?)`;
             const values = [req.body.LastName, req.body.FirstName, req.body.Email, req.body.ContactNo, req.body.Address, hashedPassword, req.body.Authorization];
-            console.log("insert: "+ values);
+            console.log("insert: " + values);
             pool.query(q, [values], (err, data) => {
-                console.log(err,data);
-                if(err) return res.json({ error: "SQL Error"});
+                console.log(err, data);
+                if (err) return res.json({ error: "SQL Error" });
                 // else return res.json({data});
             });
-            res.status(200).json({message: "Registered"});
+            res.status(200).json({ message: "Registered" });
         }
 
-    }catch(error){
+    } catch (error) {
         console.log(error);
         res.status(500).json({
-           message: "Internal server error"
+            message: "Internal server error"
         });
     }
 })
@@ -197,7 +197,7 @@ var otp;
 var authorizationValue;
 
 app.post('/signin/', async (req, res) => {
-    try{
+    try {
         console.log("In Sign in Route");
         // const { email, password } = req.body;
         const email = (req.body.Email);
@@ -211,9 +211,9 @@ app.post('/signin/', async (req, res) => {
 
         console.log(results);
 
-        const auth = "SELECT Authorization FROM users WHERE Email = ?"; 
+        const auth = "SELECT Authorization FROM users WHERE Email = ?";
 
-        
+
         // const [results, fields] = await pool.execute(q, params);
         const [authResults, rFields] = await pool.execute(auth, [email]);
 
@@ -225,9 +225,10 @@ app.post('/signin/', async (req, res) => {
         // authorizationValue = authResults[0].Authorization;
 
         // if (results.length === 1) {
+        if (results.length > 0) {
             const hashedPassword = results[0].Password;
             authorizationValue = results[0].Authorization;
-            
+
             // Use argon2.verify to compare the user's input with the stored hash
             const isPasswordValid = await argon2.verify(hashedPassword, password);
 
@@ -236,48 +237,52 @@ app.post('/signin/', async (req, res) => {
 
                 // User is authenticated, generate JWT token
                 // need to implement security for the secret key
-                
+
                 if (results.length > 0 && authorizationValue === 1) {
                     otp = generateOTP();
                     sendEmail(email, otp);
                     setOTPWithCountdown();
-                    res.status(200).json({ message: 'Authentication Successful and AuthValue = 1', Email: email});
+                    res.status(200).json({ message: 'Authentication Successful and AuthValue = 1', Email: email });
                     console.log("Success");
-                } 
+                }
                 else if (results.length > 0 && authorizationValue == 2) {
                     otp = generateOTP();
                     sendEmail(email, otp);
                     setOTPWithCountdown();
-                    res.status(201).json({ message: 'Authentication Successful and AuthValue = 2', Email: email});       
-                } 
+                    res.status(201).json({ message: 'Authentication Successful and AuthValue = 2', Email: email });
+                }
                 else if (results.length > 0 && authorizationValue == 3) {
                     otp = generateOTP();
                     setOTPWithCountdown();
                     console.log(otp);
                     sendEmail(email, otp);
-                    res.status(202).json({ message: 'Authentication Successful and AuthValue = 3', Email: email});
-                } 
+                    res.status(202).json({ message: 'Authentication Successful and AuthValue = 3', Email: email });
+                }
                 else {
                     // Invalid authorization value
-                    res.status(401).json({ message: 'Authentication failed'});
+                    res.status(401).json({ message: 'Authentication failed' });
                     console.log("Failed");
                 }
-            
-        } else {
+
+            } else {
                 // Incorrect password
                 res.status(402).json({ message: 'Authentication failed: Incorrect password' });
             }
-        
-    } catch (error){
+        } else {
+            res.status(403).json({ message: 'Email Invalid' });
+        }
+
+    } catch (error) {
         console.log(error);
         res.status(500).json({
-            message: "Internal server error" });
-        }
-    
+            message: "Internal server error"
+        });
+    }
+
 });
-            
+
 app.post('/resend2fa/', async (req, res) => {
-    try{
+    try {
         console.log("inside resend 2fa");
         const email = (req.body.Email);
         otp = generateOTP();
@@ -286,7 +291,7 @@ app.post('/resend2fa/', async (req, res) => {
         res.status(200).json({
             message: "Resent"
         });
-    }catch(error){
+    } catch (error) {
         res.status(500).json({
             message: "Internal server error"
         });
@@ -294,51 +299,51 @@ app.post('/resend2fa/', async (req, res) => {
 })
 
 
-app.get('/checkAuth/',verifyToken, async(req, res) => {
+app.get('/checkAuth/', verifyToken, async (req, res) => {
     console.log(res.json)
-    
+
 })
 
 
 app.post('/2fa/', async (req, res) => {
-    try{
+    try {
         userOTP = req.body.OTP;
         email = req.body.Email;
         console.log(email);
-        if (userOTP == otp && authorizationValue == 1){
-            const token = jwt.sign({authorization: authorizationValue}, secretKey, { expiresIn: '15m' });
+        if (userOTP == otp && authorizationValue == 1) {
+            const token = jwt.sign({ authorization: authorizationValue }, secretKey, { expiresIn: '15m' });
 
             const q = 'UPDATE users SET Token = ? WHERE Email = ?';
             const params = [token, req.body.Email];
 
             const [results, fields] = await pool.execute(q, params);
 
-            res.status(201).json({ message: '2FA Success Admin', token});
+            res.status(201).json({ message: '2FA Success Admin', token });
         }
-        else if(userOTP == otp && authorizationValue == 2){
-            const token = jwt.sign({authorization: authorizationValue,}, secretKey, { expiresIn: '15m' });
+        else if (userOTP == otp && authorizationValue == 2) {
+            const token = jwt.sign({ authorization: authorizationValue, }, secretKey, { expiresIn: '15m' });
             const q = 'UPDATE users SET Token = ? WHERE Email = ?';
             const params = [token, req.body.Email];
 
             const [results, fields] = await pool.execute(q, params);
-            res.status(202).json({ message: '2FA Success Service', token});
+            res.status(202).json({ message: '2FA Success Service', token });
         }
-        else if(userOTP == otp && authorizationValue == 3){
-            const token = jwt.sign({authorization: authorizationValue}, secretKey, { expiresIn: '15m' });
+        else if (userOTP == otp && authorizationValue == 3) {
+            const token = jwt.sign({ authorization: authorizationValue }, secretKey, { expiresIn: '15m' });
             console.log(otp);
             const q = 'UPDATE users SET Token = ? WHERE Email = ?';
             const params = [token, req.body.Email];
 
-            const [results, fields] = await pool.execute(q, params);            
-            res.status(202).json({ message: '2FA Success User', token});
+            const [results, fields] = await pool.execute(q, params);
+            res.status(202).json({ message: '2FA Success User', token });
         }
-        else if(otp == 0){
-            res.status(400).json({ message: 'Expired'});
+        else if (otp == 0) {
+            res.status(400).json({ message: 'Expired' });
         }
-        else{
-            res.status(401).json({ message: '2FA Fail'});
+        else {
+            res.status(401).json({ message: '2FA Fail' });
         }
-    }catch(error){
+    } catch (error) {
         console.log(error);
         res.status(500).json({
             message: "Internal server error"
@@ -353,7 +358,7 @@ app.post('/2fa/', async (req, res) => {
 // !!!Admin Route Codes Here!!!
 
 app.post('/adminaddservices/', async (req, res) => {
-    try{
+    try {
         console.log(req.body);
 
         const checkServiceID = "SELECT * FROM services WHERE serviceID = ?";
@@ -363,20 +368,20 @@ app.post('/adminaddservices/', async (req, res) => {
         const q = 'INSERT INTO services(serviceID, ServiceName, ServiceDesc, ServiceAdd) VALUES (?)';
         const values = [...Object.values(req.body)];
 
-        if (results.length > 0){
+        if (results.length > 0) {
             res.status(400).json({
                 message: "Service ID exist"
             });
         }
-        else{
-            pool.query(q, [values], (err, data) =>{
-                console.log(err,data);
-                if(err) return res.json({ error: "SQL Error"});
-                else return res.json({data});
+        else {
+            pool.query(q, [values], (err, data) => {
+                console.log(err, data);
+                if (err) return res.json({ error: "SQL Error" });
+                else return res.json({ data });
             })
         }
     }
-    catch(error){
+    catch (error) {
         console.log(error);
         res.status(500).json({
             message: "Internal server error"

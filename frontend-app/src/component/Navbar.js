@@ -14,11 +14,14 @@ function Navbar() {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
+  const token = localStorage.getItem('token');
+  console.log(token);
+
 
   const handleSignout = () => {
       localStorage.removeItem("token");
       console.log("logged out")
-      window.location.href = './adminhome';
+      window.location.href = './signin';
     
   }
   
