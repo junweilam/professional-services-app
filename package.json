@@ -6,6 +6,7 @@
     "express": "^4.18.2",
     "messagebird": "^4.0.1",
     "mysql2": "^3.6.1",
+    "stripe": "^14.1.0",
     "two-step-auth": "^1.1.2"
   }
 }

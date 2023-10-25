@@ -365,3 +365,36 @@ app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}. `);
 });
 
+//-------------------------------------------Payment---------------------------------
+const Stripe = require('stripe')
+const stripe = Stripe(process.env.STRIPE_KEY)
+
+//app.use("/api/stripe", stripe);
+//console.log("stripe",stripe);
+
+app.post('/create-checkout-session', async (req, res) => {
+    //console.log("stripe inside post",stripe);
+  const session = await stripe.checkout.sessions.create({
+    line_items: [
+      {
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: 'T-shirt',
+          },
+          unit_amount: 2000,
+        },
+        quantity: 1,
+      },
+    ],
+    mode: 'payment',
+    success_url: `${process.env.CLIENT_URL}/checkout-sucess`,
+    cancel_url: `${process.env.CLIENT_URL}/cartpage`,
+  });
+
+  
+  res.send({url: session.url})
+});
+
+
+

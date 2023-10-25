@@ -1,15 +1,14 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import PayButton from "../component/PayButton"
 
 const CartPage = ({ removeFromCart, updateQuantity}) => {
   const location = useLocation();
   const navigate = useNavigate();
   const cart = location.state.cart;
 
-  const handleCheckout = () => {
-    navigate('/payment');
-  };
+
   
   return (
     <div className="min-h-screen">
@@ -48,12 +47,7 @@ const CartPage = ({ removeFromCart, updateQuantity}) => {
           </ul>
         )}
         <div className="mt-4">
-          <button
-            onClick={handleCheckout}
-            className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300"
-          >
-            Proceed to Checkout
-          </button>
+          <PayButton/>
         </div>
       </div>
     </div>

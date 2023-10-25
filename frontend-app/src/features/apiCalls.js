@@ -65,3 +65,18 @@ export const addServices = async (service) => {
         };
     }
 }
+
+export const payFunction = async (cart) => {
+    try{
+        console.log(cart);
+        const res = await axios.post(`http://localhost:8080/create-checkout-session`, {
+            cart,
+        })
+        return res.data;
+    }catch(err){
+        console.log(err);
+        return{
+            error: err
+        };
+    }
+}
