@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { logIn } from '../features/apiCalls';
 import { AuthModal } from '../component/AuthModal';
-import { useEmail } from '../context/EmailContext';
 
 
 
@@ -12,14 +11,9 @@ const SignIn = () => {
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+  const [isPasswordWrong, setIsPasswordWrong] = useState(false);
   const [emailValue, setEmailValue] = useState('');
-
-  // useEffect(() => {
-  //   // This code will run after the emailValue state has been updated
-  //   console.log("email value:",emailValue);
-  // }, [emailValue]);
-
+  const [isEmailValid, setIsEmailValid] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -50,9 +44,14 @@ const SignIn = () => {
       else if (response.message === "Authentication Successful and AuthValue = 3"){
         setIsModalOpen(true);
        
-      }else {
+      }else if(response.error.response.status === 402){
         // Handle other authentication cases (e.g., incorrect credentials)
+        setIsPasswordWrong(true);
+        setIsEmailValid(false);
         console.log('Authentication failed');
+      }else if(response.error.response.status === 403){
+        setIsEmailValid(true);
+        setIsPasswordWrong(false);
       }
       setEmailValue(`${response.Email}`);
       console.log(`${response.Email}`);
@@ -105,6 +104,16 @@ const SignIn = () => {
               required
             />
           </div>
+          {
+            isPasswordWrong &&(
+              <p className="text-red-500 text-sm text-center">Incorrect Password</p>
+            )
+          }
+          {
+            isEmailValid &&(
+              <p className="text-red-500 text-sm text-center">Invalid Email</p>
+            )
+          }
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300"

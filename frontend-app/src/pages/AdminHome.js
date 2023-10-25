@@ -12,7 +12,19 @@ const AdminHome = () => {
 
     const handleClick = async () => {
         let token = {token: localStorage.getItem("token")}
-        const response = await(handleAuth(token))
+        if(!token){
+            window.location.href = "/homepage";
+            return;
+        }
+        try{
+            // to check if the token is valid
+            const response = await(handleAuth(token))
+        }catch(err){
+            console.log(err)
+            console.log("token no longer exist, please relog in")
+            window.location.href = "/homepage";
+        }
+        
        
     }
 

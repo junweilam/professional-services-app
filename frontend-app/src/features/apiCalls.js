@@ -40,6 +40,15 @@ export const handleAuth = async (user) => {
     }
 }
 
+export const resendOTP = async (user) => {
+    try{
+        const res = await axios.post('http://localhost:8080/resend2fa/', user);
+        return res.data;
+    }catch(err){
+        console.log(err);
+    }
+}
+
 export const authLogIn = async (user) => {
     try{
         console.log(user);
