@@ -8,15 +8,15 @@ const secretKey = process.env.JWT_SECRET_KEY;
 const verifyToken = require("./middleware/AuthMiddleware")
 const argon2 = require('argon2'); 
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
+const axios = require('axios');
 
 // const {Novu} = require("@novu/node");
 // const novu = new Novu("82127c4dbb88cea831be3675f883fafa");
 
 const nodemailer = require('nodemailer');
 
-
 const app = express();
-
 
 // Hashing of secretKey
 const salt = bcrypt.genSaltSync(10);
@@ -59,6 +59,27 @@ function generateOTP(){
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
+// Function to generate SHA-1 hash of password
+function generateSHA1Hash(password) {
+    const sha1Hash = crypto.createHash('sha1').update(password).digest('hex');
+    return sha1Hash.toUpperCase();
+}
+
+// Function to check if password hash apperas in Pwned Passwords Database
+async function checkPasswordAgainstPwnedPasswords(passwordHash) {
+    const apiUrl = `https://api.pwnedpasswords.com/range/${passwordHash.substr(0, 5)}`;
+
+    try {
+        const response = await axios.get(apiUrl);
+        const hashSuffixes = response.data.split('\n');
+        const found = hashSuffixes.find(suffix => suffix.startsWith(passwordHash.substr(5)));
+
+        return found ? found.split(':')[1] : 0;
+    } catch (error) {
+        console.error('Error checking password against Pwned Passwords:', error);
+        throw error;
+    }
+}
 
 // ------------------------------------------------------------------Functions-------------------------------------------------------------
 // Create a MySQL connection pool
@@ -110,9 +131,23 @@ app.post('/registration/', async (req, res) => {
 
         // Hash the password using Argon2
         const hashedPassword = await argon2.hash(password);
-
         console.log(hashedPassword);
 
+        // SHA-1 hash for password
+        const passwordHash = generateSHA1Hash(password);
+        console.log("SHA-1 password: ", passwordHash);
+
+        const matchCount = await checkPasswordAgainstPwnedPasswords(passwordHash);
+        console.log("Pwned Password match count: ", matchCount);
+        
+        if (matchCount > 1) {
+            console.log("Please input another password");
+            return res.status(400).json({message: "Please use another password"});
+        }
+        else {
+            console.log("Continue");
+        }
+        
         var emailFlag = false;
         var contactFlag = false;
 
