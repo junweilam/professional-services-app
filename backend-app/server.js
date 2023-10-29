@@ -8,6 +8,8 @@ const secretKey = process.env.JWT_SECRET_KEY;
 const verifyToken = require("./middleware/AuthMiddleware")
 const argon2 = require('argon2');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
+const axios = require('axios');
 
 // const {Novu} = require("@novu/node");
 // const novu = new Novu("82127c4dbb88cea831be3675f883fafa");
@@ -86,6 +88,26 @@ function setOTPWithCountdown() {
     updateCountdown();
 }
 
+// Allow Argon2 & PwnedPassword
+async function isPasswordPwned(sha1Hash) {
+    try {
+        const prefix = sha1Hash.slice(0, 5);
+        const response = await axios.get(`https://api.pwnedpasswords.com/range/${prefix}`);
+        const hashes = response.data.split('\r\n');
+        for (let hash of hashes) {
+            const [suffix, count] = hash.split(':');
+            if ((prefix + suffix).toUpperCase() === sha1Hash.toUpperCase()) {
+                return count;  // Return the number of times the password has been pwned
+            }
+        }
+        return 0;  // Password is not pwned
+    } catch (error) {
+        console.error('Error checking PwnedPasswords API:', error.message);
+        throw error;  // Re-throw the error to be handled by the calling function
+    }
+}
+
+
 
 // ------------------------------------------------------------------Functions-------------------------------------------------------------
 // Create a MySQL connection pool
@@ -137,6 +159,16 @@ app.post('/registration/', async (req, res) => {
 
         // Hash the password using Argon2
         const hashedPassword = await argon2.hash(password);
+
+        // Convert the Argon2 hash to SHA-1
+        const sha1Hash = crypto.createHash('sha1').update(hashedPassword).digest('hex');
+
+        // Check the password against the PwnedPasswords API
+        const pwnCount = await isPasswordPwned(sha1Hash);
+        if (pwnCount > 0) {
+            console.log(`Password has been pwned ${pwnCount} times`);
+            return res.status(400).json({ message: `Password has been pwned ${pwnCount} times` });
+        }
 
         console.log(hashedPassword);
 
