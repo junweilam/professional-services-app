@@ -90,6 +90,19 @@ function validateEmail(email) {
     return emailRegex.test(email);
 }
 
+// Validate Username Function
+function validateUsername(lastname, firstname) {
+    const disallowedCharacters = ["'", ";", "--", " ", ",", "\"", "`", "(", ")", "[", "]", "{", "}", "%", "&", "=", "+", "*", "/", "\\", "<", ">", "?", "!", "@", "#", "$", "~"];
+
+    // Check if the username contains any disallowed characters
+    for (const character of disallowedCharacters) {
+        if (lastname.includes(character) || firstname.includes(character)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 // ------------------------------------------------------------------Functions-------------------------------------------------------------
 // Create a MySQL connection pool
 const pool = mysql.createPool({
@@ -135,6 +148,15 @@ app.post('/registration/', async (req, res) => {
             console.log("Invalid email address");
             return res.status(400).json({ message: "Invalid email address" });
         }
+
+        // Add username validation using the validateUsername function
+        const lastname = req.body.LastName;
+        const firstname = req.body.FirstName;
+        if (!validateUsername(lastname, firstname)) {
+            console.log("Invalid username");
+            return res.status(400).json({ message: "Invalid username" });
+        }
+
 
         console.log(req.body.Password)
         console.log(req.body.ConfirmPassword)
