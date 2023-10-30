@@ -148,6 +148,7 @@ app.post('/registration/', async (req, res) => {
 
         const [eResults, efields] = await pool.execute(checkEmail, [req.body.Email]);
         const [cResults, cfields] = await pool.execute(checkContact, [req.body.ContactNo]);
+        console.log(req.body.ContactNo)
 
         if (eResults.length > 0 && cResults.length > 0) {
             emailFlag = true;
@@ -159,8 +160,7 @@ app.post('/registration/', async (req, res) => {
             console.log("Contact Number used");
             res.status(402).json({ message: 'Contact Number already used'});
         }
-        else if(cResults.length != 8){
-            console.log("contact 123")
+        else if(req.body.ContactNo.length != 8){
             res.status(405).json({ message: "Contact number have to be 8 number"})
         }
         else if (eResults.length > 0){
