@@ -4,14 +4,16 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { EmailProvider } from './context/EmailContext';
+import { CartProvider } from './context/CartContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <EmailProvider>
-      <App />
+      <CartProvider>
+        <App />
+      </CartProvider>
     </EmailProvider>
-
   </React.StrictMode>
 );
 

@@ -1,15 +1,17 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-import PayButton from "../component/PayButton"
+import PayButton from "../component/PayButton";
+import { useCart } from '../context/CartContext';
 
-const CartPage = ({ removeFromCart, updateQuantity}) => {
+const CartPage = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const cart = location.state.cart;
 
+  const { updateQuantity, removeFromCart } = useCart();
 
-  
+  // Calculate the total amount
+  const totalAmount = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+
   return (
     <div className="min-h-screen">
       <div className="bg-white p-8">
@@ -21,7 +23,7 @@ const CartPage = ({ removeFromCart, updateQuantity}) => {
             {cart.map((item) => (
               <li key={item.id} className="flex justify-between items-center border-b pb-2">
                 <div className="flex items-center">
-                  <img src={item.image} alt={item.title} className="h-12 w-12 object-cover mr-2" />
+                  <img src={item.image} alt={item.title} className="h-120 w-120 object-cover mr-2" />
                   <div>
                     <h3>{item.title}</h3>
                     <p>{item.description}</p>
@@ -47,7 +49,8 @@ const CartPage = ({ removeFromCart, updateQuantity}) => {
           </ul>
         )}
         <div className="mt-4">
-          <PayButton/>
+          <p>Total Amount: ${totalAmount}</p>
+          <PayButton />
         </div>
       </div>
     </div>
@@ -55,4 +58,3 @@ const CartPage = ({ removeFromCart, updateQuantity}) => {
 };
 
 export default CartPage;
-

@@ -2,35 +2,36 @@ import React, { useState, useEffect } from 'react';
 import ServiceCard from '../component/ServiceCard';
 import { useNavigate } from 'react-router-dom';
 import { useEmail } from '../context/EmailContext';
+import { useCart } from '../context/CartContext'
 
 const Home = () => {
   const navigate = useNavigate();
   const [services, setServices] = useState([]);
-  const [cart, setCart] = useState([]);
+  //const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { emailValue, setEmailValue } = useEmail();
 
+  const { cart, addToCart, removeFromCart } = useCart();
 
-
-  const addToCart = (service) => {
-    const itemIndex = cart.findIndex((item) => item.id === service.id);
-    if (itemIndex !== -1) {
-      const updatedCart = [...cart];
-      updatedCart[itemIndex].quantity++;
-      setCart(updatedCart);
-    } else {
-      setCart([...cart, { ...service, quantity: 1 }]);
-    }
-  };
+  // const addToCart = (service) => {
+  //   const itemIndex = cart.findIndex((item) => item.id === service.id);
+  //   if (itemIndex !== -1) {
+  //     const updatedCart = [...cart];
+  //     updatedCart[itemIndex].quantity++;
+  //     setCart(updatedCart);
+  //   } else {
+  //     setCart([...cart, { ...service, quantity: 1 }]);
+  //   }
+  // };
 
   const toggleCart = () => {
     setIsCartOpen(!isCartOpen);
   };
 
-  const removeFromCart = (item) => {
-    const updatedCart = cart.filter((cartItem) => cartItem.id !== item.id);
-    setCart(updatedCart);
-  };
+  // const removeFromCart = (item) => {
+  //   const updatedCart = cart.filter((cartItem) => cartItem.id !== item.id);
+  //   setCart(updatedCart);
+  // };
 
   const handleCheckout = () => {
     navigate('/cart', { state: { cart } });
