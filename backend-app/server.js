@@ -468,6 +468,27 @@ app.post("/logout/", async(req, res) => {
 
 // !!!Users Route Codes Here!!!
 
+app.get('/get-services/', async (req, res) => {
+    const q = "SELECT serviceID, ServiceName, ServiceDesc, Price FROM services";
+    const [results, fields] = await pool.execute(q);
+       
+        const services = [];
+
+        // Loop through the results and format them
+        for (const row of results){
+            services.push({
+                id: row.serviceID,
+                title: row.ServiceName,
+                description: row.ServiceDesc,
+                price: row.Price,
+            });
+        }
+        res.json(services);
+        console.log(services);
+    })
+
+
+
 //----------------------------------------------------Users-------------------------------------------------------------
 
 

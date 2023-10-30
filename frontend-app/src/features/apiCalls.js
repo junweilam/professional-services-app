@@ -105,3 +105,16 @@ export const payFunction = async (cart) => {
         };
     }
 }
+
+export const getServices = async (user) =>{
+    try{
+        const res = await axios.get('http://localhost:8080/get-services/');
+        return res;
+
+    }catch(err){
+        console.log(err);
+        return{
+            error:err
+        };
+    }
+}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ServiceCard from '../component/ServiceCard';
 import { useNavigate } from 'react-router-dom';
 import { useEmail } from '../context/EmailContext';
+import { getServices } from '../features/apiCalls';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -9,6 +10,7 @@ const Home = () => {
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { emailValue, setEmailValue } = useEmail();
+  const [serviceData, setServiceData] = useState([]);
 
 
 
@@ -40,31 +42,18 @@ const Home = () => {
 
   useEffect(() => {
     // Simulate fetching services from an API or other data source.
-    const staticServices = [
-      {
-        id: 1,
-        title: 'Web Development',
-        description: 'Professional web development services',
-        image: 'url-to-your-image-1.jpg',
-        price: 500,
-      },
-      {
-        id: 2,
-        title: 'Graphic Design',
-        description: 'Custom graphic design solutions',
-        image: 'url-to-your-image-2.jpg',
-        price: 500,
-      },
-      {
-        id: 3,
-        title: 'Digital Marketing',
-        description: 'Boost your online presence with our marketing expertise',
-        image: 'url-to-your-image-3.jpg',
-        price: 500,
-      },
-    ];
-
-    setServices(staticServices);
+    async function fetchData(){
+      try{
+        const response = await getServices();
+        console.log(response);
+        setServices(response.data);
+        
+      }catch(err){
+        console.error('API call error: ', err);
+      }
+    }
+    fetchData();
+    
   }, []);
 
   return (
