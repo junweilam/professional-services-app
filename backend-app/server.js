@@ -141,8 +141,12 @@ app.post('/registration/', async (req, res) => {
         console.log("Pwned Password match count: ", matchCount);
         
         if (matchCount > 1) {
-            console.log("Please input another password");
-            return res.status(400).json({message: "Please use another password"});
+            console.log("This password has been exposed in data breaches. Please choose a different password.");
+            return res.status(400).json({ message: "This password has been exposed in data breaches. Please choose a different password." });
+        }
+        else if (matchCount < 0) {
+            console.log("Error");
+            return res.status(400).json({ message: "Error" });
         }
         else {
             console.log("Continue");
