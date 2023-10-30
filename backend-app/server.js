@@ -205,7 +205,6 @@ app.post('/registration/', async (req, res) => {
 
         // Check password against Pwned Passwords
         const matchCount = await checkPasswordAgainstPwnedPasswords(passwordHash);
-        module.exports = { matchCount };
         console.log('Pwned Passwords match count:', matchCount);
 
         if (matchCount > 1) {
