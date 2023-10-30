@@ -86,6 +86,27 @@ function setOTPWithCountdown() {
     updateCountdown();
 }
 
+// Validate Email Function
+function validateEmail(email) {
+    // Regular expression for email validation
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    // Check if the email address is valid
+    return emailRegex.test(email);
+}
+
+// Validate Username Function
+function validateUsername(lastname, firstname) {
+    const disallowedCharacters = ["'", ";", "--", " ", ",", "\"", "`", "(", ")", "[", "]", "{", "}", "%", "&", "=", "+", "*", "/", "\\", "<", ">", "?", "!", "@", "#", "$", "~"];
+
+    // Check if the username contains any disallowed characters
+    for (const character of disallowedCharacters) {
+        if (lastname.includes(character) || firstname.includes(character)) {
+            return false;
+        }
+    }
+    return true;
+}
 
 // ------------------------------------------------------------------Functions-------------------------------------------------------------
 // Create a MySQL connection pool
@@ -126,6 +147,21 @@ app.get('/data', async (req, res) => {
 //----------------------------------------------------Registration/Sign In----------------------------------------------
 app.post('/registration/', async (req, res) => {
     try {
+        // Add email validation using the validateEmail function
+        const userEmail = req.body.Email;
+        if (!validateEmail(userEmail)) {
+            console.log("Invalid email address");
+            return res.status(400).json({ message: "Invalid email address" });
+        }
+
+        // Add username validation using the validateUsername function
+        const lastname = req.body.LastName;
+        const firstname = req.body.FirstName;
+        if (!validateUsername(lastname, firstname)) {
+            console.log("Invalid username");
+            return res.status(400).json({ message: "Invalid username" });
+        }
+
         console.log(req.body.Password)
         console.log(req.body.ConfirmPassword)
         if (req.body.Password !== req.body.ConfirmPassword) {
