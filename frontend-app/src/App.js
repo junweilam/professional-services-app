@@ -8,6 +8,7 @@ import AdminAddServices from './pages/AdminAddServices';
 import PaymentPage from './pages/PaymentPage';
 import CartPage from './pages/CartPage';
 import CheckoutSuccess from './component/CheckoutSucess'
+import FaqPage from './pages/FAQPage'
 
 // User Imports
 import UserHome from './pages/UserHome';
@@ -37,6 +38,7 @@ function App() {
           <Route path="/homepage" element={<HomePage />} />
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/cart" element={<CartPage />} />
+          <Route path="/faq" element={<FaqPage />} />
         </Routes>
       
 
