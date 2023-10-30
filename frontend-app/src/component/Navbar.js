@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useEmail } from '../context/EmailContext';
+import { logOut } from '../features/apiCalls';
 
 function Navbar() {
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
@@ -18,12 +19,24 @@ function Navbar() {
   console.log(token);
 
 
-  const handleSignout = () => {
-      localStorage.removeItem("token");
-      console.log("logged out")
-      window.location.href = './signin';
-    
-  }
+  const handleLogout = async () => {
+    let token = {token: localStorage.getItem("token")}
+    try{
+        const response = await logOut(token)
+        console.log(response.data.message)
+        if(response.data.message === "Logout successful"){
+          console.log("inside")
+            // Clear the token from localStorage
+            localStorage.removeItem('token');
+            // Redirect the user to the login page
+             window.location.href = '/signin';
+        }
+
+    }catch(err){
+        console.log("err in logout", err)
+    }
+
+}
   
   return (
     <nav className="bg-white border-gray-200 dark:bg-gray-900 relative">
@@ -105,7 +118,7 @@ function Navbar() {
                 <a
                   href="#"
                   className="block px-4 py-2 text-sm text-gray-700 hover-bg-gray-100 dark:hover-bg-gray-600 dark:text-gray-200 dark:hover-text-white"
-                  onClick={handleSignout}
+                  onClick={handleLogout}
                 >
                   Sign out
                 </a>

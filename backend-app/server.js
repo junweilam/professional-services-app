@@ -161,6 +161,7 @@ app.post('/registration/', async (req, res) => {
             res.status(402).json({ message: 'Contact Number already used'});
         }
         else if(req.body.ContactNo.length != 8){
+            console.log(req.body.ContactNo.length)
             res.status(405).json({ message: "Contact number have to be 8 number"})
         }
         else if (eResults.length > 0){
@@ -358,6 +359,7 @@ app.post('/2fa/', async (req, res) => {
 // !!!Admin Route Codes Here!!!
 
 app.post('/adminaddservices/', async (req, res) => {
+    console.log(res.json)
     try {
         console.log(req.body);
 
@@ -389,6 +391,69 @@ app.post('/adminaddservices/', async (req, res) => {
         });
     }
 })
+
+/*
+----------------------------------------------------Logout--------------------------------------------------------------------- 
+*/
+
+app.post("/logout/", async(req, res) => {
+    console.log("inside server.js")
+    // retrieving token
+    const token = req.header("Authorization").split(" ")[1]; // Get token part after 'Bearer '
+    try{
+        const checkTokeninDb = 'SELECT * FROM users WHERE Token = ?';
+        const [results, cResults] = await pool.execute(checkTokeninDb, [token])
+
+        if(results.length < 1){
+            res.status(400).json({ message: "User not in DB"})
+        }else{
+            const updateTokeninDb = 'UPDATE users SET Token = NULL WHERE Token = ?';
+            pool.query(updateTokeninDb, [token], (err, data) => {
+                console.log(err)
+                console.log(data)
+                if(err){
+                    return res.json ({ error: "SQL error"})
+                }else{
+                    return res.json ({ data })
+                }
+            })
+             res.status(200).json ({ message: "Logout successful"})
+        }
+
+        
+
+        // pool.query('SELECT * FROM users WHERE Token = ?', [token], (error, results) => {
+        //     console.log('SELECT query results:', results);
+        //     if (error) {
+        //         console.error('Error querying database', error);
+        //         return res.status(500).json({ message: 'Internal server error' });
+        //       }
+          
+        //       // Check if the user was found
+        //       if (results.length === 0) {
+        //         return res.status(404).json({ message: 'User not found' });
+        //       }
+              
+        // })
+    
+        // pool.query('UPDATE users SET Token = NULL WHERE Token = ?', [token] , (updateError, updateResults) => {
+        //     if (updateError) {
+        //         console.error('Error updating token in the database', updateError);
+        //         return res.status(500).json({ message: 'Internal server error' });
+        //       }
+        //       // Send the query results back to the client
+        //       res.status(200).json({ message: "Logout Successful" });
+          
+        // })
+        
+    }catch(err){
+        console.log(err)
+    }
+    
+  
+})
+
+//
 
 //----------------------------------------------------Admin-------------------------------------------------------------
 
