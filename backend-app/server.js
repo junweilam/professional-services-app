@@ -81,6 +81,15 @@ async function checkPasswordAgainstPwnedPasswords(passwordHash) {
     }
 }
 
+// Validate Email Function
+function validateEmail(email) {
+    // Regular expression for email validation
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    // Check if the email address is valid
+    return emailRegex.test(email);
+}
+
 // ------------------------------------------------------------------Functions-------------------------------------------------------------
 // Create a MySQL connection pool
 const pool = mysql.createPool({
@@ -120,6 +129,13 @@ app.get('/data', async (req, res) => {
 //----------------------------------------------------Registration/Sign In----------------------------------------------
 app.post('/registration/', async (req, res) => {
     try{
+        // Add email validation using the validateEmail function
+        const userEmail = req.body.Email;
+        if (!validateEmail(userEmail)) {
+            console.log("Invalid email address");
+            return res.status(400).json({ message: "Invalid email address" });
+        }
+
         console.log(req.body.Password)
         console.log(req.body.ConfirmPassword)
         if(req.body.Password !== req.body.ConfirmPassword){
