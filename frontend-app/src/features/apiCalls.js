@@ -40,6 +40,22 @@ export const handleAuth = async (user) => {
     }
 }
 
+export const logOut = async () => {
+    try{
+        const token = localStorage.getItem("token");
+        const response = await axios.post("http://localhost:8080/logout/",null , {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+          });
+          console.log(response)
+          return response
+    }catch(err){
+        console.log("err from apicalls", err)
+        throw err
+    }
+}
+
 export const resendOTP = async (user) => {
     try{
         const res = await axios.post('http://localhost:8080/resend2fa/', user);
