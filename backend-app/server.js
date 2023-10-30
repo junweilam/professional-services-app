@@ -200,7 +200,7 @@ app.post('/registration/', async (req, res) => {
         console.log(hashedPassword);
 
         // Generate SHA-1 hash of the password
-        const passwordHash = generateSHA1Hash(plainPassword);
+        const passwordHash = generateSHA1Hash(password);
         console.log('Password SHA-1 hash:', passwordHash);
 
         // Check password against Pwned Passwords
