@@ -365,7 +365,7 @@ app.post('/adminaddservices/', async (req, res) => {
         const [results, fields] = await pool.execute(checkServiceID, [req.body.ServiceID]);
 
 
-        const q = 'INSERT INTO services(serviceID, ServiceName, ServiceDesc, ServiceAdd) VALUES (?)';
+        const q = 'INSERT INTO services(serviceID, ServiceName, ServiceDesc, ServiceAdd, Price) VALUES (?)';
         const values = [...Object.values(req.body)];
 
         if (results.length > 0) {
@@ -377,8 +377,9 @@ app.post('/adminaddservices/', async (req, res) => {
             pool.query(q, [values], (err, data) => {
                 console.log(err, data);
                 if (err) return res.json({ error: "SQL Error" });
-                else return res.json({ data });
+                // else return res.status(200).json({ data, message: 'success' });
             })
+            res.status(200).json({ message:'success'});
         }
     }
     catch (error) {
