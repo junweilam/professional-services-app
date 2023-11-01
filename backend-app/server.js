@@ -429,11 +429,17 @@ app.post('/adminaddusers/', async (req, res) => {
         const checkEmail = 'SELECT * FROM users WHERE Email = ?'
         const [eResults, eFields] = await pool.execute(checkEmail, [req.body.Email]);
 
+        const password = req.body.Password;
+
+        // Hash the password using Argon2
+        const hashedPassword = await argon2.hash(password);
+        console.log(hashedPassword);
+
         if (eResults.length > 0) {
             res.status(400).json({ message: 'Email exist' })
         } else {
             const q = 'INSERT INTO users (FirstName, LastName, Email, Password, Authorization) VALUES (?)';
-            const params = [req.body.FirstName, req.body.LastName, req.body.Email, req.body.Password, req.body.Authorization];
+            const params = [req.body.FirstName, req.body.LastName, req.body.Email, hashedPassword, req.body.Authorization];
             pool.query(q, [params], (err, data) => {
                 console.log(err, data);
                 if (err) return res.json({ error: "SQL Error" });
@@ -441,7 +447,6 @@ app.post('/adminaddusers/', async (req, res) => {
             })
             res.status(200).json({ message: 'success' })
         }
-
 
     } catch (err) {
         console.log(err);
