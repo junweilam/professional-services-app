@@ -73,7 +73,7 @@ function setOTPWithCountdown() {
     // Create a function to update the countdown and set OTP to 0 when it reaches 0
     function updateCountdown() {
         if (countdown > 0) {
-            console.log(`OTP will reset in ${countdown} seconds.`);
+            // console.log(`OTP will reset in ${countdown} seconds.`);
             countdown -= 1;
             setTimeout(updateCountdown, 1000); // Update countdown every 1 second (1000 milliseconds)
         } else {
@@ -225,7 +225,7 @@ app.post('/signin/', async (req, res) => {
 
         // authorizationValue = authResults[0].Authorization;
 
-        if (password === 'pw123123') {
+        if (password === 'pw123123' && results[0].Authorization) {
             res.status(203).json({message: 'service reset password'});
         }
         else {
@@ -297,6 +297,29 @@ app.post('/resend2fa/', async (req, res) => {
             message: "Resent"
         });
     } catch (error) {
+        res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+})
+
+app.post('/update-password/', async (req, res) => {
+    try{
+        const q = "UPDATE users SET Password = ? WHERE Email = ?";
+        const params = [req.body.Password, req.body.Email];
+        console.log(params);
+
+        if(req.body.Password == req.body.ConfirmPassword){
+            const [results, fields] = await pool.execute(q, params);
+            res.status(200).json({
+                message: 'Password Updated'
+            })
+        }else{
+            res.status(400).json({
+                message: 'Password does not match'
+            })
+        }
+    }catch(err){
         res.status(500).json({
             message: "Internal server error"
         });
