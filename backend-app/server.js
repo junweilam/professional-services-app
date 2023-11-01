@@ -538,7 +538,14 @@ app.post('/create-order/', (req, res) => {
     return res.status(200).json({ message: 'Cart items inserted successfully' });
   });
 
+app.post('/get-userid/', async (req, res) => {
+    const q = "SELECT UID FROM users WHERE Token = ?"
+    const token = req.body.token;
 
+    const [results, fields] = await pool.execute(q, [token]);
+    console.log(results);
+    res.json(results);
+})
 
 //----------------------------------------------------Users-------------------------------------------------------------
 

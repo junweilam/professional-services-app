@@ -3,13 +3,17 @@ import { useLocation } from 'react-router-dom';
 import PayButton from "../component/PayButton";
 import { useCart } from '../context/CartContext';
 import { placeOrder } from '../features/apiCalls';
+import { getUserId } from "../features/apiCalls";
 
 const CartPage = () => {
   const location = useLocation();
   const cart = location.state.cart;
   const status = 'Pending';
-  const userId = 1;
+  //const userId = 1;
   const { updateQuantity, removeFromCart } = useCart();
+  const token = { token: localStorage.getItem("token") }
+
+  let userId;
 
   // Define state for date and address
   const [selectedDate, setSelectedDate] = useState('');
@@ -30,22 +34,35 @@ const CartPage = () => {
 
   const placeOrderHandler = async () => {
     try {
-      // Prepare the order data, including selectedDate and address.
-      const orderData = {
-        userId,
-        cart, 
-        selectedDate,
-        address,
-        status,
-      };
+      // Use the getUserId function to obtain the user ID
+      try {
+        const response = await getUserId(token);
+        console.log(response[0].UID);
+        userId = response[0].UID;
+        console.log(`User ID: ${userId}`);
+      } catch (error) {
+        console.error('Error getting user ID:', error);
+      }
 
-      // Make the API call to place the order.
-      const response = await placeOrder(orderData);
+      // Ensure userId is defined before proceeding
+      if (userId) {
+        const orderData = {
+          userId,
+          cart,
+          selectedDate,
+          address,
+          status,
+        };
 
-      // Handle the response as needed. For example, show a success message to the user.
-      console.log('Response from server:', response);
-      // You can also reset the cart and other state as needed.
+        // Make the API call to place the order.
+        const response = await placeOrder(orderData);
 
+        // Handle the response as needed. For example, show a success message to the user.
+        console.log('Response from server:', response);
+        // You can also reset the cart and other state as needed.
+      } else {
+        console.error('User ID is not defined. Cannot place order.');
+      }
     } catch (error) {
       // Handle errors, e.g., show an error message to the user.
       console.error('Error placing order:', error);
