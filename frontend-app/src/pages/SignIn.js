@@ -16,6 +16,8 @@ const SignIn = () => {
   const [emailValue, setEmailValue] = useState('');
   const [isEmailValid, setIsEmailValid] = useState(false);
 
+  const [mistakeCount, setMistakeCount] = useState(0);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -27,6 +29,10 @@ const SignIn = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (mistakeCount>= 5 ){
+      return;
+    }
 
     // Add your form submission logic here
     console.log(formData);
@@ -52,6 +58,7 @@ const SignIn = () => {
 
         } else if (response.error.response.status === 402) {
           // Handle other authentication cases (e.g., incorrect credentials)
+          setMistakeCount(mistakeCount + 1); // increment mistake count
           setIsPasswordWrong(true);
           setIsEmailValid(false);
           console.log('Authentication failed');
@@ -121,6 +128,10 @@ const SignIn = () => {
               <p className="text-red-500 text-sm text-center">Invalid Email</p>
             )
           }
+          {
+            isPasswordWrong &&  mistakeCount >= 5 && (
+                <p className="text-red-500 text-sm">Your account has been locked. More than 5 failed attempts. </p>
+          )}
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300"

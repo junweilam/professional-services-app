@@ -197,7 +197,19 @@ app.post('/registration/', async (req, res) => {
 var otp;
 var authorizationValue;
 
+// Initialize mistake count and user locked status
+// let mistakeCount = 0;
+let isUserLocked = false;
+let mistakeCount = {};
+
 app.post('/signin/', async (req, res) => {
+
+    if (isUserLocked){
+        console.log("User Account is locked, try again later");
+        return res.status(405).json({ message: "Account is locked. Please try again later."});
+    }
+    
+    
     try {
         console.log("In Sign in Route");
         // const { email, password } = req.body;
@@ -248,41 +260,64 @@ app.post('/signin/', async (req, res) => {
                         setOTPWithCountdown();
                         res.status(200).json({ message: 'Authentication Successful and AuthValue = 1', Email: email });
                         console.log("Success");
-                    }
+                        mistakeCount[email] = 0;
+                        // res.status(200).json({ message: 'Mistake Count: 0' });
+
+                }
                     else if (results.length > 0 && authorizationValue == 2) {
                         otp = generateOTP();
                         sendEmail(email, otp);
                         setOTPWithCountdown();
                         res.status(201).json({ message: 'Authentication Successful and AuthValue = 2', Email: email });
-                    }
+                        mistakeCount[email] = 0;
+                        // res.status(200).json({ message: 'Mistake Count: 0' });
+                }
                     else if (results.length > 0 && authorizationValue == 3) {
                         otp = generateOTP();
                         setOTPWithCountdown();
                         console.log(otp);
                         sendEmail(email, otp);
                         res.status(202).json({ message: 'Authentication Successful and AuthValue = 3', Email: email });
-                    }
+                        mistakeCount[email] = 0;
+                        // res.status(200).json({ message: 'Mistake Count= 0' });
+                }
                     else {
                         // Invalid authorization value
-                        res.status(401).json({ message: 'Authentication failed' });
                         console.log("Failed");
+                        return res.status(401).json({ message: 'Authentication failed' });
                     }
 
-                } else {
-                    // Incorrect password
-                    res.status(402).json({ message: 'Authentication failed: Incorrect password' });
-                }
             } else {
-                res.status(403).json({ message: 'Email Invalid' });
+                // Incorrect password
+                if (mistakeCount[email] >= 5){
+                    isUserLocked = true;
+                    return
+                }
+                // mistakeCount++;
+                // const currentAttempts = mistakeCount.get(email) || 0;
+                // mistakeCount.set(email, currentAttempts +1 );
+                mistakeCount[email] = (mistakeCount[email] || 0) + 1;
+                console.log(mistakeCount[email]);
+                return res.status(402).json({ message: 'Authentication failed: Incorrect password' });
+                
             }
+        } else {
+            return res.status(403).json({ message: 'Email Invalid' });
         }
-
+    }
     } catch (error) {
         console.log(error);
         res.status(500).json({
             message: "Internal server error"
         });
     }
+
+    // // Check if the user should be locked out
+    // const { email } = req.body.Email;
+    // if (mistakeCount[.get(email)] >= 5) {
+    //     isUserLocked = true;
+    //     return res.status(403).json({ message: 'Account is locked. Please try again later.' });
+    // }
 
 });
 
