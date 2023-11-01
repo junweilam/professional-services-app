@@ -7,22 +7,27 @@ const jwt = require('jsonwebtoken');
 const secretKey = process.env.JWT_SECRET_KEY;
 const verifyToken = require("./middleware/AuthMiddleware")
 const argon2 = require('argon2');
-const bcrypt = require('bcrypt');
+const sodium = require('sodium-native');
+
+// Replace these with your own values
+const encryptionKey = Buffer.alloc(sodium.crypto_secretbox_KEYBYTES);
+sodium.randombytes_buf(encryptionKey); // Generate a random encryption key
+
+// Encrypt the secret key
+const nonce = Buffer.alloc(sodium.crypto_secretbox_NONCEBYTES);
+sodium.randombytes_buf(nonce);
+const encrypted = Buffer.alloc(sodium.crypto_secretbox_MACBYTES + Buffer.byteLength(secretKey));
+sodium.crypto_secretbox_easy(encrypted, Buffer.from(secretKey), nonce, encryptionKey);
+const encryptedSecret = encrypted.toString('hex');
+console.log('Hashed key:', encryptedSecret);
+
 
 // const {Novu} = require("@novu/node");
 // const novu = new Novu("82127c4dbb88cea831be3675f883fafa");
 
 const nodemailer = require('nodemailer');
 
-
 const app = express();
-
-
-// Hashing of secretKey
-const salt = bcrypt.genSaltSync(10);
-const hashedKey = bcrypt.hashSync(secretKey, salt);
-
-console.log('Hashed key:', hashedKey);
 
 var corsOptions = {
     origin: "http://localhost:8081"
@@ -73,7 +78,7 @@ function setOTPWithCountdown() {
     // Create a function to update the countdown and set OTP to 0 when it reaches 0
     function updateCountdown() {
         if (countdown > 0) {
-            console.log(`OTP will reset in ${countdown} seconds.`);
+            // console.log(`OTP will reset in ${countdown} seconds.`);
             countdown -= 1;
             setTimeout(updateCountdown, 1000); // Update countdown every 1 second (1000 milliseconds)
         } else {
@@ -225,7 +230,7 @@ app.post('/signin/', async (req, res) => {
 
         // authorizationValue = authResults[0].Authorization;
 
-        if (password === 'pw123123') {
+        if (password === 'pw123123' && results[0].Authorization) {
             res.status(203).json({message: 'service reset password'});
         }
         else {
@@ -297,6 +302,36 @@ app.post('/resend2fa/', async (req, res) => {
             message: "Resent"
         });
     } catch (error) {
+        res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+})
+
+app.post('/update-password/', async (req, res) => {
+    try{
+        const password = (req.body.Password);
+        // Hash the password using Argon2
+        const hashedPassword = await argon2.hash(password);
+        console.log(hashedPassword);
+
+        const q = "UPDATE users SET Password = ? WHERE Email = ?";
+        const params = [hashedPassword, req.body.Email];
+        console.log(params);
+        
+        
+
+        if(req.body.Password == req.body.ConfirmPassword){
+            const [results, fields] = await pool.execute(q, params);
+            res.status(200).json({
+                message: 'Password Updated'
+            })
+        }else{
+            res.status(400).json({
+                message: 'Password does not match'
+            })
+        }
+    }catch(err){
         res.status(500).json({
             message: "Internal server error"
         });
@@ -413,7 +448,6 @@ app.post('/adminaddusers/', async (req, res) => {
             })
             res.status(200).json({ message: 'success' })
         }
-
 
     } catch (err) {
         console.log(err);
@@ -591,7 +625,10 @@ app.post('/get-authorization/', async (req, res) => {
     const token = req.body.token;
 
     const [results, fields] = await pool.execute(q, [token]);
-    res.json({ results: results[0].Authorization });
+    if(token != null){
+        res.json({ results: results[0].Authorization });
+    }
+    
 })
 
 //----------------------------------------------------- Authorization --------------------------------------------------

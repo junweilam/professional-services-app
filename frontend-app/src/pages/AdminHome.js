@@ -9,6 +9,7 @@ const AdminHome = () => {
 
     const handleLogout = async () => {
         let token = { token: localStorage.getItem("token") }
+        console.log(token);
         try {
             const response = await logOut(token)
             console.log(response)
@@ -47,13 +48,16 @@ const AdminHome = () => {
         async function fetchUserAuthorization() {
             try {
                 let token = { token: localStorage.getItem("token") }
-                const response = await getAuthorization(token);
-                console.log(response);
-                if (response.results == 1) {
-                    setIsAuthorized(true);
-                } else {
-                    setIsAuthorized(false);
+                if (token != null){
+                    const response = await getAuthorization(token);
+                    console.log(response);
+                    if (response.results == 1) {
+                        setIsAuthorized(true);
+                    } else {
+                        setIsAuthorized(false);
+                    }
                 }
+                
             } catch (err) {
                 console.log('API call error: ', err);
             }

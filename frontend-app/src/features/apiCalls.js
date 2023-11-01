@@ -43,6 +43,7 @@ export const handleAuth = async (user) => {
 export const logOut = async () => {
     try{
         const token = localStorage.getItem("token");
+        console.log(token);
         const response = await axios.post("http://localhost:8080/logout/",null , {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -190,6 +191,18 @@ export const getUserId = async (token) => {
 export const adminAddUsers = async (user) => {
     try{
         const res = await axios.post('http://localhost:8080/adminaddusers/', user);
+        return res.data;
+    }catch(err){
+        console.log(err);
+        return{
+            error:err
+        }
+    }
+}
+
+export const updatePassword = async (user) =>{
+    try{
+        const res = await axios.post('http://localhost:8080/update-password/', user);
         return res.data;
     }catch(err){
         console.log(err);

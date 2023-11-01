@@ -56,13 +56,17 @@ const Home = () => {
     async function fetchUserAuthorization(){
       try{
         let token = {token: localStorage.getItem("token")}
-        const response = await getAuthorization(token);
-        console.log(response);
-        if(response.results == 3){
-          setIsAuthorized(true);
-        }else{
-          setIsAuthorized(false);
+        console.log(token);
+        if(token != null){
+          const response = await getAuthorization(token);
+          console.log(response);
+          if(response.results == 3){
+            setIsAuthorized(true);
+          }else{
+            setIsAuthorized(false);
+          }
         }
+       
 
       }catch(err){
         console.error('API call error: ', err);

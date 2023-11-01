@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { logIn } from '../features/apiCalls';
 import { AuthModal } from '../component/AuthModal';
+import { ServiceResetPassword } from '../component/ServiceResetPassword';
 
 
 
@@ -60,7 +61,7 @@ const SignIn = () => {
           setIsPasswordWrong(false);
         }
       }
-      setEmailValue(`${response.Email}`);
+      setEmailValue(`${formData.email}`);
       console.log(`${response.Email}`);
 
     } catch (err) {
@@ -129,7 +130,7 @@ const SignIn = () => {
           </button>
           <p className="text-gray-600 text-sm mt-2">Don't have an account? <a href="/signup" className="text-blue-500">Sign Up</a></p>
         </form>
-
+        <ServiceResetPassword isOpen={isResetPassword} closeModal={() => setIsResetPassword(false)} email={emailValue}/>
         <AuthModal isOpen={isModalOpen} closeModal={() => setIsModalOpen(false)} email={emailValue} />
       </div>
 

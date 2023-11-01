@@ -3,16 +3,12 @@ import React from 'react';
 const UnauthorizedUserPage = ({ isAuthorized }) => {
   if (!isAuthorized) {
     return (
-      <div>
-        <h1>Unauthorized User</h1>
-        <p>You do not have permission to access this page.</p>
+      <div className="flex flex-col items-center justify-center h-screen">
+        <h1 className="text-4xl font-bold text-red-600 mb-4">Unauthorized User</h1>
+        <p className="text-lg text-gray-600">You do not have permission to access this page.</p>
       </div>
     );
   }
-
-  // If the user is authorized, you can render something else or redirect to another page.
-  // For redirection, you can use the React Router or other navigation techniques.
-  // Example: return <Redirect to="/login" />;
 
   return null;
 };
