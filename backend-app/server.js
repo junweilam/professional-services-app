@@ -585,7 +585,10 @@ app.post('/get-authorization/', async (req, res) => {
     const token = req.body.token;
 
     const [results, fields] = await pool.execute(q, [token]);
-    res.json({ results: results[0].Authorization });
+    if(token != null){
+        res.json({ results: results[0].Authorization });
+    }
+    
 })
 
 //----------------------------------------------------- Authorization --------------------------------------------------
