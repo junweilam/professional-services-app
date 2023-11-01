@@ -1,11 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useEmail } from '../context/EmailContext';
 import { logOut } from '../features/apiCalls';
 
 function Navbar() {
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeLink, setActiveLink] = useState('');
   const { userEmail } = useEmail();
+
+  useEffect(() => {
+    // Get the current URL path and set the active link based on it
+    const currentPath = window.location.pathname;
+    if (currentPath === '/servicehome') {
+      setActiveLink('Home');
+    } else if (currentPath === '/homepage') {
+      setActiveLink('Services');
+    } else if (currentPath === '/faq') {
+      setActiveLink('Contact');
+    }
+  }, []); // Empty dependency array ensures the effect runs only once after the initial render
+
+
+  const handleLinkClick = (link) => {
+    setActiveLink(link);
+
+    // Redirect based on the clicked link using window.location.href
+    if (link === 'Home') {
+      window.location.href = '/servicehome';
+    } else if (link === 'Services') {
+      window.location.href = '/homepage';
+    } else if (link === 'Contact') {
+      window.location.href = '/faq';
+    }
+  };
 
 
   const toggleUserDropdown = () => {
@@ -18,6 +45,7 @@ function Navbar() {
 
   const token = localStorage.getItem('token');
   console.log(token);
+  
 
 
   const handleLogout = async () => {
@@ -54,7 +82,9 @@ function Navbar() {
           </span>
         </a>
         <div className="flex items-center md:order-2">
-
+        {token ? (
+            // If token exists, display user menu
+            <div>
           <button
             type="button"
             className="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
@@ -151,7 +181,15 @@ function Navbar() {
               />
             </svg>
           </button>
+          </div>
+          ) : (
+            // If token doesn't exist, display sign-in button
+            <a href="/signin" className="text-gray-700 hover:text-gray-900">
+              Sign In
+            </a>
+          )}
         </div>
+         
         <div
           className={`${isMobileMenuOpen ? 'block' : 'hidden'
             } items-center justify-between w-full md:flex md:w-auto md:order-1`}
@@ -160,31 +198,30 @@ function Navbar() {
           <ul
             className="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md-border-0 md-bg-white dark-bg-gray-800 md-dark-bg-gray-900 dark-border-gray-700"
           >
-            <li>
-              <a
-                href="./servicehome"
-                className="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md-bg-transparent md-text-blue-700 md-p-0 md-dark-text-blue-500"
-                aria-current="page"
-              >
-                Home
-              </a>
-            </li>
-            <li>
-              <a
-                href="./homepage"
-                className="block py-2 pl-3 pr-4 text-gray-900 rounded hover-bg-gray-100 md-hover-bg-transparent md-hover-text-blue-700 md-p-0 dark-text-white md-dark-hover-text-blue-500 dark-hover-bg-gray-700 dark-hover-text-white md-dark-hover-bg-transparent dark-border-gray-700"
-              >
-                Services
-              </a>
-            </li>
-            <li>
-              <a
-                href="./faq"
-                className="block py-2 pl-3 pr-4 text-gray-900 rounded hover-bg-gray-100 md-hover-bg-transparent md-hover-text-blue-700 md-p-0 dark-text-white md-dark-hover-text-blue-500 dark-hover-bg-gray-700 dark-hover-text-white md-dark-hover-bg-transparent dark-border-gray-700"
-              >
-                Contact
-              </a>
-            </li>
+           <li>
+          <button
+            className={`block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 ${activeLink === 'Home' ? 'bg-blue-700' : ''}`}
+            onClick={() => handleLinkClick('Home')}
+          >
+            Home
+          </button>
+        </li>
+        <li>
+          <button
+            className={`block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 ${activeLink === 'Services' ? 'bg-blue-700' : ''}`}
+            onClick={() => handleLinkClick('Services')}
+          >
+            Services
+          </button>
+        </li>
+        <li>
+          <button
+            className={`block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 ${activeLink === 'Contact' ? 'bg-blue-700' : ''}`}
+            onClick={() => handleLinkClick('Contact')}
+          >
+            Contact
+          </button>
+        </li>
           </ul>
         </div>
       </div>

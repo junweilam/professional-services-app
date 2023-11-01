@@ -9,8 +9,6 @@ const AdminHome = () => {
 
     const handleLogout = async () => {
         let token = { token: localStorage.getItem("token") }
-
-
         try {
             const response = await logOut(token)
             console.log(response)
@@ -19,6 +17,8 @@ const AdminHome = () => {
                 localStorage.removeItem('token');
                 // Redirect the user to the login page
                 window.location.href = '/signin';
+            }else{
+                console.error("Unexpected Server Responese:", response)
             }
 
         } catch (err) {
