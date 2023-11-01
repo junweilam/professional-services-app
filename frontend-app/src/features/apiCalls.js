@@ -123,6 +123,20 @@ export const getServices = async (user) =>{
     }
 }
 
+export const getOrderHistory = async (uid) =>{
+    try{
+        console.log("uid",uid);
+        const res = await axios.post('http://localhost:8080/get-history/', uid);
+        return res.data;
+
+    }catch(err){
+        console.log(err);
+        return{
+            error:err
+        };
+    }
+}
+
 export const placeOrder = async (orderData) => {
     try {
       // Make a POST request to your backend API endpoint to insert the data.
@@ -143,6 +157,19 @@ export const placeOrder = async (orderData) => {
 export const getAuthorization = async (token) => {
     try{
         const res = await axios.post('http://localhost:8080/get-authorization/', token);
+        return res.data;
+    }catch(err){
+        console.log(err);
+        return{
+            error:err
+        }
+    }
+}
+
+export const getService = async (serviceId) => {
+    try{
+        console.log("serviceid:", serviceId);
+        const res = await axios.post('http://localhost:8080/get-service/', serviceId);
         return res.data;
     }catch(err){
         console.log(err);
@@ -180,6 +207,18 @@ export const updatePassword = async (user) =>{
     try{
         const res = await axios.post('http://localhost:8080/update-password/', user);
         return res.data;
+    }catch(err){
+        console.log(err);
+        return{
+            error:err
+        }
+    }
+}
+
+export const getServicesID = async (user) => {
+    try{
+        const res = await axios.get('http://localhost:8080/getServicesID/');
+        return res;
     }catch(err){
         console.log(err);
         return{

@@ -1,20 +1,37 @@
-import React, { useState } from 'react';
-import { adminAddUsers } from '../features/apiCalls';
+import React, { useState, useEffect } from 'react';
+import { adminAddUsers, getServicesID } from '../features/apiCalls';
 import { AddServiceSuccess } from '../component/AddServiceSuccess';
 
 const AdminAddUsers = () => {
 
     const [emailStatus, setEmailStatus] = useState(true);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [showServiceOption, setShowServiceOption] = useState(false);
+    const [serviceID, setServiceID] = useState([]);
 
     // Handle form input changes
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
+        // setFormData({
+        //     ...formData,
+        //     [name]: value,
+        // });
+        setFormData((prevFormData) => {
+            const updatedData = { ...prevFormData, [name]: value};
+        
+        if(updatedData.authorization == 2){
+            setShowServiceOption(true);
+            console.log(updatedData.authorization);
+        }else{
+            setShowServiceOption(false);
+            console.log(updatedData.authorization);
+        }
+        return updatedData;
+    })
     };
+
+    
+    
     // State to hold form input values
     const [formData, setFormData] = useState({
         firstName: '',
@@ -22,12 +39,26 @@ const AdminAddUsers = () => {
         email: '',
         password: 'pw123123',
         authorization: '',
+        serviceID: '',
     });
+
+    useEffect(() => {
+        async function fetchServicesID(){
+            try{
+                const response = await getServicesID();
+                setServiceID(response.data);
+            }catch(err){
+                console.error('API call error: ', err);
+            }
+        }
+
+        fetchServicesID();
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        let formValues = {LastName: formData.lastName, FirstName: formData.firstName, Email: formData.email, Password: formData.password, Authorization: formData.authorization};
+        let formValues = {LastName: formData.lastName, FirstName: formData.firstName, Email: formData.email, Password: formData.password, Authorization: formData.authorization, ServiceID: formData.serviceID};
         const response = await adminAddUsers(formValues);
         if(response.error){
             if(response.error.response.status === 400){
@@ -118,6 +149,30 @@ const AdminAddUsers = () => {
                            
                         </select>
                     </div>
+                    {showServiceOption && (
+                        <div className="mb-4">
+                        <label className="block text-gray-600 text-sm font-medium mb-2" htmlFor="role">
+                            Service ID
+                        </label>
+                        <select
+                            className="w-full px-4 py-2 border rounded-lg outline-none focus.border-blue-500"
+                            id="serviceID"
+                            name="serviceID"
+                            value={formData.serviceID}
+                            onChange={handleInputChange}
+                            required
+                        >
+                            <option value="">Select Service ID</option>
+                            {serviceID.map((service) =>(
+                                <option key={service.id} value={service.id}>
+                                    {service.id}
+                                </option>
+                            ))}
+                           
+                        </select>
+                    </div>
+                    )}
+                    
                     <button
                         className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300"
                         type="submit"

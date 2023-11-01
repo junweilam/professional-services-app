@@ -230,7 +230,7 @@ app.post('/signin/', async (req, res) => {
 
         // authorizationValue = authResults[0].Authorization;
 
-        if (password === 'pw123123' && results[0].Authorization) {
+        if (password === 'pw123123' && results[0].Authorization == 2 || password === 'pw123123' && results[0].Authorization == 1) {
             res.status(203).json({message: 'service reset password'});
         }
         else {
@@ -435,12 +435,19 @@ app.post('/adminaddusers/', async (req, res) => {
     try {
         const checkEmail = 'SELECT * FROM users WHERE Email = ?'
         const [eResults, eFields] = await pool.execute(checkEmail, [req.body.Email]);
-
+        let q = '';
+        let params = [];
         if (eResults.length > 0) {
             res.status(400).json({ message: 'Email exist' })
         } else {
-            const q = 'INSERT INTO users (FirstName, LastName, Email, Password, Authorization) VALUES (?)';
-            const params = [req.body.FirstName, req.body.LastName, req.body.Email, req.body.Password, req.body.Authorization];
+            if (req.body.Authorization == 1){
+                q = 'INSERT INTO users (FirstName, LastName, Email, Password, Authorization) VALUES (?)';
+                params = [req.body.FirstName, req.body.LastName, req.body.Email, req.body.Password, req.body.Authorization];
+            }else if (req.body.Authorization == 2){
+                q = 'INSERT INTO users (FirstName, LastName, Email, Password, Authorization, serviceID) VALUES (?)';
+                params = [req.body.FirstName, req.body.LastName, req.body.Email, req.body.Password, req.body.Authorization, req.body.ServiceID];
+            }
+            
             pool.query(q, [params], (err, data) => {
                 console.log(err, data);
                 if (err) return res.json({ error: "SQL Error" });
@@ -450,6 +457,27 @@ app.post('/adminaddusers/', async (req, res) => {
         }
 
     } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: "Internal server error"
+        })
+    }
+})
+
+app.get('/getServicesID/', async (req, res) => {
+    try{
+        const q = 'SELECT serviceID FROM services';
+        const [results, fields] = await pool.execute(q);
+        const services = [];
+        if (results.length > 0){
+            for (const row of results) {
+                services.push({
+                    id: row.serviceID,
+                });
+            }
+            res.json(services);
+        }
+    }catch (err){
         console.log(err);
         res.status(500).json({
             message: "Internal server error"
@@ -578,6 +606,40 @@ app.post('/get-userid/', async (req, res) => {
 
     const [results, fields] = await pool.execute(q, [token]);
     console.log(results);
+    res.json(results);
+})
+
+app.post('/get-history/', async (req, res) => {
+    const q = "SELECT OrderID, ServiceID, OrderTime, DateofService, Status FROM orders WHERE UID = ?";
+    console.log(req.body);
+    const uid = req.body.userId;
+    console.log("history-uid:",uid);
+    const [results, fields] = await pool.execute(q, [uid]);
+
+    const orders = [];
+
+    // Loop through the results and format them
+    for (const row of results) {
+        orders.push({
+            orderid: row.OrderID,
+            serviceid: row.ServiceID,
+            ordertime: row.OrderTime,
+            dos: row.DateofService,
+            status: row.Status,
+        });
+    }
+    res.json(orders);
+    console.log("order:",orders);
+})
+
+app.post('/get-service/', async (req, res) => {
+    const q = "SELECT ServiceName FROM services WHERE serviceID = ?"
+    console.log("req.body:", req.body);
+    const serviceID = req.body.sid;
+    console.log("serviceid:",serviceID);
+
+    const [results, fields] = await pool.execute(q, [serviceID]);
+    console.log("result",results);
     res.json(results);
 })
 
