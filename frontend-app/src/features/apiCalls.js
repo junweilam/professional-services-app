@@ -149,6 +149,18 @@ export const getAuthorization = async (token) => {
     }
 }
 
+export const getUserId = async (token) => {
+    try{
+        const res = await axios.post('http://localhost:8080/get-userid/', token);
+        return res.data;
+    }catch(err){
+        console.log(err);
+        return{
+            error:err
+        }
+    }
+}
+
 export const adminAddUsers = async (user) => {
     try{
         const res = await axios.post('http://localhost:8080/adminaddusers/', user);

@@ -7,22 +7,27 @@ const jwt = require('jsonwebtoken');
 const secretKey = process.env.JWT_SECRET_KEY;
 const verifyToken = require("./middleware/AuthMiddleware")
 const argon2 = require('argon2');
-const bcrypt = require('bcrypt');
+const sodium = require('sodium-native');
+
+// Replace these with your own values
+const encryptionKey = Buffer.alloc(sodium.crypto_secretbox_KEYBYTES);
+sodium.randombytes_buf(encryptionKey); // Generate a random encryption key
+
+// Encrypt the secret key
+const nonce = Buffer.alloc(sodium.crypto_secretbox_NONCEBYTES);
+sodium.randombytes_buf(nonce);
+const encrypted = Buffer.alloc(sodium.crypto_secretbox_MACBYTES + Buffer.byteLength(secretKey));
+sodium.crypto_secretbox_easy(encrypted, Buffer.from(secretKey), nonce, encryptionKey);
+const encryptedSecret = encrypted.toString('hex');
+console.log('Hashed key:', encryptedSecret);
+
 
 // const {Novu} = require("@novu/node");
 // const novu = new Novu("82127c4dbb88cea831be3675f883fafa");
 
 const nodemailer = require('nodemailer');
 
-
 const app = express();
-
-
-// Hashing of secretKey
-const salt = bcrypt.genSaltSync(10);
-const hashedKey = bcrypt.hashSync(secretKey, salt);
-
-console.log('Hashed key:', hashedKey);
 
 var corsOptions = {
     origin: "http://localhost:8081"
@@ -561,7 +566,14 @@ app.post('/create-order/', (req, res) => {
     return res.status(200).json({ message: 'Cart items inserted successfully' });
   });
 
+app.post('/get-userid/', async (req, res) => {
+    const q = "SELECT UID FROM users WHERE Token = ?"
+    const token = req.body.token;
 
+    const [results, fields] = await pool.execute(q, [token]);
+    console.log(results);
+    res.json(results);
+})
 
 //----------------------------------------------------Users-------------------------------------------------------------
 
