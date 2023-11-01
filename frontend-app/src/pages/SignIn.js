@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { logIn } from '../features/apiCalls';
 import { AuthModal } from '../component/AuthModal';
+import { ServiceResetPassword } from '../component/ServiceResetPassword';
 
 
 
@@ -11,6 +12,7 @@ const SignIn = () => {
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isResetPassword, setIsResetPassword] = useState(false);
   const [isPasswordWrong, setIsPasswordWrong] = useState(false);
   const [emailValue, setEmailValue] = useState('');
   const [isEmailValid, setIsEmailValid] = useState(false);
@@ -26,37 +28,43 @@ const SignIn = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Add your form submission logic here
     console.log(formData);
-    try{
-      let formValues = {Email: formData.email, Password: formData.password}
+    try {
+      let formValues = { Email: formData.email, Password: formData.password }
       const response = await logIn(formValues);
       console.log(response);
-      if (response.message === "Authentication Successful and AuthValue = 1"){
-        
-        //window.location.href = './adminhome';
-        setIsModalOpen(true);        
+      if (response.message === "service reset password") {
+        setIsResetPassword(true);
       }
-      else if (response.message === "Authentication Successful and AuthValue = 2"){
-        setIsModalOpen(true);
+      else {
+        setIsResetPassword(false);
+        if (response.message === "Authentication Successful and AuthValue = 1") {
+
+          //window.location.href = './adminhome';
+          setIsModalOpen(true);
+        }
+        else if (response.message === "Authentication Successful and AuthValue = 2") {
+          setIsModalOpen(true);
+        }
+        else if (response.message === "Authentication Successful and AuthValue = 3") {
+          setIsModalOpen(true);
+
+        } else if (response.error.response.status === 402) {
+          // Handle other authentication cases (e.g., incorrect credentials)
+          setIsPasswordWrong(true);
+          setIsEmailValid(false);
+          console.log('Authentication failed');
+        } else if (response.error.response.status === 403) {
+          setIsEmailValid(true);
+          setIsPasswordWrong(false);
+        }
       }
-      else if (response.message === "Authentication Successful and AuthValue = 3"){
-        setIsModalOpen(true);
-       
-      }else if(response.error.response.status === 402){
-        // Handle other authentication cases (e.g., incorrect credentials)
-        setIsPasswordWrong(true);
-        setIsEmailValid(false);
-        console.log('Authentication failed');
-      }else if(response.error.response.status === 403){
-        setIsEmailValid(true);
-        setIsPasswordWrong(false);
-      }
-      setEmailValue(`${response.Email}`);
+      setEmailValue(`${formData.email}`);
       console.log(`${response.Email}`);
 
-    }catch(err){
+    } catch (err) {
       if (err.response && err.response.status === 401) {
         // Handle token expiration: clear token and redirect to login page
         console.log('Authentication token expired. Logging out...');
@@ -69,7 +77,7 @@ const SignIn = () => {
   };
 
   return (
-    
+
     <div className="flex justify-center items-center min-h-screen">
       <div className="bg-white p-8 shadow-md rounded-md">
         <h2 className="text-2xl font-semibold mb-4">Sign In</h2>
@@ -105,12 +113,12 @@ const SignIn = () => {
             />
           </div>
           {
-            isPasswordWrong &&(
+            isPasswordWrong && (
               <p className="text-red-500 text-sm text-center">Incorrect Password</p>
             )
           }
           {
-            isEmailValid &&(
+            isEmailValid && (
               <p className="text-red-500 text-sm text-center">Invalid Email</p>
             )
           }
@@ -122,12 +130,12 @@ const SignIn = () => {
           </button>
           <p className="text-gray-600 text-sm mt-2">Don't have an account? <a href="/signup" className="text-blue-500">Sign Up</a></p>
         </form>
-
+        <ServiceResetPassword isOpen={isResetPassword} closeModal={() => setIsResetPassword(false)} email={emailValue}/>
         <AuthModal isOpen={isModalOpen} closeModal={() => setIsModalOpen(false)} email={emailValue} />
       </div>
-      
+
     </div>
-    
+
   );
 };
 

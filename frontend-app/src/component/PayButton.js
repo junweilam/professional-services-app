@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { payFunction, url } from "../features/apiCalls";
 import { useLocation } from 'react-router-dom';
 
+
 const PayButton = () => {
 
     const location = useLocation();
@@ -24,10 +25,11 @@ const PayButton = () => {
             window.location.href = response.url
         }
     }
+    
 
     return (
         <>
-            <button onClick={handleCheckout}>Check Out</button>
+            <button className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 mt-2" onClick={handleCheckout}>Check Out</button>
         </>
     );
 };

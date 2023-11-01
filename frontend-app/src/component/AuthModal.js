@@ -12,6 +12,7 @@ export const AuthModal = ({ isOpen, closeModal, isAuthenticated, setIsAuthentica
   const [is2FA, setIs2FA] = useState(true);
   const [isResent, setIsResent] = useState(false);
   const [isExpired, setIsExpired] = useState(false);
+  const [isCountdown, setIsCountdown] = useState(true);
   const [countdown, setCountdown] = useState(10);
 
   useEffect(() => {
@@ -32,7 +33,7 @@ export const AuthModal = ({ isOpen, closeModal, isAuthenticated, setIsAuthentica
   }, [countdown]);
 
   const startCountdown = () => {
-    setCountdown(10); // Reset the countdown to 60 seconds
+    setCountdown(300); // Reset the countdown to 60 seconds
   };
 
   useEffect(() => {
@@ -62,6 +63,7 @@ export const AuthModal = ({ isOpen, closeModal, isAuthenticated, setIsAuthentica
         setIs2FA(true);
         setIsResent(true);
         setIsExpired(false);
+        setIsCountdown(true);
         setCountdown(10);
         console.log(is2FA);
         console.log(isResent);
@@ -108,9 +110,11 @@ export const AuthModal = ({ isOpen, closeModal, isAuthenticated, setIsAuthentica
         setIs2FA(false);
         setIsResent(false);
         setIsExpired(false);
+        setIsCountdown(false);
       }
       else if (response.error.response.status === 400){
         setIsExpired(true);
+        setIsCountdown(false);
       }
     } catch (err) {
       console.log(err);
@@ -138,7 +142,11 @@ export const AuthModal = ({ isOpen, closeModal, isAuthenticated, setIsAuthentica
                 />
               </div>
             </div>
-            <p>OTP expires in {countdown} seconds</p>
+            {isCountdown && (
+              <p>OTP expires in {countdown} seconds</p>
+            )
+            }
+            
             {!is2FA && (
               <p className="text-red-500 text-sm">OTP is incorrect. Click <a onClick={handleResendOTP} className="text-blue-500 underline hover:cursor-pointer">Here</a> for new OTP</p>
             )}
