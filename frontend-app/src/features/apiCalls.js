@@ -184,3 +184,15 @@ export const updatePassword = async (user) =>{
         }
     }
 }
+
+export const getServicesID = async (user) => {
+    try{
+        const res = await axios.get('http://localhost:8080/getServicesID/');
+        return res;
+    }catch(err){
+        console.log(err);
+        return{
+            error:err
+        }
+    }
+}
