@@ -33,7 +33,7 @@ export const AuthModal = ({ isOpen, closeModal, isAuthenticated, setIsAuthentica
   }, [countdown]);
 
   const startCountdown = () => {
-    setCountdown(10); // Reset the countdown to 60 seconds
+    setCountdown(300); // Reset the countdown to 60 seconds
   };
 
   useEffect(() => {

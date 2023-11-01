@@ -9,6 +9,7 @@ import PaymentPage from './pages/PaymentPage';
 import CartPage from './pages/CartPage';
 import CheckoutSuccess from './component/CheckoutSucess'
 import FaqPage from './pages/FAQPage'
+import AdminAddUsers from './pages/AdminAddUsers';
 
 // User Imports
 import UserHome from './pages/UserHome';
@@ -32,6 +33,7 @@ function App() {
           <Route path="/adminhome" element={<AdminHome />} />
           <Route path="/checkout-success" element={<CheckoutSuccess />} />
           <Route path="/adminaddservices" element={<AdminAddServices />} />
+          <Route path="/adminaddusers" element={<AdminAddUsers/>} />
           <Route path="/*" element={<Navigate to="/signin" />} />
           <Route path="/userhome" element={<UserHome />} />
           <Route path="/servicehome" element={<ServiceHome />} />

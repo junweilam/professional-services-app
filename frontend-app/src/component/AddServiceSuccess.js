@@ -9,7 +9,7 @@ export const AddServiceSuccess = ({ show, onClose }) => {
   return (
     <Modal show={show} onHide={onClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Added Services Successful</Modal.Title>
+        <Modal.Title>Added Successful</Modal.Title>
       </Modal.Header>
       {/* <Modal.Body>
         <p>Add Services successful.</p>

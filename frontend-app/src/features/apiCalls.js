@@ -130,3 +130,15 @@ export const getAuthorization = async (token) => {
         }
     }
 }
+
+export const adminAddUsers = async (user) => {
+    try{
+        const res = await axios.post('http://localhost:8080/adminaddusers/', user);
+        return res.data;
+    }catch(err){
+        console.log(err);
+        return{
+            error:err
+        }
+    }
+}

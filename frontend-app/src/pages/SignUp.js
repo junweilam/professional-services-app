@@ -212,7 +212,7 @@ const SignUp = () => {
               Password
             </label>
             <input
-              className={`${!passwordLengthStatus ? 'w-full px-4 py-2 border rounded-lg outline-none focus:border-blue-500': `w-full px-4 py-2 border rounded-lg outline-none focus:border-blue-500`}`}
+              className={`${!passwordLengthStatus ? 'w-full px-4 py-2 border rounded-lg outline-none focus:border-red-500': `w-full px-4 py-2 border rounded-lg outline-none focus:border-blue-500`}`}
               type="password"
               id="password"
               name="password"

@@ -65,7 +65,7 @@ function setOTPWithCountdown() {
     console.log(`Current OTP: ${otp}`);
 
     // Define the countdown duration in seconds (e.g., 60 seconds)
-    const countdownDuration = 10;
+    const countdownDuration = 300;
 
     // Initialize the countdown timer
     let countdown = countdownDuration;
@@ -158,20 +158,20 @@ app.post('/registration/', async (req, res) => {
         else if (cResults.length > 0) {
             contactFlag = true;
             console.log("Contact Number used");
-            res.status(402).json({ message: 'Contact Number already used'});
+            res.status(402).json({ message: 'Contact Number already used' });
         }
-        else if(req.body.ContactNo.length != 8){
+        else if (req.body.ContactNo.length != 8) {
             console.log(req.body.ContactNo.length)
-            res.status(405).json({ message: "Contact number have to be 8 number"})
+            res.status(405).json({ message: "Contact number have to be 8 number" })
         }
-        else if (eResults.length > 0){
+        else if (eResults.length > 0) {
             console.log("Email used");
             res.status(403).json({ message: 'Email already used' });
         }
-        else if(password.length != 8){
+        else if (password.length != 8) {
             res.status(404).json({ message: "Password needs to be 8 number" })
         }
-        else{
+        else {
             console.log(req.body);
             const q = `insert into users(LastName, FirstName, Email, ContactNo, Address, Password, Authorization) VALUES(?)`;
             const values = [req.body.LastName, req.body.FirstName, req.body.Email, req.body.ContactNo, req.body.Address, hashedPassword, req.body.Authorization];
@@ -225,52 +225,56 @@ app.post('/signin/', async (req, res) => {
 
         // authorizationValue = authResults[0].Authorization;
 
-        // if (results.length === 1) {
-        if (results.length > 0) {
-            const hashedPassword = results[0].Password;
-            authorizationValue = results[0].Authorization;
+        if (password === 'pw123123') {
+            res.status(203).json({message: 'service reset password'});
+        }
+        else {
+            if (results.length > 0) {
+                const hashedPassword = results[0].Password;
+                authorizationValue = results[0].Authorization;
 
-            // Use argon2.verify to compare the user's input with the stored hash
-            const isPasswordValid = await argon2.verify(hashedPassword, password);
+                // Use argon2.verify to compare the user's input with the stored hash
+                const isPasswordValid = await argon2.verify(hashedPassword, password);
 
-            if (isPasswordValid) {
-                // Password is correct, proceed with authentication
+                if (isPasswordValid) {
+                    // Password is correct, proceed with authentication
 
-                // User is authenticated, generate JWT token
-                // need to implement security for the secret key
+                    // User is authenticated, generate JWT token
+                    // need to implement security for the secret key
 
-                if (results.length > 0 && authorizationValue === 1) {
-                    otp = generateOTP();
-                    sendEmail(email, otp);
-                    setOTPWithCountdown();
-                    res.status(200).json({ message: 'Authentication Successful and AuthValue = 1', Email: email });
-                    console.log("Success");
+                    if (results.length > 0 && authorizationValue === 1) {
+                        otp = generateOTP();
+                        sendEmail(email, otp);
+                        setOTPWithCountdown();
+                        res.status(200).json({ message: 'Authentication Successful and AuthValue = 1', Email: email });
+                        console.log("Success");
+                    }
+                    else if (results.length > 0 && authorizationValue == 2) {
+                        otp = generateOTP();
+                        sendEmail(email, otp);
+                        setOTPWithCountdown();
+                        res.status(201).json({ message: 'Authentication Successful and AuthValue = 2', Email: email });
+                    }
+                    else if (results.length > 0 && authorizationValue == 3) {
+                        otp = generateOTP();
+                        setOTPWithCountdown();
+                        console.log(otp);
+                        sendEmail(email, otp);
+                        res.status(202).json({ message: 'Authentication Successful and AuthValue = 3', Email: email });
+                    }
+                    else {
+                        // Invalid authorization value
+                        res.status(401).json({ message: 'Authentication failed' });
+                        console.log("Failed");
+                    }
+
+                } else {
+                    // Incorrect password
+                    res.status(402).json({ message: 'Authentication failed: Incorrect password' });
                 }
-                else if (results.length > 0 && authorizationValue == 2) {
-                    otp = generateOTP();
-                    sendEmail(email, otp);
-                    setOTPWithCountdown();
-                    res.status(201).json({ message: 'Authentication Successful and AuthValue = 2', Email: email });
-                }
-                else if (results.length > 0 && authorizationValue == 3) {
-                    otp = generateOTP();
-                    setOTPWithCountdown();
-                    console.log(otp);
-                    sendEmail(email, otp);
-                    res.status(202).json({ message: 'Authentication Successful and AuthValue = 3', Email: email });
-                }
-                else {
-                    // Invalid authorization value
-                    res.status(401).json({ message: 'Authentication failed' });
-                    console.log("Failed");
-                }
-
             } else {
-                // Incorrect password
-                res.status(402).json({ message: 'Authentication failed: Incorrect password' });
+                res.status(403).json({ message: 'Email Invalid' });
             }
-        } else {
-            res.status(403).json({ message: 'Email Invalid' });
         }
 
     } catch (error) {
@@ -381,7 +385,7 @@ app.post('/adminaddservices/', async (req, res) => {
                 if (err) return res.json({ error: "SQL Error" });
                 // else return res.status(200).json({ data, message: 'success' });
             })
-            res.status(200).json({ message:'success'});
+            res.status(200).json({ message: 'success' });
         }
     }
     catch (error) {
@@ -392,35 +396,62 @@ app.post('/adminaddservices/', async (req, res) => {
     }
 })
 
+app.post('/adminaddusers/', async (req, res) => {
+    try {
+        const checkEmail = 'SELECT * FROM users WHERE Email = ?'
+        const [eResults, eFields] = await pool.execute(checkEmail, [req.body.Email]);
+
+        if (eResults.length > 0) {
+            res.status(400).json({ message: 'Email exist' })
+        } else {
+            const q = 'INSERT INTO users (FirstName, LastName, Email, Password, Authorization) VALUES (?)';
+            const params = [req.body.FirstName, req.body.LastName, req.body.Email, req.body.Password, req.body.Authorization];
+            pool.query(q, [params], (err, data) => {
+                console.log(err, data);
+                if (err) return res.json({ error: "SQL Error" });
+
+            })
+            res.status(200).json({ message: 'success' })
+        }
+
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: "Internal server error"
+        })
+    }
+})
+
 /*
 ----------------------------------------------------Logout--------------------------------------------------------------------- 
 */
 
-app.post("/logout/", async(req, res) => {
+app.post("/logout/", async (req, res) => {
     console.log("inside server.js")
     // retrieving token
     const token = req.header("Authorization").split(" ")[1]; // Get token part after 'Bearer '
-    try{
+    try {
         const checkTokeninDb = 'SELECT * FROM users WHERE Token = ?';
         const [results, cResults] = await pool.execute(checkTokeninDb, [token])
 
-        if(results.length < 1){
-            res.status(400).json({ message: "User not in DB"})
-        }else{
+        if (results.length < 1) {
+            res.status(400).json({ message: "User not in DB" })
+        } else {
             const updateTokeninDb = 'UPDATE users SET Token = NULL WHERE Token = ?';
             pool.query(updateTokeninDb, [token], (err, data) => {
                 console.log(err)
                 console.log(data)
-                if(err){
-                    return res.json ({ error: "SQL error"})
-                }else{
-                    return res.json ({ data })
+                if (err) {
+                    return res.json({ error: "SQL error" })
+                } else {
+                    return res.json({ data })
                 }
             })
-             res.status(200).json ({ message: "Logout successful"})
+            res.status(200).json({ message: "Logout successful" })
         }
 
-        
+
 
         // pool.query('SELECT * FROM users WHERE Token = ?', [token], (error, results) => {
         //     console.log('SELECT query results:', results);
@@ -428,14 +459,14 @@ app.post("/logout/", async(req, res) => {
         //         console.error('Error querying database', error);
         //         return res.status(500).json({ message: 'Internal server error' });
         //       }
-          
+
         //       // Check if the user was found
         //       if (results.length === 0) {
         //         return res.status(404).json({ message: 'User not found' });
         //       }
-              
+
         // })
-    
+
         // pool.query('UPDATE users SET Token = NULL WHERE Token = ?', [token] , (updateError, updateResults) => {
         //     if (updateError) {
         //         console.error('Error updating token in the database', updateError);
@@ -443,15 +474,15 @@ app.post("/logout/", async(req, res) => {
         //       }
         //       // Send the query results back to the client
         //       res.status(200).json({ message: "Logout Successful" });
-          
+
         // })
-        
-    }catch(err){
+
+    } catch (err) {
         console.log(err)
     }
-    
-  
 })
+
+
 
 //
 
@@ -471,21 +502,21 @@ app.post("/logout/", async(req, res) => {
 app.get('/get-services/', async (req, res) => {
     const q = "SELECT serviceID, ServiceName, ServiceDesc, Price FROM services";
     const [results, fields] = await pool.execute(q);
-       
-        const services = [];
 
-        // Loop through the results and format them
-        for (const row of results){
-            services.push({
-                id: row.serviceID,
-                title: row.ServiceName,
-                description: row.ServiceDesc,
-                price: row.Price,
-            });
-        }
-        res.json(services);
-        console.log(services);
-    })
+    const services = [];
+
+    // Loop through the results and format them
+    for (const row of results) {
+        services.push({
+            id: row.serviceID,
+            title: row.ServiceName,
+            description: row.ServiceDesc,
+            price: row.Price,
+        });
+    }
+    res.json(services);
+    console.log(services);
+})
 
 
 
@@ -500,7 +531,7 @@ app.post('/get-authorization/', async (req, res) => {
     const token = req.body.token;
 
     const [results, fields] = await pool.execute(q, [token]);
-    res.json({results: results[0].Authorization});
+    res.json({ results: results[0].Authorization });
 })
 
 //----------------------------------------------------- Authorization --------------------------------------------------
@@ -536,30 +567,30 @@ const stripe = Stripe(process.env.STRIPE_KEY)
 
 app.post('/create-checkout-session', async (req, res) => {
     const line_items = req.body.cart.map(item => {
-        return{
+        return {
             price_data: {
-              currency: 'sgd',
-              product_data: {
-                name: item.title,
-                images: [item.image],
-                description: item.description
-              },
-              unit_amount: item.price * 100,
+                currency: 'sgd',
+                product_data: {
+                    name: item.title,
+                    images: [item.image],
+                    description: item.description
+                },
+                unit_amount: item.price * 100,
             },
             quantity: item.quantity,
-          };
+        };
     });
     //console.log("stripe inside post",stripe);
     console.log(line_items);
-  const session = await stripe.checkout.sessions.create({
-    line_items,
-    mode: 'payment',
-    success_url: `${process.env.CLIENT_URL}/checkout-success`,
-    cancel_url: `${process.env.CLIENT_URL}/cart`,
-  });
+    const session = await stripe.checkout.sessions.create({
+        line_items,
+        mode: 'payment',
+        success_url: `${process.env.CLIENT_URL}/checkout-success`,
+        cancel_url: `${process.env.CLIENT_URL}/cart`,
+    });
 
-  
-  res.send({url: session.url})
+
+    res.send({ url: session.url })
 });
 
 
