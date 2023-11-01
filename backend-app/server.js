@@ -180,7 +180,7 @@ app.post('/registration/', async (req, res) => {
         const userEmail = req.body.Email;
         if (!validateEmail(userEmail)) {
             console.log("Invalid email address");
-            return res.status(400).json({ message: "Invalid email address" });
+            return res.status(406).json({ message: "Invalid email address" });
         }
 
         // Add username validation using the validateUsername function
@@ -188,14 +188,14 @@ app.post('/registration/', async (req, res) => {
         const firstname = req.body.FirstName;
         if (!validateUsername(lastname, firstname)) {
             console.log("Invalid username");
-            return res.status(400).json({ message: "Invalid username" });
+            return res.status(411).json({ message: "Invalid username" });
         }
 
         console.log(req.body.Password)
         console.log(req.body.ConfirmPassword)
         if (req.body.Password !== req.body.ConfirmPassword) {
             console.log("Password and Confirm Password do not match");
-            return res.status(400).json({ message: "Password and Confirm Password do not match" })
+            return res.status(408).json({ message: "Password and Confirm Password do not match" })
         }
 
         const password = req.body.Password;
@@ -214,13 +214,13 @@ app.post('/registration/', async (req, res) => {
 
         if (matchCount > 1) {
             console.log("This password has been exposed in data breaches. Please choose a different password.");
-            return res.status(400).json({ message: "This password has been exposed in data breaches. Please choose a different password." });
+            return res.status(409).json({ message: "This password has been exposed in data breaches. Please choose a different password." });
         } else if (matchCount == 0) {
             console.log("Continue");
             // Proceed with registration logic here
         } else {
             console.log("Error");
-            return res.status(400).json({ message: "Error" });
+            return res.status(410).json({ message: "Error" });
         }
 
         var emailFlag = false;

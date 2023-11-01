@@ -15,6 +15,9 @@ const SignUp = () => {
   const [passwordStatus, setPasswordStatus] = useState(true);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
+  const [isInvalidEmail, setIsInvalidEmail] = useState(false);
+  const [isInvalidUsername, setIsInvalidUsername] = useState(false);
+  const [isBreached, setIsBreached] = useState(false);
 
   // State to hold form input values
   const [formData, setFormData] = useState({
@@ -72,43 +75,90 @@ const SignUp = () => {
         setContactLengthStatus(true)
         setPasswordStatus(true);
         setPasswordLegnthStatus(true)
+        setIsBreached(false);
+        setIsInvalidEmail(false);
+        setIsInvalidUsername(false);
       } else if (response.error.response.status === 402) {
         setEmailStatus(true);
         setContactStatus(false);
         setContactLengthStatus(true)
         setPasswordStatus(true);
         setPasswordLegnthStatus(true)
+        setIsBreached(false);
+        setIsInvalidEmail(false);
+        setIsInvalidUsername(false);
       } else if (response.error.response.status === 403) {
         setEmailStatus(false);
         setContactStatus(true);
         setContactLengthStatus(true)
         setPasswordStatus(true);
         setPasswordLegnthStatus(true)
-      } else if(response.error.response.status === 400){
+        setIsBreached(false);
+        setIsInvalidEmail(false);
+        setIsInvalidUsername(false);
+      } else if(response.error.response.status === 408){
         setPasswordStatus(false);
         setEmailStatus(true);
         setContactStatus(true);
         setContactLengthStatus(true)
         setPasswordLegnthStatus(true)
+        setIsBreached(false);
+        setIsInvalidEmail(false);
+        setIsInvalidUsername(false);
       }else if(response.error.response.status === 404){
         setPasswordStatus(true);
         setEmailStatus(true);
         setContactStatus(true);
         setContactLengthStatus(true)
         setPasswordLegnthStatus(false)
+        setIsBreached(false);
+        setIsInvalidEmail(false);
+        setIsInvalidUsername(false);
       }else if (response.error.response.status === 405){
         setPasswordStatus(true);
         setEmailStatus(true);
         setContactStatus(true);
         setContactLengthStatus(false)
         setPasswordLegnthStatus(true)
+        setIsBreached(false);
+        setIsInvalidEmail(false);
+        setIsInvalidUsername(false);
+      }else if(response.error.response.status === 406){
+        setIsInvalidEmail(true);
+        setEmailStatus(true);
+        setContactStatus(true);
+        setPasswordStatus(true);
+        setPasswordLegnthStatus(true);
+        setContactLengthStatus(true)
+      }else if(response.error.response.status === 411){
+        setIsInvalidUsername(true);
+        setEmailStatus(true);
+        setContactStatus(true);
+        setPasswordLegnthStatus(true);
+        passwordStatus(true);
+        setIsInvalidEmail(false);
+        setContactLengthStatus(true)
+      }else if(response.error.response.status === 409){
+        setIsBreached(true);
+        setIsInvalidEmail(false);
+        setIsInvalidUsername(false);
+        setEmailStatus(true);
+        setPasswordLegnthStatus(true);
+        setPasswordStatus(true);
+        setContactStatus(true);
+        setContactLengthStatus(true)
       }
      }
        else {
         setEmailStatus(true);
         setContactStatus(true);
+        setContactLengthStatus(true)
         setPasswordStatus(true);
-        setPasswordLegnthStatus(true)
+        setPasswordLegnthStatus(true);
+        setIsInvalidEmail(false);
+        setIsBreached(false);
+        setIsInvalidEmail(false);
+        setIsInvalidUsername(false);
         // window.location.href = './signin';
         setShowSuccessModal(true);
       }
@@ -120,7 +170,7 @@ const SignUp = () => {
 
   return (
     <div className="flex justify-center items-center min-h-screen">
-      <div className="bg-white p-8 shadow-md rounded-md">
+      <div className="bg-white p-8 w-9/12 shadow-md rounded-md">
         <h2 className="text-2xl font-semibold mb-4">Sign Up</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -153,6 +203,9 @@ const SignUp = () => {
               required
             />
           </div>
+          {isInvalidUsername && (
+            <p className="text-red-500 text-sm">Username is Invalid</p>
+          )}
           <div className="mb-4">
             <label className="block text-gray-600 text-sm font-medium mb-2" htmlFor="contactno">
               Contact Number
@@ -190,6 +243,9 @@ const SignUp = () => {
             />
             {!emailStatus && (
               <p className="text-red-500 text-sm">Email has been used</p>
+            )}
+            {isInvalidEmail && (
+              <p className="text-red-500 text-sm">Email is Invalid</p>
             )}
           </div>
           <div className="mb-4">
@@ -241,6 +297,9 @@ const SignUp = () => {
             />
             {!passwordStatus && (
               <p className="text-red-500 text-sm">Password do not match</p>
+            )}
+            {isBreached && (
+              <p className="text-red-500 text-sm">This password has been exposed in data breaches. Please choose a different password</p>
             )}
           </div>
           <button
