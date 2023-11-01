@@ -468,25 +468,25 @@ app.post("/logout/", async(req, res) => {
 
 // !!!Users Route Codes Here!!!
 
-app.get('/get-services/', async (req, res) => {
-    const q = "SELECT serviceID, ServiceName, ServiceDesc, Price FROM services";
-    const [results, fields] = await pool.execute(q);
-       
-        const services = [];
+app.post('/create-order/', (req, res) => {
+    const { userId, selectedDate, address, cart, status } = req.body;
 
-        // Loop through the results and format them
-        for (const row of results){
-            services.push({
-                id: row.serviceID,
-                title: row.ServiceName,
-                description: row.ServiceDesc,
-                price: row.Price,
-            });
+    // Validate the data and perform database insertion
+    const insertQuery = 'INSERT INTO orders (UID, serviceID, OrderTime, DateofService, DeliveryAddress, Status) VALUES (?, ?, NOW(), ?, ?, ?)';
+  
+    cart.forEach((item) => {
+      const values = [userId, item.id, selectedDate, address, status];
+      console.log("values:",values);
+      pool.query(insertQuery, values, (err, result) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ error: 'Database error' });
         }
-        res.json(services);
-        console.log(services);
-    })
-
+      });
+    });
+  
+    return res.status(200).json({ message: 'Cart items inserted successfully' });
+  });
 
 
 //----------------------------------------------------Users-------------------------------------------------------------
