@@ -2,6 +2,8 @@ import React, { useId, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { registerUser } from '../features/apiCalls';
 import { SuccessModal } from '../component/SuccessModal';
+import ReCAPTCHA from "react-google-recaptcha";
+
 
 // const BASE_API_URL = "http://localhost:8081";
 
@@ -43,6 +45,12 @@ const SignUp = () => {
     window.location.href = './signin';
   };
 
+  const [recaptchaToken, setRecaptchaToken] = useState('');
+
+  const handleRecaptcha = (value) => {
+    setRecaptchaToken(value);
+  };
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,7 +68,7 @@ const SignUp = () => {
     // Once validated, you can send the data to your backend or perform any desired actions
     
     try{
-      let formValues = {LastName: formData.lastName, FirstName : formData.firstName, Email : formData.email, ContactNo : formData.contactNo, Address : formData.address,Password : formData.password, Authorization : formData.authorization, ConfirmPassword : formData.confirmPassword};
+      let formValues = {LastName: formData.lastName, FirstName : formData.firstName, Email : formData.email, ContactNo : formData.contactNo, Address : formData.address,Password : formData.password, Authorization : formData.authorization, ConfirmPassword : formData.confirmPassword, recaptchaToken};
       const response = await registerUser(formValues, formData.id);
 
       console.log(response);
@@ -243,6 +251,10 @@ const SignUp = () => {
               <p className="text-red-500 text-sm">Password do not match</p>
             )}
           </div>
+          <ReCAPTCHA
+            sitekey="6LfBduYoAAAAADMiGiBwSrIFYScMc48vWvjcrg7W"  // replace with your site key
+            onChange={handleRecaptcha}
+          />
           <button
             className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300"
             type="submit"

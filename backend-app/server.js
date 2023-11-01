@@ -9,6 +9,14 @@ const verifyToken = require("./middleware/AuthMiddleware")
 const argon2 = require('argon2');
 const bcrypt = require('bcrypt');
 
+// reCAPTCHA
+const { RecaptchaV2 } = require('express-recaptcha');
+const recaptcha = new RecaptchaV2({
+  siteKey: '6LfBduYoAAAAADMiGiBwSrIFYScMc48vWvjcrg7W',
+  secretKey: '6LfBduYoAAAAAKjlFNQUGYhusg8REA6W-lAvniKK'
+});
+
+
 // const {Novu} = require("@novu/node");
 // const novu = new Novu("82127c4dbb88cea831be3675f883fafa");
 
@@ -124,7 +132,10 @@ app.get('/data', async (req, res) => {
 // Registration for users
 
 //----------------------------------------------------Registration/Sign In----------------------------------------------
-app.post('/registration/', async (req, res) => {
+app.post('/registration/', recaptcha.middleware.verify, async (req, res) => {
+    if (req.recaptcha.error) {
+        return res.status(400).json({ message: "reCAPTCHA verification failed", error: req.recaptcha.error });
+    }
     try {
         console.log(req.body.Password)
         console.log(req.body.ConfirmPassword)

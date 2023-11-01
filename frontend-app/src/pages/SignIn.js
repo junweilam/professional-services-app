@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { logIn } from '../features/apiCalls';
 import { AuthModal } from '../component/AuthModal';
+import ReCAPTCHA from "react-google-recaptcha";
 
 
 
@@ -23,14 +24,21 @@ const SignIn = () => {
     });
   };
 
+  const [recaptchaToken, setRecaptchaToken] = useState('');
+  
+  const handleRecaptcha = (value) => {
+    setRecaptchaToken(value);
+  };
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+        
     // Add your form submission logic here
     console.log(formData);
     try{
-      let formValues = {Email: formData.email, Password: formData.password}
+      let formValues = {Email: formData.email, Password: formData.password,  RecaptchaToken: recaptchaToken}
       const response = await logIn(formValues);
       console.log(response);
       if (response.message === "Authentication Successful and AuthValue = 1"){
@@ -114,6 +122,11 @@ const SignIn = () => {
               <p className="text-red-500 text-sm text-center">Invalid Email</p>
             )
           }
+          <ReCAPTCHA
+            sitekey="6LfBduYoAAAAADMiGiBwSrIFYScMc48vWvjcrg7W"  // replace with your site key
+            onChange={handleRecaptcha}
+          />
+
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300"
