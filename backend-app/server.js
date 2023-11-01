@@ -21,6 +21,8 @@ sodium.crypto_secretbox_easy(encrypted, Buffer.from(secretKey), nonce, encryptio
 const encryptedSecret = encrypted.toString('hex');
 console.log('Hashed key:', encryptedSecret);
 
+const crypto = require('crypto');
+const axios = require('axios');
 
 // const {Novu} = require("@novu/node");
 // const novu = new Novu("82127c4dbb88cea831be3675f883fafa");
@@ -91,6 +93,49 @@ function setOTPWithCountdown() {
     updateCountdown();
 }
 
+// Validate Email Function
+function validateEmail(email) {
+    // Regular expression for email validation
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    // Check if the email address is valid
+    return emailRegex.test(email);
+}
+
+// Validate Username Function
+function validateUsername(lastname, firstname) {
+    const disallowedCharacters = ["'", ";", "--", " ", ",", "\"", "`", "(", ")", "[", "]", "{", "}", "%", "&", "=", "+", "*", "/", "\\", "<", ">", "?", "!", "@", "#", "$", "~"];
+
+    // Check if the username contains any disallowed characters
+    for (const character of disallowedCharacters) {
+        if (lastname.includes(character) || firstname.includes(character)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// Function to generate SHA-1 hash of password
+function generateSHA1Hash(password) {
+    const sha1Hash = crypto.createHash('sha1').update(password).digest('hex');
+    return sha1Hash.toUpperCase();
+}
+
+// Function to check if password hash apperas in Pwned Passwords Database
+async function checkPasswordAgainstPwnedPasswords(passwordHash) {
+    const apiUrl = `https://api.pwnedpasswords.com/range/${passwordHash.substr(0, 5)}`;
+
+    try {
+        const response = await axios.get(apiUrl);
+        const hashSuffixes = response.data.split('\n');
+        const found = hashSuffixes.find(suffix => suffix.startsWith(passwordHash.substr(5)));
+
+        return found ? found.split(':')[1] : 0;
+    } catch (error) {
+        console.error('Error checking password against Pwned Passwords:', error);
+        throw error;
+    }
+}
 
 // ------------------------------------------------------------------Functions-------------------------------------------------------------
 // Create a MySQL connection pool
@@ -131,6 +176,21 @@ app.get('/data', async (req, res) => {
 //----------------------------------------------------Registration/Sign In----------------------------------------------
 app.post('/registration/', async (req, res) => {
     try {
+        // Add email validation using the validateEmail function
+        const userEmail = req.body.Email;
+        if (!validateEmail(userEmail)) {
+            console.log("Invalid email address");
+            return res.status(400).json({ message: "Invalid email address" });
+        }
+
+        // Add username validation using the validateUsername function
+        const lastname = req.body.LastName;
+        const firstname = req.body.FirstName;
+        if (!validateUsername(lastname, firstname)) {
+            console.log("Invalid username");
+            return res.status(400).json({ message: "Invalid username" });
+        }
+
         console.log(req.body.Password)
         console.log(req.body.ConfirmPassword)
         if (req.body.Password !== req.body.ConfirmPassword) {
@@ -142,8 +202,26 @@ app.post('/registration/', async (req, res) => {
 
         // Hash the password using Argon2
         const hashedPassword = await argon2.hash(password);
-
         console.log(hashedPassword);
+
+        // Generate SHA-1 hash of the password
+        const passwordHash = generateSHA1Hash(password);
+        console.log('Password SHA-1 hash:', passwordHash);
+
+        // Check password against Pwned Passwords
+        const matchCount = await checkPasswordAgainstPwnedPasswords(passwordHash);
+        console.log('Pwned Passwords match count:', matchCount);
+
+        if (matchCount > 1) {
+            console.log("This password has been exposed in data breaches. Please choose a different password.");
+            return res.status(400).json({ message: "This password has been exposed in data breaches. Please choose a different password." });
+        } else if (matchCount == 0) {
+            console.log("Continue");
+            // Proceed with registration logic here
+        } else {
+            console.log("Error");
+            return res.status(400).json({ message: "Error" });
+        }
 
         var emailFlag = false;
         var contactFlag = false;
@@ -684,7 +762,8 @@ app.listen(PORT, () => {
 });
 
 //-------------------------------------------Payment---------------------------------
-const Stripe = require('stripe')
+const Stripe = require('stripe');
+const { match } = require('assert');
 const stripe = Stripe(process.env.STRIPE_KEY)
 
 //app.use("/api/stripe", stripe);
@@ -717,6 +796,4 @@ app.post('/create-checkout-session', async (req, res) => {
 
     res.send({ url: session.url })
 });
-
-
 
