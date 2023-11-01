@@ -310,9 +310,16 @@ app.post('/resend2fa/', async (req, res) => {
 
 app.post('/update-password/', async (req, res) => {
     try{
+        const password = (req.body.Password);
+        // Hash the password using Argon2
+        const hashedPassword = await argon2.hash(password);
+        console.log(hashedPassword);
+
         const q = "UPDATE users SET Password = ? WHERE Email = ?";
-        const params = [req.body.Password, req.body.Email];
+        const params = [hashedPassword, req.body.Email];
         console.log(params);
+        
+        
 
         if(req.body.Password == req.body.ConfirmPassword){
             const [results, fields] = await pool.execute(q, params);
@@ -429,17 +436,11 @@ app.post('/adminaddusers/', async (req, res) => {
         const checkEmail = 'SELECT * FROM users WHERE Email = ?'
         const [eResults, eFields] = await pool.execute(checkEmail, [req.body.Email]);
 
-        const password = req.body.Password;
-
-        // Hash the password using Argon2
-        const hashedPassword = await argon2.hash(password);
-        console.log(hashedPassword);
-
         if (eResults.length > 0) {
             res.status(400).json({ message: 'Email exist' })
         } else {
             const q = 'INSERT INTO users (FirstName, LastName, Email, Password, Authorization) VALUES (?)';
-            const params = [req.body.FirstName, req.body.LastName, req.body.Email, hashedPassword, req.body.Authorization];
+            const params = [req.body.FirstName, req.body.LastName, req.body.Email, req.body.Password, req.body.Authorization];
             pool.query(q, [params], (err, data) => {
                 console.log(err, data);
                 if (err) return res.json({ error: "SQL Error" });
