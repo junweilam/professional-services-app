@@ -547,6 +547,40 @@ app.post('/get-userid/', async (req, res) => {
     res.json(results);
 })
 
+app.post('/get-history/', async (req, res) => {
+    const q = "SELECT OrderID, ServiceID, OrderTime, DateofService, Status FROM orders WHERE UID = ?";
+    console.log(req.body);
+    const uid = req.body.userId;
+    console.log("history-uid:",uid);
+    const [results, fields] = await pool.execute(q, [uid]);
+
+    const orders = [];
+
+    // Loop through the results and format them
+    for (const row of results) {
+        orders.push({
+            orderid: row.OrderID,
+            serviceid: row.ServiceID,
+            ordertime: row.OrderTime,
+            dos: row.DateofService,
+            status: row.Status,
+        });
+    }
+    res.json(orders);
+    console.log("order:",orders);
+})
+
+app.post('/get-service/', async (req, res) => {
+    const q = "SELECT ServiceName FROM services WHERE serviceID = ?"
+    console.log("req.body:", req.body);
+    const serviceID = req.body.sid;
+    console.log("serviceid:",serviceID);
+
+    const [results, fields] = await pool.execute(q, [serviceID]);
+    console.log("result",results);
+    res.json(results);
+})
+
 //----------------------------------------------------Users-------------------------------------------------------------
 
 

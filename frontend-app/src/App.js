@@ -10,6 +10,7 @@ import CartPage from './pages/CartPage';
 import CheckoutSuccess from './component/CheckoutSucess'
 import FaqPage from './pages/FAQPage'
 import AdminAddUsers from './pages/AdminAddUsers';
+import OrderHistory from './pages/HistoryPage';
 
 // User Imports
 import UserHome from './pages/UserHome';
@@ -41,6 +42,7 @@ function App() {
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/faq" element={<FaqPage />} />
+          <Route path="/orderhistory" element={<OrderHistory />} />
         </Routes>
       
 
