@@ -340,7 +340,7 @@ app.post('/update-password/', async (req, res) => {
 
 
 app.get('/checkAuth/', verifyToken, async (req, res) => {
-    console.log(res.json)
+    console.log( res.json)
 
 })
 

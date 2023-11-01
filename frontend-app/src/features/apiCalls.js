@@ -36,9 +36,12 @@ export const handleAuth = async (user) => {
         console.log(stress)
         return stress
     }catch(err){
-        console.log(err)
+        console.log("err",err)
+        throw err
     }
 }
+
+
 
 export const logOut = async () => {
     try{

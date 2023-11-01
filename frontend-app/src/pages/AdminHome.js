@@ -2,10 +2,18 @@ import React, { useState, useEffect } from "react";
 import { handleAuth } from "../features/apiCalls";
 import { logOut, getAuthorization } from "../features/apiCalls";
 import UnauthorizedUserPage from "../component/UnauthorizedUserPage";
+import { TokenExpireModal } from "../component/TokenExpireModal";
+import { CheckToken }from "../features/CheckToken";
 
 const AdminHome = () => {
 
     const [isAuthorized, setIsAuthorized] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+
+    const closeSuccessModal = () => {
+        setShowModal(false);
+        window.location.href = './signin';
+      };
 
     const handleLogout = async () => {
         let token = { token: localStorage.getItem("token") }
@@ -28,23 +36,10 @@ const AdminHome = () => {
 
     }
 
-    const handleClick = async () => {
-        let token = { token: localStorage.getItem("token") }
-        if (!token) {
-            window.location.href = "/homepage";
-            return;
-        }
-        try {
-            // to check if the token is valid
-            const response = await (handleAuth(token))
-        } catch (err) {
-            console.log(err)
-            console.log("token no longer exist, please relog in")
-            window.location.href = "/homepage";
-        }
-    }
 
     useEffect(() => {
+
+
         async function fetchUserAuthorization() {
             try {
                 let token = { token: localStorage.getItem("token") }
@@ -62,22 +57,30 @@ const AdminHome = () => {
                 console.log('API call error: ', err);
             }
         }
+        CheckToken(setShowModal)
         fetchUserAuthorization();
     }, []);
 
 
 
     return (
+        <div>
 
-        isAuthorized ? (
+       
+
+        {isAuthorized ? (
             <>
                 <p>admin home</p>
-                <button onClick={handleClick}> check auth</button>
                 <button onClick={handleLogout}> LOGOUT</button>
             </>
         ): (
             <UnauthorizedUserPage isAuthorized={isAuthorized}/>
-        )   
+        )   }
+
+        <TokenExpireModal show={ showModal } onClose={closeSuccessModal}/>
+
+        </div>
+
     );
 }
 export default AdminHome;
