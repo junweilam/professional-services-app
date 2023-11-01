@@ -119,6 +119,23 @@ export const getServices = async (user) =>{
     }
 }
 
+export const placeOrder = async (orderData) => {
+    try {
+      // Make a POST request to your backend API endpoint to insert the data.
+      const response = await axios.post('http://localhost:8080/create-order/', orderData);
+  
+      // Handle the response from the server.
+      if (response.status === 200) {
+        // Data inserted successfully. You can return the response data.
+        return response.data;
+      }
+    } catch (error) {
+      // Handle any errors, e.g., show an error message to the user.
+      console.error('Error placing order:', error);
+      throw error; // You can throw the error for further handling.
+    }
+}
+
 export const getAuthorization = async (token) => {
     try{
         const res = await axios.post('http://localhost:8080/get-authorization/', token);

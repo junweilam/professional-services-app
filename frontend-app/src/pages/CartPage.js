@@ -1,16 +1,56 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import PayButton from "../component/PayButton";
 import { useCart } from '../context/CartContext';
+import { placeOrder } from '../features/apiCalls';
 
 const CartPage = () => {
   const location = useLocation();
   const cart = location.state.cart;
-
+  const status = 'Pending';
+  const userId = 1;
   const { updateQuantity, removeFromCart } = useCart();
+
+  // Define state for date and address
+  const [selectedDate, setSelectedDate] = useState('');
+  const [address, setAddress] = useState('');
 
   // Calculate the total amount
   const totalAmount = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+
+  // Handler for date selection
+  const handleDateChange = (e) => {
+    setSelectedDate(e.target.value);
+  };
+
+  // Handler for address input
+  const handleAddressChange = (e) => {
+    setAddress(e.target.value);
+  };
+
+  const placeOrderHandler = async () => {
+    try {
+      // Prepare the order data, including selectedDate and address.
+      const orderData = {
+        userId,
+        cart, 
+        selectedDate,
+        address,
+        status,
+      };
+
+      // Make the API call to place the order.
+      const response = await placeOrder(orderData);
+
+      // Handle the response as needed. For example, show a success message to the user.
+      console.log('Response from server:', response);
+      // You can also reset the cart and other state as needed.
+
+    } catch (error) {
+      // Handle errors, e.g., show an error message to the user.
+      console.error('Error placing order:', error);
+    }
+  };
 
   return (
     <div className="min-h-screen">
@@ -48,10 +88,33 @@ const CartPage = () => {
             ))}
           </ul>
         )}
+
+        {/* Date selection and address input */}
         <div className="mt-4">
-          <p>Total Amount: ${totalAmount}</p>
-          <PayButton />
+          <div className="mb-4">
+            <label htmlFor="selectedDate" className="block font-semibold">Select Delivery Date:</label>
+            <input
+              type="date"
+              id="selectedDate"
+              value={selectedDate}
+              onChange={handleDateChange}
+              className="border border-gray-300 rounded-md p-2"
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="address" className="block font-semibold">Delivery Address:</label>
+            <textarea
+              id="address"
+              value={address}
+              onChange={handleAddressChange}
+              className="border border-gray-300 rounded-md p-2 h-20 w-150"
+            />
+          </div>
         </div>
+
+        <p>Total Amount: ${totalAmount}</p>
+        <button onClick={placeOrderHandler}>Place Order</button>
+        {/* <PayButton onClick={placeOrderHandler} /> */}
       </div>
     </div>
   );

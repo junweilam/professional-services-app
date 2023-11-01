@@ -518,6 +518,25 @@ app.get('/get-services/', async (req, res) => {
     console.log(services);
 })
 
+app.post('/create-order/', (req, res) => {
+    const { userId, selectedDate, address, cart, status } = req.body;
+
+    // Validate the data and perform database insertion
+    const insertQuery = 'INSERT INTO orders (UID, serviceID, OrderTime, DateofService, DeliveryAddress, Status) VALUES (?, ?, NOW(), ?, ?, ?)';
+  
+    cart.forEach((item) => {
+      const values = [userId, item.id, selectedDate, address, status];
+      console.log("values:",values);
+      pool.query(insertQuery, values, (err, result) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ error: 'Database error' });
+        }
+      });
+    });
+  
+    return res.status(200).json({ message: 'Cart items inserted successfully' });
+  });
 
 
 
