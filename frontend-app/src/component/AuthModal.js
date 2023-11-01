@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { authLogIn } from '../features/apiCalls';
 import { resendOTP } from '../features/apiCalls';
+import ReCAPTCHA from "react-google-recaptcha";
 
 export const AuthModal = ({ isOpen, closeModal, isAuthenticated, setIsAuthenticated, email }) => {
 
@@ -74,6 +75,12 @@ export const AuthModal = ({ isOpen, closeModal, isAuthenticated, setIsAuthentica
     }
   }
 
+  const [recaptchaToken, setRecaptchaToken] = useState('');
+
+  const handleRecaptcha = (value) => {
+    setRecaptchaToken(value);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -82,7 +89,7 @@ export const AuthModal = ({ isOpen, closeModal, isAuthenticated, setIsAuthentica
     setIsExpired(false);
 
     try {
-      let formValues = { OTP: formData.otp, Email: email }
+      let formValues = { OTP: formData.otp, Email: email, recaptchaToken}
       const response = await authLogIn(formValues);
       if (response.message === "2FA Success Admin") {
 
@@ -160,6 +167,12 @@ export const AuthModal = ({ isOpen, closeModal, isAuthenticated, setIsAuthentica
                 <p className="text-red-500 text-sm">OTP has expired. Click <a onClick={handleResendOTP} className="text-blue-500 underline hover:cursor-pointer">Here</a> for new OTP</p>
               )
             }
+
+            <ReCAPTCHA
+              sitekey="your-site-key-here"  // replace with your site key
+              onChange={handleRecaptcha}
+            />
+
             <button
               type="submit"
               className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300 center-horizontal mt-5"
