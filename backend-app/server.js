@@ -489,8 +489,21 @@ app.post('/create-order/', (req, res) => {
   });
 
 
+
 //----------------------------------------------------Users-------------------------------------------------------------
 
+
+//----------------------------------------------------- Authorization --------------------------------------------------
+
+app.post('/get-authorization/', async (req, res) => {
+    const q = "SELECT Authorization FROM users WHERE Token = ?"
+    const token = req.body.token;
+
+    const [results, fields] = await pool.execute(q, [token]);
+    res.json({results: results[0].Authorization});
+})
+
+//----------------------------------------------------- Authorization --------------------------------------------------
 
 
 //----------------------------------------------------- Routes ---------------------------------------------------------

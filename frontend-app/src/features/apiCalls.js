@@ -135,3 +135,15 @@ export const placeOrder = async (orderData) => {
       throw error; // You can throw the error for further handling.
     }
 }
+
+export const getAuthorization = async (token) => {
+    try{
+        const res = await axios.post('http://localhost:8080/get-authorization/', token);
+        return res.data;
+    }catch(err){
+        console.log(err);
+        return{
+            error:err
+        }
+    }
+}
