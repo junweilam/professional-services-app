@@ -130,7 +130,7 @@ const SignIn = () => {
           }
           {
             isPasswordWrong &&  mistakeCount >= 5 && (
-                <p className="text-red-500 text-sm">Your account has been locked. More than 5 failed attempts. </p>
+                <p className="text-red-500 text-sm">Your account has been locked. Exceeded failed attempts. </p>
           )}
           <button
             type="submit"

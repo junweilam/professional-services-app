@@ -200,10 +200,6 @@ app.post('/registration/', async (req, res) => {
 var otp;
 var authorizationValue;
 
-// Initialize mistake count and user locked status
-// let mistakeCount = 0;
-// let isUserLocked = false;
-// let mistakeCount = {};
 let attempts = 0;
 
 // Initialize a dictionary (object) to keep track of login attempt counts
@@ -249,16 +245,14 @@ function resetLoginAttempts(email) {
 }
 
 // Function to update mistake count
-async function updateUserInDatabase (email, mistakeCount, isLocked, lockoutTimestamp) {
+async function updateUserInDatabase (email, mistakeCount) {
     const updateQuery = `
             UPDATE users
-            SET MistakeCount = ?,
-                IsLocked = ?,
-                LockoutTimestamp = ?
+            SET MistakeCount = ?
             WHERE Email = ?;
         `;
 
-    const [results, fields] = await pool.execute(updateQuery, [mistakeCount, isLocked, lockoutTimestamp, email]);
+    const [results, fields] = await pool.execute(updateQuery, [mistakeCount, email]);
 
     // Check results if needed
     console.log("User updated successfully:", results);
@@ -268,7 +262,7 @@ async function updateUserInDatabase (email, mistakeCount, isLocked, lockoutTimes
 // Function to set a timer to unlock the account after 30 minutes
 function setLockoutTimer(email) {
     // Calculate unlock time (in 30 minutes)
-    const unlockTime = new Date(Date.now() + 30 * 60 * 1000);
+    const unlockTime = new Date(Date.now() + 1 * 60 * 1000);
 
     // Update LockoutTimestamp in the database
     const updateQuery = `
@@ -300,26 +294,12 @@ app.post('/signin/', async (req, res) => {
     const q = "SELECT * FROM users WHERE Email = ?";
     const [results, fields] = await pool.execute(q, [email]);
     
+    // If the account is locked, handle the lockout logic
     if (await isUserLocked(email)){
         console.log("User Account is locked");
         return res.status(405).json({ message: "Account is locked. Please try again later."});
     }
-
-    // If the account is locked, handle the lockout logic
-
-    // if (email.IsLocked) {
-    //     const lockoutDuration = new Date() - new Date(user.LockoutTimestamp);
-    //     if (lockoutDuration < 30 * 60 * 1000) {
-    //         return res.status(405).json({ message: 'Account is locked. Please try again later.' });
-    //     } else {
-    //         // The lockout period has passed. Reset the MistakeCount and unlock the account.
-    //         updateUserInDatabase(email, {
-    //             IsLocked: false,
-    //             MistakeCount: 0,
-    //         });
-    //     }
-    // }
-    
+  
     
     try {
         console.log("In Sign in Route");
@@ -372,16 +352,18 @@ app.post('/signin/', async (req, res) => {
                         setOTPWithCountdown();
                         res.status(200).json({ message: 'Authentication Successful and AuthValue = 1', Email: email });
                         console.log("Success");
-                        // Successful login; reset login attempts for this email
                         resetLoginAttempts(email);
+                        updateUserInDatabase(email, 0);
+
                 }
                     else if (results.length > 0 && authorizationValue == 2) {
                         otp = generateOTP();
                         sendEmail(email, otp);
                         setOTPWithCountdown();
                         res.status(201).json({ message: 'Authentication Successful and AuthValue = 2', Email: email });
-                        // Successful login; reset login attempts for this email
                         resetLoginAttempts(email);
+                        updateUserInDatabase(email, 0);
+
                 }
                     else if (results.length > 0 && authorizationValue == 3) {
                         otp = generateOTP();
@@ -389,8 +371,9 @@ app.post('/signin/', async (req, res) => {
                         console.log(otp);
                         sendEmail(email, otp);
                         res.status(202).json({ message: 'Authentication Successful and AuthValue = 3', Email: email });
-                        // Successful login; reset login attempts for this email
                         resetLoginAttempts(email);
+                        updateUserInDatabase(email, 0);
+
                 }
                     else {
                         // Invalid authorization value
@@ -405,23 +388,7 @@ app.post('/signin/', async (req, res) => {
                 const attempts = incrementLoginAttempts(email); // Increment login attempts
                 setLockoutTimer(email); 
                 console.log(`Login attempts for ${email}: ${attempts}`);
-
-                // if (email.MistakeCount +1 >= 5) {
-                //     updateUserInDatabase(email, { IsLocked: true, LockoutTimestamp: new Date() });
-                //     return res.status(409).json({ message: 'Account is locked. Please try again later.' });
-                // }
-
-                // if (attempts >= 5) {
-                //     setLockoutTimer(email); // Lock the account and set the timer
-                //     isUserLocked = true;
-                //     console.log(`Login attempts for ${email}: ${attempts}`);
-                //     return res.status(406).json({ message: "Account is locked. Please try again later." });
-                // }
-
-                // mistakeCount++;
-                // const currentAttempts = mistakeCount.get(email) || 0;
-                // mistakeCount.set(email, currentAttempts +1 );
-               
+              
                 return res.status(402).json({ message: 'Authentication failed: Incorrect password' });
                 
             }
@@ -435,13 +402,6 @@ app.post('/signin/', async (req, res) => {
             message: "Internal server error"
         });
     }
-
-    // // Check if the user should be locked out
-    // const { email } = req.body.Email;
-    // if (mistakeCount[.get(email)] >= 5) {
-    //     isUserLocked = true;
-    //     return res.status(403).json({ message: 'Account is locked. Please try again later.' });
-    // }
 
 });
 
