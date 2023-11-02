@@ -166,6 +166,9 @@ app.get('/data', async (req, res) => {
     }
 });
 
+
+
+  
 // Routes:
 // app.post('/registration/')
 // app.post('/signin/')
@@ -280,7 +283,107 @@ app.post('/registration/', async (req, res) => {
 var otp;
 var authorizationValue;
 
+let attempts = 0;
+
+// Initialize a dictionary (object) to keep track of login attempt counts
+const loginAttempts = {};
+
+// Function to check if an email's account is locked
+async function isUserLocked(email) {
+    // return loginAttempts[email] >= 5;
+
+    const query = "SELECT IsLocked FROM users WHERE Email=?";
+    const [results] = await pool.execute(query, [email]);
+    if (results.length > 0) {
+        return results[0].IsLocked === 1 || results[0].IsLocked === true;
+    }
+    return false; // user not found
+
+}
+
+// Function to increment login attempts for an email
+async function incrementLoginAttempts(email) {
+    loginAttempts[email] = (loginAttempts[email] || 0) + 1;
+
+    // Update the mistake count in the database
+    const MistakeCount = loginAttempts[email];
+    const updateQuery = `
+    UPDATE users
+    SET MistakeCount = ?
+    WHERE Email = ?;
+    `;
+
+    try {
+        await pool.execute(updateQuery, [MistakeCount, email]);
+    } catch (error) {
+        console.error("Error updatinf MistakeCount in the database:", error);
+    }
+
+    return loginAttempts[email];
+}
+
+// Function to reset login attempts for an email
+function resetLoginAttempts(email) {
+    loginAttempts[email] = 0;
+}
+
+// Function to update mistake count
+async function updateUserInDatabase (email, mistakeCount) {
+    const updateQuery = `
+            UPDATE users
+            SET MistakeCount = ?
+            WHERE Email = ?;
+        `;
+
+    const [results, fields] = await pool.execute(updateQuery, [mistakeCount, email]);
+
+    // Check results if needed
+    console.log("User updated successfully:", results);
+    return results;
+}
+
+// Function to set a timer to unlock the account after 30 minutes
+function setLockoutTimer(email) {
+    // Calculate unlock time (in 30 minutes)
+    const unlockTime = new Date(Date.now() + 1 * 60 * 1000);
+
+    // Update LockoutTimestamp in the database
+    const updateQuery = `
+        UPDATE users
+        SET LockoutTimestamp = ?
+        WHERE Email = ?;
+    `;
+
+    pool.execute(updateQuery, [unlockTime, email])
+        .then(([results, fields]) => {
+            console.log("LockoutTimestamp updated successfully:", results);
+        })
+        .catch((error) => {
+            console.error("Error updating LockoutTimestamp:", error);
+        });
+
+    // After 30 minutes, reset the login attempts and unlock the account
+    setTimeout(() => {
+        resetLoginAttempts(email);
+    }, 30 * 60 * 1000); // 30 minutes in milliseconds
+}
+
+
+
 app.post('/signin/', async (req, res) => {
+
+    const email = req.body.Email;
+
+    const q = "SELECT * FROM users WHERE Email = ?";
+    const [results, fields] = await pool.execute(q, [email]);
+    
+    // If the account is locked, handle the lockout logic
+    if (await isUserLocked(email)){
+        console.log("User Account is locked");
+        return res.status(405).json({ message: "Account is locked. Please try again later."});
+    }
+  
+    
     try {
         console.log("In Sign in Route");
         // const { email, password } = req.body;
@@ -289,6 +392,7 @@ app.post('/signin/', async (req, res) => {
         console.log(email);
         console.log(password);
 
+        // Check email against database
         const q = "SELECT * FROM users WHERE Email = ?";
         const [results, fields] = await pool.execute(q, [email]);
         // const params = [email, password];
@@ -331,35 +435,50 @@ app.post('/signin/', async (req, res) => {
                         setOTPWithCountdown();
                         res.status(200).json({ message: 'Authentication Successful and AuthValue = 1', Email: email });
                         console.log("Success");
-                    }
+                        resetLoginAttempts(email);
+                        updateUserInDatabase(email, 0);
+
+                }
                     else if (results.length > 0 && authorizationValue == 2) {
                         otp = generateOTP();
                         sendEmail(email, otp);
                         setOTPWithCountdown();
                         res.status(201).json({ message: 'Authentication Successful and AuthValue = 2', Email: email });
-                    }
+                        resetLoginAttempts(email);
+                        updateUserInDatabase(email, 0);
+
+                }
                     else if (results.length > 0 && authorizationValue == 3) {
                         otp = generateOTP();
                         setOTPWithCountdown();
                         console.log(otp);
                         sendEmail(email, otp);
                         res.status(202).json({ message: 'Authentication Successful and AuthValue = 3', Email: email });
-                    }
+                        resetLoginAttempts(email);
+                        updateUserInDatabase(email, 0);
+
+                }
                     else {
                         // Invalid authorization value
-                        res.status(401).json({ message: 'Authentication failed' });
                         console.log("Failed");
+                        return res.status(401).json({ message: 'Authentication failed' });
                     }
 
-                } else {
-                    // Incorrect password
-                    res.status(402).json({ message: 'Authentication failed: Incorrect password' });
-                }
             } else {
-                res.status(403).json({ message: 'Email Invalid' });
+                // Incorrect password
+                // updateUserInDatabase(email, { MistakeCount: email.MistakeCount + 1 });
+                
+                const attempts = incrementLoginAttempts(email); // Increment login attempts
+                setLockoutTimer(email); 
+                console.log(`Login attempts for ${email}: ${attempts}`);
+              
+                return res.status(402).json({ message: 'Authentication failed: Incorrect password' });
+                
             }
+        } else {
+            return res.status(403).json({ message: 'Email Invalid' });
         }
-
+    }
     } catch (error) {
         console.log(error);
         res.status(500).json({
