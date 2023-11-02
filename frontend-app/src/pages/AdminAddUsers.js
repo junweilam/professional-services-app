@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { adminAddUsers, getServicesID } from '../features/apiCalls';
 import { AddServiceSuccess } from '../component/AddServiceSuccess';
+import { TokenExpireModal } from "../component/TokenExpireModal";
+import { CheckToken }from "../features/CheckToken";
 
 const AdminAddUsers = () => {
 
@@ -8,6 +10,9 @@ const AdminAddUsers = () => {
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [showServiceOption, setShowServiceOption] = useState(false);
     const [serviceID, setServiceID] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+
+    
 
     // Handle form input changes
     const handleInputChange = (e) => {
@@ -31,6 +36,8 @@ const AdminAddUsers = () => {
     };
 
     
+
+    
     
     // State to hold form input values
     const [formData, setFormData] = useState({
@@ -41,6 +48,10 @@ const AdminAddUsers = () => {
         authorization: '',
         serviceID: '',
     });
+    const closeExpiredModal = () => {
+        setShowModal(false);
+        window.location.href = './signin';
+      };
 
     useEffect(() => {
         async function fetchServicesID(){
@@ -53,6 +64,7 @@ const AdminAddUsers = () => {
         }
 
         fetchServicesID();
+        CheckToken(setShowModal)
     }, []);
 
     const handleSubmit = async (e) => {
@@ -182,6 +194,7 @@ const AdminAddUsers = () => {
                 </form>
             </div>
         <AddServiceSuccess show={showSuccessModal} onClose={closeSuccessModal}/>
+        <TokenExpireModal show={showModal} onClose={closeExpiredModal} />
         </div>
     );
 }

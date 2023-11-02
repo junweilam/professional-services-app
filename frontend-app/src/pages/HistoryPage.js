@@ -7,12 +7,20 @@ import {
 } from "../features/apiCalls";
 import OrderHistoryCard from "../component/OrderHistoryCard";
 import UnauthorizedUserPage from "../component/UnauthorizedUserPage";
+import { TokenExpireModal } from "../component/TokenExpireModal";
+import { CheckToken }from "../features/CheckToken";
 
 const HistoryPage = () => {
   const [orderhistory, setOrderhistory] = useState([]);
   const token = { token: localStorage.getItem("token") };
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const id = 5;
+
+  const closeExpiredModal = () => {
+    setShowModal(false);
+    window.location.href = './signin';
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -43,6 +51,7 @@ const HistoryPage = () => {
 
     // Call fetchData to retrieve the order history
     fetchData();
+    CheckToken(setShowModal)
 
   
 
@@ -78,6 +87,7 @@ const HistoryPage = () => {
           <OrderHistoryCard key={order.orderid} order={order} />
         ))
       )}
+      <TokenExpireModal show={showModal} onClose={closeExpiredModal} />
     </div>
   );
 };

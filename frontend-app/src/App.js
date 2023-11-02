@@ -12,8 +12,6 @@ import FaqPage from './pages/FAQPage'
 import AdminAddUsers from './pages/AdminAddUsers';
 import OrderHistory from './pages/HistoryPage';
 
-// User Imports
-import UserHome from './pages/UserHome';
 
 // Service Imports
 import ServiceHome from './pages/ServiceHome';
@@ -36,7 +34,6 @@ function App() {
           <Route path="/adminaddservices" element={<AdminAddServices />} />
           <Route path="/adminaddusers" element={<AdminAddUsers/>} />
           <Route path="/*" element={<Navigate to="/signin" />} />
-          <Route path="/userhome" element={<UserHome />} />
           <Route path="/servicehome" element={<ServiceHome />} />
           <Route path="/homepage" element={<HomePage />} />
           <Route path="/payment" element={<PaymentPage />} />

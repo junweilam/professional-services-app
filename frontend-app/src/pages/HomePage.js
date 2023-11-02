@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { getServices, getAuthorization } from '../features/apiCalls';
 import { useCart } from '../context/CartContext'
 import UnauthorizedUserPage from '../component/UnauthorizedUserPage';
+import { TokenExpireModal } from "../component/TokenExpireModal";
+import { CheckToken }from "../features/CheckToken";
+
 
 const Home = () => {
   const navigate = useNavigate();
@@ -12,6 +15,7 @@ const Home = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const { cart, addToCart, removeFromCart } = useCart();
 
@@ -25,6 +29,11 @@ const Home = () => {
   //     setCart([...cart, { ...service, quantity: 1 }]);
   //   }
   // };
+
+  const closeExpiredModal = () => {
+    setShowModal(false);
+    window.location.href = './signin';
+  };
 
   const toggleCart = () => {
     setIsCartOpen(!isCartOpen);
@@ -73,6 +82,7 @@ const Home = () => {
       }
     }
     fetchData();
+    CheckToken(setShowModal)
     fetchUserAuthorization();
     
   }, []);
@@ -137,6 +147,7 @@ const Home = () => {
             />
           ))}
         </div>
+        <TokenExpireModal show={showModal} onClose={closeExpiredModal} />
       </div>
     ) : (
       <UnauthorizedUserPage isAuthorized={isAuthorized} />

@@ -1,6 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { TokenExpireModal } from "../component/TokenExpireModal";
+import { CheckToken }from "../features/CheckToken";
 
 const PaymentPage = () => {
+  const [showModal, setShowModal] = useState(false);
+
+  const closeExpiredModal = () => {
+    setShowModal(false);
+    window.location.href = './signin';
+  };
+
   const [paymentInfo, setPaymentInfo] = useState({
     cardNumber: '',
     expiryDate: '',
@@ -20,6 +29,10 @@ const PaymentPage = () => {
     // Implement your payment processing logic here, e.g., with Stripe or another payment service.
     // You would typically send the paymentInfo to your server and handle the payment there.
   };
+
+  useEffect(() => {
+    CheckToken(setShowModal)
+  }, []);
 
   return (
     <div className="min-h-screen">
@@ -79,6 +92,7 @@ const PaymentPage = () => {
           </button>
         </form>
       </div>
+      <TokenExpireModal show={showModal} onClose={closeExpiredModal} />
     </div>
   );
 };
