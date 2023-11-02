@@ -252,7 +252,7 @@ app.post('/registration/', async (req, res) => {
             res.status(403).json({ message: 'Email already used' });
         }
         else if (password.length != 8) {
-            res.status(404).json({ message: "Password needs to be 8 number" })
+            res.status(404).json({ message: "Password needs to be 8 characters" })
         }
         else {
             console.log(req.body);
@@ -397,7 +397,24 @@ app.post('/update-password/', async (req, res) => {
         const params = [hashedPassword, req.body.Email];
         console.log(params);
         
-        
+        // Generate SHA-1 hash of the password
+        const passwordHash = generateSHA1Hash(password);
+        console.log('Password SHA-1 hash:', passwordHash);
+
+        // Check password against Pwned Passwords
+        const matchCount = await checkPasswordAgainstPwnedPasswords(passwordHash);
+        console.log('Pwned Passwords match count:', matchCount);
+
+        if (matchCount > 1) {
+            console.log("This password has been exposed in data breaches. Please choose a different password.");
+            return res.status(409).json({ message: "This password has been exposed in data breaches. Please choose a different password." });
+        } else if (matchCount == 0) {
+            console.log("Continue");
+            // Proceed with registration logic here
+        } else {
+            console.log("Error");
+            return res.status(410).json({ message: "Error" });
+        }
 
         if(req.body.Password == req.body.ConfirmPassword){
             const [results, fields] = await pool.execute(q, params);
