@@ -758,6 +758,28 @@ app.post("/logout/", async (req, res) => {
     }
 })
 
+app.post('/update-service-by-id/', async (req, res) =>{
+    const q = 'UPDATE services SET ServiceName = ?, ServiceDesc = ?, ServiceAdd = ?, Price = ? WHERE serviceID = ?';
+    const params = [req.body.ServiceName, req.body.ServiceDesc, req.body.ServiceAdd, req.body.ServicePrice, req.body.ServiceID];
+
+    const [results, fields] = await pool.execute(q,params);
+
+    return res.status(200).json({
+        message: "Updated service"
+    })
+})
+
+app.post('/delete-service-by-id/', async (req,res) => {
+    const q = 'DELETE FROM services WHERE serviceID = ?';
+    const params = [req.body.ServiceID];
+    console.log(params);
+    const [results, fields] = await pool.execute(q,params);
+
+    return res.status(200).json({
+        message: "Deleted service"
+    })
+})
+
 
 
 //
@@ -792,6 +814,18 @@ app.get('/get-services/', async (req, res) => {
     }
     res.json(services);
     console.log(services);
+})
+
+app.post('/get-service-by-id/', async (req, res) =>{
+    const q = "SELECT serviceID, ServiceName, ServiceDesc, ServiceAdd, Price FROM services WHERE serviceID = ?";
+    const params = req.body.ServiceID;
+    const [results, fields] = await pool.execute(q, [params]);
+
+    if(results.length > 0){
+        return res.status(200).json({
+            results
+        })
+    }
 })
 
 app.post('/create-order/', (req, res) => {

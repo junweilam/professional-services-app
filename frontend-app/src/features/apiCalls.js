@@ -123,6 +123,42 @@ export const getServices = async (user) =>{
     }
 }
 
+export const getServicesById = async (user) =>{
+    try{
+        const res = await axios.post('http://localhost:8080/get-service-by-id', user);
+        return res.data;
+    }catch(err){
+        console.log(err);
+        return{
+            error:err
+        }
+    }
+}
+
+export const updateServiceById = async (user) => {
+    try{
+        const res = await axios.post('http://localhost:8080/update-service-by-id', user);
+        return res.data;
+    }catch(err){
+        console.log(err);
+        return{
+            error:err
+        }
+    }
+}
+
+export const deleteServiceById = async (user) => {
+    try{
+        const res = await axios.post('http://localhost:8080/delete-service-by-id', user);
+        return res.data;
+    }catch(err){
+        console.log(err);
+        return{
+            error:err
+        }
+    }
+}
+
 export const getOrderHistory = async (uid) =>{
     try{
         console.log("uid",uid);
