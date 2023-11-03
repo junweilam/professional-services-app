@@ -18,6 +18,7 @@ import ServiceHome from './pages/ServiceHome';
 
 import Navbar from './component/Navbar';
 import { EmailProvider } from './context/EmailContext';
+import AdminUpdateService from './pages/AdminUpdateService';
 
 function App() {
 
@@ -33,6 +34,7 @@ function App() {
           <Route path="/checkout-success" element={<CheckoutSuccess />} />
           <Route path="/adminaddservices" element={<AdminAddServices />} />
           <Route path="/adminaddusers" element={<AdminAddUsers/>} />
+          <Route path="/adminupdateservice" element={<AdminUpdateService/>}/>
           <Route path="/*" element={<Navigate to="/signin" />} />
           <Route path="/servicehome" element={<ServiceHome />} />
           <Route path="/homepage" element={<HomePage />} />
