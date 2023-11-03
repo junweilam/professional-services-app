@@ -857,8 +857,52 @@ app.post('/get-service/', async (req, res) => {
     res.json(results);
 })
 
+app.post('/complete-order/', async (req, res) => {
+    const q = "UPDATE orders SET Status = 'Completed' WHERE OrderID = ?"
+    console.log("req.body:", req.body);
+    const orderid = req.body.orderid;
+    console.log("orderid:",orderid);
+
+    const [results, fields] = await pool.execute(q, [orderid]);
+    console.log("result",results);
+    res.json(results);
+})
+
 //----------------------------------------------------Users-------------------------------------------------------------
 
+//----------------------------------------------ServiceUsers------------------------------------------------
+
+app.post('/get-serviceuserid/', async (req, res) => {
+    const q = "SELECT ServiceID FROM users WHERE Token = ?"
+    const token = req.body.token;
+
+    const [results, fields] = await pool.execute(q, [token]);
+    console.log("get-serviceuserid",results);
+    res.json(results);
+})
+
+app.post('/get-servieorder/', async (req, res) => {
+    const q = "SELECT OrderID, OrderTime, DeliveryAddress, DateofService, Status FROM orders WHERE ServiceID = ?";
+    console.log(req.body);
+    const sid = req.body.serviceId;
+    console.log("serviceid:",sid);
+    const [results, fields] = await pool.execute(q, [sid]);
+    console.log("results:",results);
+    const orders = [];
+
+    // Loop through the results and format them
+    for (const row of results) {
+        orders.push({
+            orderid: row.OrderID,
+            ordertime: row.OrderTime,
+            add: row.DeliveryAddress,
+            dos: row.DateofService,
+            status: row.Status,
+        });
+    }
+    res.json(orders);
+    console.log("order:",orders);
+})
 
 //----------------------------------------------------- Authorization --------------------------------------------------
 

@@ -226,3 +226,43 @@ export const getServicesID = async (user) => {
         }
     }
 }
+
+export const getServiceUserId = async (token) => {
+    try{
+        const res = await axios.post('http://localhost:8080/get-serviceuserid/', token);
+        return res.data;
+    }catch(err){
+        console.log(err);
+        return{
+            error:err
+        }
+    }
+}
+
+export const getServiceOrder = async (serviceid) =>{
+    try{
+        console.log("serviceid",serviceid);
+        const res = await axios.post('http://localhost:8080/get-servieorder/', serviceid);
+        return res.data;
+
+    }catch(err){
+        console.log(err);
+        return{
+            error:err
+        };
+    }
+}
+
+export const completeServiceOrder = async (orderid) =>{
+    try{
+        console.log("orderid",orderid);
+        const res = await axios.post('http://localhost:8080/complete-order/', orderid);
+        return res.data;
+
+    }catch(err){
+        console.log(err);
+        return{
+            error:err
+        };
+    }
+}

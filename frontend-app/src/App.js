@@ -11,6 +11,7 @@ import CheckoutSuccess from './component/CheckoutSucess'
 import FaqPage from './pages/FAQPage'
 import AdminAddUsers from './pages/AdminAddUsers';
 import OrderHistory from './pages/HistoryPage';
+import ServiceHomePage from './pages/ServiceHomePage';
 
 
 // Service Imports
@@ -40,6 +41,7 @@ function App() {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/faq" element={<FaqPage />} />
           <Route path="/orderhistory" element={<OrderHistory />} />
+          <Route path="/servicehomepage" element={<ServiceHomePage />} />
         </Routes>
       
 
