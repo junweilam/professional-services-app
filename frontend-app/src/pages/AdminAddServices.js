@@ -48,7 +48,7 @@ const AdminAddServices = () => {
         let token = { token: localStorage.getItem("token") }
         if (token != null) {
           const response = await getAuthorization(token);
-          if (response.results == 1) {
+          if (response.results === 1) {
             setIsAuthorized(true);
           } else {
             setIsAuthorized(false);
@@ -79,7 +79,7 @@ const AdminAddServices = () => {
           setIsServiceIdUsers(false);
         }
       }
-      else if (response.message == "success") {
+      else if (response.message === "success") {
         console.log("inside");
         setShowSuccessModal(true);
       }

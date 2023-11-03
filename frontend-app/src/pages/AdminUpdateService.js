@@ -8,10 +8,6 @@ const AdminUpdateService = () => {
     const [serviceID, setServiceID] = useState([]);
     const [isServiceSelected, setIsServiceSelected] = useState(false);
     const [serviceSelected, setServiceSelected] = useState('');
-    const [serviceName, setServiceName] = useState('');
-    const [serviceDesc, setServiceDesc] = useState('');
-    const [serviceAdd, setServiceAdd] = useState('');
-    const [servicePrice, setServicePrice] = useState('');
     const [isUpdated, setIsUpdated] = useState(false);
     const [isDeleted, setIsDeleted] = useState(false);
     const [isAuthorized, setIsAuthorized] = useState(false);
@@ -35,10 +31,6 @@ const AdminUpdateService = () => {
                 const response = await getServicesById(fields);
                 console.log(response.results[0]);
                 setServiceSelected(response.results[0].serviceID);
-                setServiceName(response.results[0].ServiceName);
-                setServiceAdd(response.results[0].ServiceAdd);
-                setServiceDesc(response.results[0].ServiceDesc);
-                setServicePrice(response.results[0].Price);
 
                 setFormData((prevFormData) => ({
                     ...prevFormData,
@@ -80,7 +72,7 @@ const AdminUpdateService = () => {
             let value = {ServiceID: serviceSelected}
             console.log(value);
             const response = await deleteServiceById(value);
-            if(response.message == "Deleted service"){
+            if(response.message === "Deleted service"){
                 setIsDeleted(true);
             }
             
@@ -121,7 +113,7 @@ const AdminUpdateService = () => {
                 let token = {token: localStorage.getItem("token")}
                 if(token != null){
                     const response = await getAuthorization(token);
-                    if(response.results == 1){
+                    if(response.results === 1){
                         setIsAuthorized(true);
                     }else{
                         setIsAuthorized(false);
