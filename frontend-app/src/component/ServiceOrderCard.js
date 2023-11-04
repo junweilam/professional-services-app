@@ -14,7 +14,7 @@ const ServiceOrderCard = ({ order, onCompleteOrder  }) => {
         <p className="text-gray-600">Status: {order.status}</p>
         <button
           onClick={handleCompleteOrder}
-          className="bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300"
+          className="bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 mt-5 transition duration-300"
         >
           Complete Order
         </button>
