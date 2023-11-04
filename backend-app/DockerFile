@@ -1,0 +1,33 @@
+FROM node:14
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+RUN npm install mysql2
+
+RUN npm install argon2
+
+RUN npm install sodium-native
+
+RUN npm install stripe
+
+RUN npm install mysql
+
+# Install the MariaDB client, which includes the MySQL client
+# RUN apt-get update && apt-get install -y mariadb-client
+
+# Install the MySQL client
+RUN apt-get update && apt-get install -y default-mysql-client
+
+COPY . .
+
+COPY entrypoint.sh /entrypoint.sh
+
+RUN chmod +x /entrypoint.sh  
+
+EXPOSE 8080
+
+CMD ["/entrypoint.sh"]
