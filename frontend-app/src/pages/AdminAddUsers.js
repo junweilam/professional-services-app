@@ -25,7 +25,8 @@ const AdminAddUsers = () => {
         setFormData((prevFormData) => {
             const updatedData = { ...prevFormData, [name]: value};
         
-        if(updatedData.authorization === 2){
+        if(updatedData.authorization == 2){
+            console.log("inside");
             setShowServiceOption(true);
             console.log(updatedData.authorization);
         }else{
@@ -35,6 +36,7 @@ const AdminAddUsers = () => {
         return updatedData;
     })
     };
+    console.log(showServiceOption);
 
     
 
@@ -68,7 +70,7 @@ const AdminAddUsers = () => {
                 let token = {token: localStorage.getItem("token")}
                 if(token != null){
                     const response = await getAuthorization(token);
-                    if(response.results === 1){
+                    if(response.results == 1){
                         setIsAuthorized(true);
                     }else{
                         setIsAuthorized(false);
