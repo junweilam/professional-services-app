@@ -97,7 +97,7 @@ export const AuthModal = ({ isOpen, closeModal, isAuthenticated, setIsAuthentica
         if (response.token) {
           localStorage.setItem('token', response.token)
         }
-        window.location.href = './servicehome';
+        window.location.href = './servicehomepage';
       }
       else if (response.message === "2FA Success User") {
 
