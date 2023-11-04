@@ -32,17 +32,24 @@ pipeline {
             }
         }
 
-        stage('Backend run build') {
+        // stage('Backend run build') {
+        //     steps {
+        //         dir('backend-app/') {
+        //                 sh 'npm install'
+        //                 sh 'npm run dev'
+        //             }
+        //     }
+        // }
+        // stage('Backend run test') {
+        //     steps {
+        //         dir('backend-app/') {
+        //                 sh 'npm test'
+        //             }
+        //     }
+        // }
+        stage('Frontend run test') {
             steps {
-                dir('backend-app/') {
-                        sh 'npm install'
-                        sh 'npm run dev'
-                    }
-            }
-        }
-        stage('Backend run test') {
-            steps {
-                dir('backend-app/') {
+                dir('frontend-app/') {
                         sh 'npm test'
                     }
             }
