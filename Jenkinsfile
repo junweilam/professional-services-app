@@ -23,19 +23,28 @@ pipeline {
                 }
             }
         }
-        stage('Install react-scripts') {
-            steps {
-                sh 'npm install react-scripts --save-dev'
-            }
-        }
-        stage('Frontend run build') {
-            steps {
-                dir('frontend-app/') {
-                        sh 'npm install'
-                        sh 'npm run build'
+        stage('Testing'){
+            parallel{
+                stage('Install react-scripts') {
+                    steps {
+                        sh 'npm install react-scripts --save-dev'
                     }
-            }
+                }
+                stage('Frontend run build') {
+                    steps {
+                        sh 'cd ./frontend && npm install'
+                        sh 'cd ./frontend && npm start'
+                    }
+                }
+                stage('Frontend run build') {
+                    steps {
+                        sh 'sleep 120'
+                        sh 'cd ./frontend && npm test'
+                    }
+                }
         }
+        
+        
 
         // stage('Backend run build') {
         //     steps {
@@ -59,12 +68,12 @@ pipeline {
         //             }
         //     }
         // }
-        stage('Deliver') {
-            steps {
-                sh './jenkins/scripts/deliver.sh'
-                input message: 'Finished using the web site? (Click "Proceed" to continue)'
-                sh './jenkins/scripts/kill.sh'
-            }
-        }
+        // stage('Deliver') {
+        //     steps {
+        //         sh './jenkins/scripts/deliver.sh'
+        //         input message: 'Finished using the web site? (Click "Proceed" to continue)'
+        //         sh './jenkins/scripts/kill.sh'
+        //     }
+        // }
     }
 }
