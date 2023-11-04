@@ -24,7 +24,7 @@ pipeline {
             }
         }
         stage('Testing'){
-            parallel{
+            parellel{
                 stage('Install react-scripts') {
                     steps {
                         sh 'npm install react-scripts --save-dev'
