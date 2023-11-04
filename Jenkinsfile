@@ -8,6 +8,14 @@ pipeline {
 
     environment {
         CI = 'false'
+        DB_HOST= credentials('DB_HOST') 
+        DB_USER= credentials('DB_USER')
+        DB_PASSWORD= credentials('DB_PASSWORD') 
+        DB_NAME= credentials('DB_NAME')
+        DB_PORT= credentials('DB_PORT') 
+        JWT_SECRET_KEY= credentials('JWT_SECRET_KEY')
+        STRIPE_KEY= credentials('STRIPE_KEY') 
+        CLIENT_URL = credentials('CLIENT_URL')
     }
 
     stages {
@@ -44,10 +52,11 @@ pipeline {
                         sh 'cd ./frontend-app && npm start'
                     }
                 }
-                stage('Frontend run test') {
+                stage('Backend run build') {
                     steps {
-                        sh 'sleep 120'
-                        sh 'cd ./frontend-app && npm test'
+                        
+                        sh 'cd ./backend-app && npm install'
+                        sh 'cd ./backend-app && npm start'
                     }
                 }
                 // Add stages for backend build and test here if needed.
