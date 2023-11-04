@@ -30,9 +30,11 @@ const Home = () => {
   //   }
   // };
 
+  
+
   const closeExpiredModal = () => {
-    setShowModal(false);
-    window.location.href = './signin';
+      setShowModal(false);
+      window.location.href = './signin';
   };
 
   const toggleCart = () => {

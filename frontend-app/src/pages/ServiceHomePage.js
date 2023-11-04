@@ -48,14 +48,21 @@ const ServiceHomePage = () => {
     }
   };
 
+  // Sort orders based on status: "Pending" orders first, "Completed" orders last
+  const sortedOrders = [...orders].sort((a, b) => {
+    if (a.status === "Completed" && b.status !== "Completed") return 1;
+    if (a.status !== "Completed" && b.status === "Completed") return -1;
+    return 0;
+  });
+
   console.log("orders", orders);
   return (
     <div>
       <h2>Service Orders</h2>
-      {orders.length === 0 ? (
+      {sortedOrders.length === 0 ? (
         <p>Order List is empty.</p>
       ) : (
-        orders.map((order) => (
+        sortedOrders.map((order) => (
           <ServiceOrderCard key={order.orderid} order={order} onCompleteOrder={handleCompleteOrder} />
         ))
       )}
