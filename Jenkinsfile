@@ -10,7 +10,6 @@ pipeline {
         CI = 'false'
     }
 
-    
     stages {
         stage('Verify Workspace') {
             steps {
@@ -23,8 +22,9 @@ pipeline {
                 }
             }
         }
-        stage('Testing'){
-            parellel{
+
+        stage('Testing') {
+            parallel {
                 stage('Install react-scripts') {
                     steps {
                         sh 'npm install react-scripts --save-dev'
@@ -36,45 +36,14 @@ pipeline {
                         sh 'cd ./frontend && npm start'
                     }
                 }
-                stage('Frontend run build') {
+                stage('Frontend run test') {
                     steps {
                         sh 'sleep 120'
                         sh 'cd ./frontend && npm test'
                     }
                 }
+                // Add stages for backend build and test here if needed.
             }
-        
-        
-
-        // stage('Backend run build') {
-        //     steps {
-        //         dir('backend-app/') {
-        //                 sh 'npm install'
-        //                 sh 'npm run dev'
-        //             }
-        //     }
-        // }
-        // stage('Backend run test') {
-        //     steps {
-        //         dir('backend-app/') {
-        //                 sh 'npm test'
-        //             }
-        //     }
-        // }
-        // stage('Frontend run test') {
-        //     steps {
-        //         dir('frontend-app/') {
-        //                 sh 'npm test'
-        //             }
-        //     }
-        // }
-        // stage('Deliver') {
-        //     steps {
-        //         sh './jenkins/scripts/deliver.sh'
-        //         input message: 'Finished using the web site? (Click "Proceed" to continue)'
-        //         sh './jenkins/scripts/kill.sh'
-        //     }
-        // }
         }
     }
 }
