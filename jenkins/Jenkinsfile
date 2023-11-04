@@ -11,8 +11,10 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'npm install'
-            }
+                dir('../frontend-app/') {
+                    sh 'npm install'
+        }
+    }
         }
         stage('Test') {
             steps {
