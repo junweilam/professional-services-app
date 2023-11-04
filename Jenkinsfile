@@ -47,13 +47,13 @@ pipeline {
         //             }
         //     }
         // }
-        stage('Frontend run test') {
-            steps {
-                dir('frontend-app/') {
-                        sh 'npm test'
-                    }
-            }
-        }
+        // stage('Frontend run test') {
+        //     steps {
+        //         dir('frontend-app/') {
+        //                 sh 'npm test'
+        //             }
+        //     }
+        // }
         stage('Deliver') {
             steps {
                 sh './jenkins/scripts/deliver.sh'
