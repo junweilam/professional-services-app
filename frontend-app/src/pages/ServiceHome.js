@@ -1,6 +1,20 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { TokenExpireModal } from "../component/TokenExpireModal";
+import { CheckToken }from "../features/CheckToken";
 
 const ServiceHome = () => {
+
+  const [showModal, setShowModal] = useState(false);
+
+  const closeExpiredModal = () => {
+    setShowModal(false);
+    window.location.href = './signin';
+  };
+
+  useEffect(() => {
+    CheckToken(setShowModal)
+  }, []);
+
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="p-6 text-center">
@@ -47,6 +61,7 @@ const ServiceHome = () => {
           and transform your living space today!
         </h2>
       </div>
+      <TokenExpireModal show={showModal} onClose={closeExpiredModal} />
     </div>
   );
 };

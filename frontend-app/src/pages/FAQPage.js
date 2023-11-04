@@ -1,6 +1,20 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { TokenExpireModal } from "../component/TokenExpireModal";
+import { CheckToken }from "../features/CheckToken";
 
 const FaqPage = () => {
+
+  const [showModal, setShowModal] = useState(false);
+
+  const closeExpiredModal = () => {
+    setShowModal(false);
+    window.location.href = './signin';
+  };
+
+  useEffect(() => {
+    CheckToken(setShowModal)
+  }, []);
+
   return (
     <div className="min-h-screen">
       <div className="bg-white p-8">
@@ -83,6 +97,7 @@ const FaqPage = () => {
           
         </div>
       </div>
+      <TokenExpireModal show={showModal} onClose={closeExpiredModal} />
     </div>
   );
 };

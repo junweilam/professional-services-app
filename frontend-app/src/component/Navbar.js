@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useEmail } from '../context/EmailContext';
 import { logOut } from '../features/apiCalls';
+import { getAuthorization } from '../features/apiCalls';
 
 function Navbar() {
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeLink, setActiveLink] = useState('');
+  const [Authorized, setAuthorized] = useState(false);
   const { userEmail } = useEmail();
 
   useEffect(() => {
@@ -25,12 +27,18 @@ function Navbar() {
     setActiveLink(link);
 
     // Redirect based on the clicked link using window.location.href
-    if (link === 'Home') {
+    if (link === 'Home' && Authorized === 3) {
       window.location.href = '/servicehome';
-    } else if (link === 'Services') {
+    }else if (link === 'Services' && Authorized === 1){
+      window.location.href = '/adminupdateservice'
+    } else if (link === 'Services' ) {
       window.location.href = '/homepage';
     } else if (link === 'Contact') {
       window.location.href = '/faq';
+    } else if(link === 'Home' && Authorized === 2){
+      window.location.href = '/servicehomepage'
+    } else if (link === 'Home' && Authorized === 1){
+      window.location.href = '/adminhome'
     }
   };
 
@@ -66,6 +74,25 @@ function Navbar() {
     }
 
 }
+
+useEffect(() => {
+  // Simulate fetching services from an API or other data source.
+  async function fetchUserAuthorization(){
+    try{
+      let token = {token: localStorage.getItem("token")}
+      console.log(token);
+      if(token != null){
+        const response = await getAuthorization(token);
+        setAuthorized(response.results)
+      }
+    }catch(err){
+      console.error('API call error: ', err);
+    }
+  }
+  fetchUserAuthorization();
+}, []);
+
+console.log(Authorized)
   
   return (
     <nav className="bg-white border-gray-200 dark:bg-gray-900 relative">

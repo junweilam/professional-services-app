@@ -1,18 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import PayButton from "../component/PayButton";
 import { useCart } from "../context/CartContext";
 import { placeOrder } from "../features/apiCalls";
 import { getUserId } from "../features/apiCalls";
+import { TokenExpireModal } from "../component/TokenExpireModal";
+import { CheckToken }from "../features/CheckToken";
 
 const CartPage = () => {
   const location = useLocation();
   const cart = location.state.cart;
   const status = "Pending";
   const { updateQuantity, removeFromCart } = useCart();
+  const [showModal, setShowModal] = useState(false);
   const token = { token: localStorage.getItem("token") };
 
   let userId;
+
+  const closeExpiredModal = () => {
+    setShowModal(false);
+    window.location.href = './signin';
+  };
 
   const [selectedDate, setSelectedDate] = useState("");
   const [address, setAddress] = useState("");
@@ -63,6 +71,10 @@ const CartPage = () => {
       console.error("Error placing the order:", error);
     }
   };
+
+  useEffect(() => {
+    CheckToken(setShowModal)
+  }, []);
 
   return (
     <div className="min-h-screen">
@@ -153,6 +165,7 @@ const CartPage = () => {
           {isOrderConfirmed && <PayButton />}
         </div>
       </div>
+      <TokenExpireModal show={showModal} onClose={closeExpiredModal} />
     </div>
   );
 };

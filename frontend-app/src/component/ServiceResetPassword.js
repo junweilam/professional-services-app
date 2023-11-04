@@ -4,51 +4,57 @@ import { UpdatePasswordSuccessModal } from './UpdatePasswordSuccessModal';
 
 export const ServiceResetPassword = ({ isOpen, closeModal, email }) => {
 
-    const [formData, setFormData] = useState({
-        email2: '',
-        password2: '',
-        confirmPassword2: '',
-    })
+  const [formData, setFormData] = useState({
+    email2: '',
+    password2: '',
+    confirmPassword2: '',
+  })
 
-    const [isPasswordMatch, setIsPasswordMatch] = useState(true);
-    const [showUpdateSuccessModal, setUpdateShowSuccessModal] = useState(false);
+  const [isPasswordMatch, setIsPasswordMatch] = useState(true);
+  const [showUpdateSuccessModal, setUpdateShowSuccessModal] = useState(false);
+  const [isBreached, setIsBreached] = useState(false);
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  }
+
+  const closeUpdateSuccessModal = () => {
+    setUpdateShowSuccessModal(false);
+    window.location.href = './signin';
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    let formValues = { Email: email, Password: formData.password2, ConfirmPassword: formData.confirmPassword2 }
+    const response = await updatePassword(formValues);
+    if (response.error) {
+      if (response.error.response.status === 400) {
+        setIsPasswordMatch(false);
+        setIsBreached(false);
+      } else if (response.error.response.status === 409) {
+        setIsPasswordMatch(true);
+        setIsBreached(true);
+      }
+    } else {
+      setUpdateShowSuccessModal(true);
+      setIsBreached(false);
     }
+  }
 
-    const closeUpdateSuccessModal = () => {
-        setUpdateShowSuccessModal(false);
-        window.location.href='./signin';
-    }
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        let formValues = {Email: email, Password: formData.password2, ConfirmPassword: formData.confirmPassword2}
-        const response = await updatePassword(formValues);
-        if(response.error){
-            if(response.error.response.status === 400){
-                setIsPasswordMatch(false);
-            }
-        }else{
-            setUpdateShowSuccessModal(true);
-        }
-    }
-
-    return(
-        <div className={`modal ${isOpen ? 'open' : ''}`}>
+  return (
+    <div className={`modal ${isOpen ? 'open' : ''}`}>
       <div className="flex justify-center items-center min-h-screen">
         <div className="bg-white p-8 shadow-md rounded-md">
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <div className="flex items-center">
-              <label htmlFor="email2" className="block text-gray-600 text-sm font-medium mb-2">
-                Email:
-              </label>
+                <label htmlFor="email2" className="block text-gray-600 text-sm font-medium mb-2">
+                  Email:
+                </label>
                 <input
                   type="text"
                   id="email2"
@@ -63,9 +69,9 @@ export const ServiceResetPassword = ({ isOpen, closeModal, email }) => {
             </div>
             <div className="mb-4">
               <div className="flex items-center">
-              <label htmlFor="password2" className="block text-gray-600 text-sm font-medium mb-2">
-                Password:
-              </label>
+                <label htmlFor="password2" className="block text-gray-600 text-sm font-medium mb-2">
+                  Password:
+                </label>
                 <input
                   type="password"
                   id="password2"
@@ -80,9 +86,9 @@ export const ServiceResetPassword = ({ isOpen, closeModal, email }) => {
             </div>
             <div className="mb-4">
               <div className="flex items-center">
-              <label htmlFor="confirmPassword2" className="block text-gray-600 text-sm font-medium mb-2">
-                Confirm Password:
-              </label>
+                <label htmlFor="confirmPassword2" className="block text-gray-600 text-sm font-medium mb-2">
+                  Confirm Password:
+                </label>
                 <input
                   type="password"
                   id="confirmPassword2"
@@ -95,8 +101,11 @@ export const ServiceResetPassword = ({ isOpen, closeModal, email }) => {
                 />
               </div>
               {!isPasswordMatch && (
-              <p className="text-red-500 text-sm">Password do not match</p>
-            )}
+                <p className="text-red-500 text-sm">Password do not match</p>
+              )}
+              {isBreached && (
+                <p className="text-red-500 text-sm">This password has been exposed in data breaches. Please choose a different password</p>
+              )}
             </div>
             <button
               type="submit"
@@ -114,7 +123,7 @@ export const ServiceResetPassword = ({ isOpen, closeModal, email }) => {
 
         </div>
       </div>
-      <UpdatePasswordSuccessModal show={showUpdateSuccessModal} onClose={closeUpdateSuccessModal}/>
+      <UpdatePasswordSuccessModal show={showUpdateSuccessModal} onClose={closeUpdateSuccessModal} />
     </div>
-    )
+  )
 }

@@ -7,12 +7,20 @@ import {
 } from "../features/apiCalls";
 import OrderHistoryCard from "../component/OrderHistoryCard";
 import UnauthorizedUserPage from "../component/UnauthorizedUserPage";
+import { TokenExpireModal } from "../component/TokenExpireModal";
+import { CheckToken } from "../features/CheckToken";
 
 const HistoryPage = () => {
   const [orderhistory, setOrderhistory] = useState([]);
   const token = { token: localStorage.getItem("token") };
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const id = 5;
+
+  const closeExpiredModal = () => {
+    setShowModal(false);
+    window.location.href = './signin';
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -28,7 +36,7 @@ const HistoryPage = () => {
         const updatedOrderHistory = await Promise.all(
           response2.map(async (order) => {
             let sid = await order.serviceid;
-            const servicenameResponse  = await getService({sid});
+            const servicenameResponse = await getService({ sid });
             const servicename = servicenameResponse[0].ServiceName;
             console.log("sname", servicename);
             return { ...order, servicename }; // Replace serviceid with servicename
@@ -41,10 +49,32 @@ const HistoryPage = () => {
       }
     }
 
+    async function fetchUserAuthorization() {
+      try {
+        let token = { token: localStorage.getItem("token") }
+        console.log(token);
+        if (token != null) {
+          const response = await getAuthorization(token);
+          console.log(response);
+          if (response.results == 3) {
+            setIsAuthorized(true);
+          } else {
+            setIsAuthorized(false);
+          }
+        }
+
+
+      } catch (err) {
+        console.error('API call error: ', err);
+      }
+    }
+
     // Call fetchData to retrieve the order history
     fetchData();
+    CheckToken(setShowModal);
+    fetchUserAuthorization();
 
-  
+
 
     // You can uncomment and modify the following section for user authorization if needed
     // async function fetchUserAuthorization() {
@@ -65,20 +95,26 @@ const HistoryPage = () => {
     // Call fetchUserAuthorization if needed
   }, []);
 
-  console.log("orderhistor:",orderhistory);
+  console.log("orderhistor:", orderhistory);
   console.log("servicename", orderhistory.servicename)
 
   return (
-    <div>
-      <h2>Order History</h2>
-      {orderhistory.length === 0 ? (
-        <p>History is empty.</p>
-      ) : (
-        orderhistory.map((order) => (
-          <OrderHistoryCard key={order.orderid} order={order} />
-        ))
-      )}
-    </div>
+    isAuthorized ? (
+      <div>
+        <h2>Order History</h2>
+        {orderhistory.length === 0 ? (
+          <p>History is empty.</p>
+        ) : (
+          orderhistory.map((order) => (
+            <OrderHistoryCard key={order.orderid} order={order} />
+          ))
+        )}
+        <TokenExpireModal show={showModal} onClose={closeExpiredModal} />
+      </div>
+    ) : (
+      <UnauthorizedUserPage isAuthorized={isAuthorized} />
+    )
+
   );
 };
 

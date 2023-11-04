@@ -11,15 +11,15 @@ import CheckoutSuccess from './component/CheckoutSucess'
 import FaqPage from './pages/FAQPage'
 import AdminAddUsers from './pages/AdminAddUsers';
 import OrderHistory from './pages/HistoryPage';
+import ServiceHomePage from './pages/ServiceHomePage';
 
-// User Imports
-import UserHome from './pages/UserHome';
 
 // Service Imports
 import ServiceHome from './pages/ServiceHome';
 
 import Navbar from './component/Navbar';
 import { EmailProvider } from './context/EmailContext';
+import AdminUpdateService from './pages/AdminUpdateService';
 
 function App() {
 
@@ -35,14 +35,15 @@ function App() {
           <Route path="/checkout-success" element={<CheckoutSuccess />} />
           <Route path="/adminaddservices" element={<AdminAddServices />} />
           <Route path="/adminaddusers" element={<AdminAddUsers/>} />
+          <Route path="/adminupdateservice" element={<AdminUpdateService/>}/>
           <Route path="/*" element={<Navigate to="/signin" />} />
-          <Route path="/userhome" element={<UserHome />} />
           <Route path="/servicehome" element={<ServiceHome />} />
           <Route path="/homepage" element={<HomePage />} />
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/faq" element={<FaqPage />} />
           <Route path="/orderhistory" element={<OrderHistory />} />
+          <Route path="/servicehomepage" element={<ServiceHomePage />} />
         </Routes>
       
 

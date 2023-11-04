@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { adminAddUsers, getServicesID } from '../features/apiCalls';
+import { adminAddUsers, getServicesID, getAuthorization } from '../features/apiCalls';
 import { AddServiceSuccess } from '../component/AddServiceSuccess';
+import { TokenExpireModal } from "../component/TokenExpireModal";
+import { CheckToken }from "../features/CheckToken";
+import UnauthorizedUserPage from '../component/UnauthorizedUserPage';
 
 const AdminAddUsers = () => {
 
@@ -8,6 +11,9 @@ const AdminAddUsers = () => {
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [showServiceOption, setShowServiceOption] = useState(false);
     const [serviceID, setServiceID] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+    const [isAuthorized, setIsAuthorized] = useState(false);
+    
 
     // Handle form input changes
     const handleInputChange = (e) => {
@@ -19,7 +25,7 @@ const AdminAddUsers = () => {
         setFormData((prevFormData) => {
             const updatedData = { ...prevFormData, [name]: value};
         
-        if(updatedData.authorization == 2){
+        if(updatedData.authorization === 2){
             setShowServiceOption(true);
             console.log(updatedData.authorization);
         }else{
@@ -29,6 +35,8 @@ const AdminAddUsers = () => {
         return updatedData;
     })
     };
+
+    
 
     
     
@@ -41,6 +49,10 @@ const AdminAddUsers = () => {
         authorization: '',
         serviceID: '',
     });
+    const closeExpiredModal = () => {
+        setShowModal(false);
+        window.location.href = './signin';
+      };
 
     useEffect(() => {
         async function fetchServicesID(){
@@ -51,8 +63,25 @@ const AdminAddUsers = () => {
                 console.error('API call error: ', err);
             }
         }
+        async function fetchUserAuthorization(){
+            try{
+                let token = {token: localStorage.getItem("token")}
+                if(token != null){
+                    const response = await getAuthorization(token);
+                    if(response.results === 1){
+                        setIsAuthorized(true);
+                    }else{
+                        setIsAuthorized(false);
+                    }
+                }
+            }catch(err){
+                console.error('API call error: ', err);
+            }
+        }
 
         fetchServicesID();
+        CheckToken(setShowModal);
+        fetchUserAuthorization();
     }, []);
 
     const handleSubmit = async (e) => {
@@ -79,7 +108,8 @@ const AdminAddUsers = () => {
     }
 
     return (
-        <div className="flex justify-center items-center min-h-screen">
+        isAuthorized ?(
+<div className="flex justify-center items-center min-h-screen">
             <div className="bg-white p-8 shadow-md rounded-md">
                 <h2 className="text-2xl font-semibold mb-4">Add User</h2>
                 <form onSubmit={handleSubmit}>
@@ -151,7 +181,7 @@ const AdminAddUsers = () => {
                     </div>
                     {showServiceOption && (
                         <div className="mb-4">
-                        <label className="block text-gray-600 text-sm font-medium mb-2" htmlFor="role">
+                        <label className="block text-gray-600 text-sm font-medium mb-2" htmlFor="serviceID">
                             Service ID
                         </label>
                         <select
@@ -182,7 +212,12 @@ const AdminAddUsers = () => {
                 </form>
             </div>
         <AddServiceSuccess show={showSuccessModal} onClose={closeSuccessModal}/>
+        <TokenExpireModal show={showModal} onClose={closeExpiredModal} />
         </div>
+        ) : (
+            <UnauthorizedUserPage isAuthorized={isAuthorized} />
+        )
+        
     );
 }
 
