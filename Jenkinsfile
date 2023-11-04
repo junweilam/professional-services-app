@@ -25,8 +25,7 @@ pipeline {
 
         stage('Clean Workspace') {
                     steps {
-                        sh 'rm -rf frontend/build''
-                        sh 'cd ./frontend && npm test'
+                        sh 'rm -rf frontend/build'
                     }
                 }
 
