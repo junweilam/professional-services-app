@@ -385,15 +385,6 @@ function setLockoutTimer(email) {
 
 
 // // This is your new CAPTCHA endpoint
-// app.get('/captcha', (req, res) => {
-//     const captcha = svgCaptcha.create();
-//     req.session.captcha = captcha.text; // Save captcha text in session to validate later
-//     console.log(captcha.text)
-
-//     res.type('svg'); // Set the content type to svg
-//     res.status(200).send(captcha.data); // Send the captcha svg data to client
-// });
-// Assuming you have a route to generate and serve a new CAPTCHA
 app.get('/captcha', (req, res) => {
     const captcha = svgCaptcha.create();  // This line replaces the generateCaptcha function call
     req.session.captcha = captcha.text;
@@ -529,14 +520,14 @@ app.post('/signin/', async (req, res) => {
 
 });
 
-app.post('/verify-captcha', (req, res) => {
-    const userCaptcha = req.body.captcha;
-    if (req.session.captcha === userCaptcha) {
-        res.json({ success: true });
-    } else {
-        res.status(400).json({ success: false, message: 'Captcha verification failed' });
-    }
-});
+// app.post('/verify-captcha', (req, res) => {
+//     const userCaptcha = req.body.captcha;
+//     if (req.session.captcha === userCaptcha) {
+//         res.json({ success: true });
+//     } else {
+//         res.status(400).json({ success: false, message: 'Captcha verification failed' });
+//     }
+// });
 
 app.post('/resend2fa/', async (req, res) => {
     try {

@@ -1,11 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { logIn } from '../features/apiCalls';
 import { AuthModal } from '../component/AuthModal';
 import { ServiceResetPassword } from '../component/ServiceResetPassword';
-import axios from 'axios';
-
-
-
 
 
 const SignIn = () => {
@@ -50,7 +46,7 @@ const SignIn = () => {
     // Add your form submission logic here
     console.log(formData);
     try {
-      let formValues = { Email: formData.email, Password: formData.password, captcha:formData.captcha, }
+      let formValues = { Email: formData.email, Password: formData.password, Captcha:formData.captcha, }
       const response = await logIn(formValues);
       console.log(response);
 
