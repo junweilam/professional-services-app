@@ -28,24 +28,26 @@ pipeline {
                         sh 'rm -rf frontend/build'
                     }
                 }
-
-        stage('Testing') {
-            parallel {
-                stage('Install react-scripts') {
+        
+        stage('Install react-scripts') {
                     steps {
                         sh 'npm install react-scripts --save-dev'
                     }
                 }
+
+        stage('Testing') {
+            parallel {
+                
                 stage('Frontend run build') {
                     steps {
-                        sh 'cd ./frontend && npm install'
-                        sh 'cd ./frontend && npm start'
+                        sh 'cd ./frontend-app && npm install'
+                        sh 'cd ./frontend-app && npm start'
                     }
                 }
                 stage('Frontend run test') {
                     steps {
                         sh 'sleep 120'
-                        sh 'cd ./frontend && npm test'
+                        sh 'cd ./frontend-app && npm test'
                     }
                 }
                 // Add stages for backend build and test here if needed.
