@@ -13,5 +13,3 @@ pipeline {
         }
     }
 }
-
-#Test edit for linking jenkins with github
