@@ -26,7 +26,7 @@ pipeline {
             steps {
                 dir('frontend-app/') {
                         sh 'npm install'
-                        sh 'npm start'
+                        sh 'npm run build'
                     }
             }
         }
@@ -35,7 +35,7 @@ pipeline {
             steps {
                 dir('backend-app/') {
                         sh 'npm install'
-                        sh 'npm run dev'
+                        sh 'npm run build'
                     }
             }
         }
