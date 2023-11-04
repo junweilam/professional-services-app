@@ -17,6 +17,7 @@ export const logIn = async (user) => {
     try{
         console.log(user);
         const res = await axios.post("http://localhost:8080/signin/", user);
+        console.log(res)
         return res.data;
     }catch(err){
         console.log(err);
@@ -300,5 +301,16 @@ export const completeServiceOrder = async (orderid) =>{
         return{
             error:err
         };
+    }
+}
+
+
+export const getCaptcha = async () => {
+    try {
+        const res = await axios.get(`http://localhost:8080/captcha?${new Date().getTime()}`);
+        console.log(res);
+        return res
+    } catch (err) {
+        console.log(err);
     }
 }

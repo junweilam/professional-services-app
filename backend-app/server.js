@@ -385,23 +385,28 @@ function setLockoutTimer(email) {
 
 
 // // This is your new CAPTCHA endpoint
-app.get('/captcha', (req, res) => {
+app.get('/captcha/', (req, res) => {
+    console.log("inside captcha")
     const captcha = svgCaptcha.create();  // This line replaces the generateCaptcha function call
     req.session.captcha = captcha.text;
     res.type('image/svg+xml');
-    res.send(captcha.data);
+    res.send(captcha);
+    // return res.json( {captcha: captcha.text} )
     console.log(captcha.text)
   });
   
 
 app.post('/signin/', async (req, res) => {
 
+
     const email = req.body.Email;
 
     const q = "SELECT * FROM users WHERE Email = ?";
     const [results, fields] = await pool.execute(q, [email]);
-    const clientCaptcha = req.body.captcha; // Assuming the CAPTCHA value is sent in the request body
-    const serverCaptcha = req.session.captcha; // Assuming the CAPTCHA value is stored in the session
+    const clientCaptcha = req.body.Captcha; // Assuming the CAPTCHA value is sent in the request body
+    const serverCaptcha = captcha.text// Assuming the CAPTCHA value is stored in the session
+
+
 
       // Validate CAPTCHA
         if (clientCaptcha !== serverCaptcha) {

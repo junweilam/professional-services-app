@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { logIn } from '../features/apiCalls';
 import { AuthModal } from '../component/AuthModal';
 import { ServiceResetPassword } from '../component/ServiceResetPassword';
+import { getCaptcha } from '../features/apiCalls';
 
 
 const SignIn = () => {
@@ -9,6 +10,7 @@ const SignIn = () => {
     email: '',
     password: '',
     captcha: '',
+    servercaptcha: '',
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,13 +20,20 @@ const SignIn = () => {
   const [isEmailValid, setIsEmailValid] = useState(false);
 
   const [mistakeCount, setMistakeCount] = useState(0);
-  const [captchaUrl, setCaptchaUrl] = useState('http://localhost:8080/captcha');
+  const [captchaUrl, setCaptchaUrl] = useState();
+  const [captchaText, setCaptchaText] = useState()
   const [isCaptchaValid, setIsCaptchaValid] = useState(false);
 
-  const refreshCaptcha = () => {
-    // Append a timestamp to the URL to ensure the image is re-fetched and not loaded from cache
-    setCaptchaUrl(`http://localhost:8080/captcha?${new Date().getTime()}`);
+  const refreshCaptcha = async () => {
+    const res = await getCaptcha()
+    setCaptchaUrl(res.data.data)
+    console.log(res)
+    console.log(res.data.text)
+    console.log(res.data.data)
   };
+  
+
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -81,7 +90,7 @@ const SignIn = () => {
         }
       }
       setEmailValue(`${formData.email}`);
-      console.log(`${response.Email}`);
+      console.log(response);
 
     } catch (err) {
       console.error('Error in handleSubmit', err); 
@@ -136,7 +145,7 @@ const SignIn = () => {
             <label htmlFor="captcha" className="block text-gray-600 text-sm font-medium mb-2">
               Captcha
             </label>
-            <img src={captchaUrl} alt="captcha" onClick={refreshCaptcha} />
+            <img src={captchaUrl} alt="captcha"/>
             <input
               type="text"
               id="captcha"
