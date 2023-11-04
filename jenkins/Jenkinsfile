@@ -22,7 +22,7 @@ pipeline {
                 }
             }
         }
-        stage('Build') {
+        stage('Build frontend') {
             steps {
                 dir('frontend-app/') {
                         sh 'npm install'
@@ -30,9 +30,18 @@ pipeline {
                     }
             }
         }
+
+        stage('Build backend') {
+            steps {
+                dir('backend-app/') {
+                        sh 'npm install'
+                        sh 'npm run build'
+                    }
+            }
+        }
         stage('Test') {
             steps {
-                dir('frontend-app/') {
+                dir('backend-app/') {
                         sh 'npm test'
                     }
             }
