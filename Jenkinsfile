@@ -5,7 +5,8 @@ pipeline {
             args '-p 3000:3000'
         }
     }
- 
+
+
 
     
     stages {
@@ -24,7 +25,7 @@ pipeline {
             steps {
                 dir('frontend-app/') {
                         sh 'npm install'
-                        sh 'npm run build'
+                        sh 'false npm run build'
                     }
             }
         }
