@@ -19,6 +19,7 @@ const SignIn = () => {
 
   const [mistakeCount, setMistakeCount] = useState(0);
   const [captchaUrl, setCaptchaUrl] = useState('http://localhost:8080/captcha');
+  const [isCaptchaValid, setIsCaptchaValid] = useState(false);
 
   const refreshCaptcha = () => {
     // Append a timestamp to the URL to ensure the image is re-fetched and not loaded from cache
@@ -49,12 +50,6 @@ const SignIn = () => {
       let formValues = { Email: formData.email, Password: formData.password, Captcha:formData.captcha, }
       const response = await logIn(formValues);
       console.log(response);
-
-      if (response.message === 'Incorrect CAPTCHA') {
-        // Handle incorrect CAPTCHA
-        console.error('Incorrect CAPTCHA');
-        return;
-      }
       
       if (response.message === "service reset password") {
         setIsResetPassword(true);
@@ -77,10 +72,12 @@ const SignIn = () => {
           setMistakeCount(mistakeCount + 1); // increment mistake count
           setIsPasswordWrong(true);
           setIsEmailValid(false);
+          setIsCaptchaValid(false);
           console.log('Authentication failed');
         } else if (response.error.response.status === 403) {
           setIsEmailValid(true);
           setIsPasswordWrong(false);
+          setIsCaptchaValid(true);
         }
       }
       setEmailValue(`${formData.email}`);
@@ -160,6 +157,10 @@ const SignIn = () => {
           {
             isEmailValid && (
               <p className="text-red-500 text-sm text-center">Invalid Email</p>
+            )
+          }
+          { isCaptchaValid && (
+              <p className="text-red-500 text-sm text-center">Invalid Captcha</p>
             )
           }
           {
