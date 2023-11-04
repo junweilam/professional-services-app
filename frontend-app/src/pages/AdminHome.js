@@ -22,6 +22,10 @@ const AdminHome = () => {
         window.location.href="./adminaddusers"
     }
 
+    const handleUpdateServices = () => {
+      window.location.href = "./adminupdateservice"
+    }
+
     useEffect(() => {
         async function fetchUserAuthorization() {
             try {
@@ -63,6 +67,12 @@ const AdminHome = () => {
                 onClick={handleAddUsers}
               >
                 Add Users
+              </button>
+              <button
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                onClick={handleUpdateServices}
+              >
+                Update Services
               </button>
             </div>
           </>

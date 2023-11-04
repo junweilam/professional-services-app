@@ -254,7 +254,7 @@ app.post('/registration/', async (req, res) => {
             console.log("Email used");
             res.status(403).json({ message: 'Email already used' });
         }
-        else if (password.length < 8) {
+        else if (password.length <= 8) {
             res.status(404).json({ message: "Password needs to be 8 characters" })
         }
         else {
