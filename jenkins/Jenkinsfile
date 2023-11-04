@@ -8,7 +8,20 @@ pipeline {
     environment {
         CI = 'true'
     }
+
+    
     stages {
+        stage('Verify Workspace') {
+            steps {
+                dir('frontend-app/') {
+                    script {
+                        if (!fileExists('package.json')) {
+                            error('Missing package.json in the workspace.')
+                        }
+                    }
+                }
+            }
+        }
         stage('Build') {
             steps {
                 dir('frontend-app/') {
