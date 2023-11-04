@@ -22,31 +22,12 @@ const SignIn = () => {
   const [isEmailValid, setIsEmailValid] = useState(false);
 
   const [mistakeCount, setMistakeCount] = useState(0);
-  const [captchaSvg, setCaptchaSvg] = useState(''); // State to hold the captcha SVG data
   const [captchaUrl, setCaptchaUrl] = useState('http://localhost:8080/captcha');
 
   const refreshCaptcha = () => {
     // Append a timestamp to the URL to ensure the image is re-fetched and not loaded from cache
     setCaptchaUrl(`http://localhost:8080/captcha?${new Date().getTime()}`);
   };
-
-  // Fetch captcha when component mounts or when you need to refresh it
-  useEffect(() => {
-    fetchCaptcha();
-  }, []);
-
-  // // Function to fetch captcha from the backend
-  const fetchCaptcha = async () => {
-    try {
-      const response = await axios.get('http://localhost:8080/captcha', { withCredentials: true });
-      setCaptchaSvg(response.data);  // Update state with the captcha SVG data
-      console.log(response.data)
-    } catch (error) {
-      console.error('Error fetching captcha', error);
-      console.error(error.response); 
-  };
-};
-
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -59,6 +40,8 @@ const SignIn = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('handleSubmit called');  // Add this line
+    console.log('formData', formData);  // And this line
 
     if (mistakeCount>= 5 ){
       return;
@@ -108,6 +91,7 @@ const SignIn = () => {
       console.log(`${response.Email}`);
 
     } catch (err) {
+      console.error('Error in handleSubmit', err); 
       if (err.response && err.response.status === 401) {
         // Handle token expiration: clear token and redirect to login page
         console.log('Authentication token expired. Logging out...');
@@ -118,8 +102,6 @@ const SignIn = () => {
       }
     }
   };
-
-  console.log(captchaSvg)
 
   return (
 
@@ -172,7 +154,7 @@ const SignIn = () => {
               className="w-full px-4 py-2 border rounded-lg outline-none focus:border-blue-500"
               required
             />
-            <button onClick={refreshCaptcha}>Refresh Captcha</button>
+            <button type="button" onClick={refreshCaptcha}>Refresh Captcha</button>
           </div>
           {
             isPasswordWrong && (
