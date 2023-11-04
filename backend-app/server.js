@@ -170,11 +170,16 @@ app.get('/data', async (req, res) => {
 });
 
 // Set up session handling
+// app.use(session({
+//     secret: 'your secret key',
+//     resave: false,
+//     saveUninitialized: true,
+//     cookie: { secure: true } // Set secure to true if using https
+// }));
 app.use(session({
-    secret: 'your secret key',
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: true } // Set secure to true if using https
+  secret: 'your-secret-key',
+  resave: false,
+  saveUninitialized: true,
 }));
 
 
@@ -379,15 +384,24 @@ function setLockoutTimer(email) {
 }
 
 
-// This is your new CAPTCHA endpoint
-app.get('/captcha', (req, res) => {
-    const captcha = svgCaptcha.create();
-    req.session.captcha = captcha.text; // Save captcha text in session to validate later
-    console.log(captcha.text)
+// // This is your new CAPTCHA endpoint
+// app.get('/captcha', (req, res) => {
+//     const captcha = svgCaptcha.create();
+//     req.session.captcha = captcha.text; // Save captcha text in session to validate later
+//     console.log(captcha.text)
 
-    res.type('svg'); // Set the content type to svg
-    res.status(200).send(captcha.data); // Send the captcha svg data to client
-});
+//     res.type('svg'); // Set the content type to svg
+//     res.status(200).send(captcha.data); // Send the captcha svg data to client
+// });
+// Assuming you have a route to generate and serve a new CAPTCHA
+app.get('/captcha', (req, res) => {
+    const captcha = svgCaptcha.create();  // This line replaces the generateCaptcha function call
+    req.session.captcha = captcha.text;
+    res.type('image/svg+xml');
+    res.send(captcha.data);
+    console.log(captcha.text)
+  });
+  
 
 app.post('/signin/', async (req, res) => {
 
@@ -395,6 +409,14 @@ app.post('/signin/', async (req, res) => {
 
     const q = "SELECT * FROM users WHERE Email = ?";
     const [results, fields] = await pool.execute(q, [email]);
+    const clientCaptcha = req.body.captcha; // Assuming the CAPTCHA value is sent in the request body
+    const serverCaptcha = req.session.captcha; // Assuming the CAPTCHA value is stored in the session
+
+      // Validate CAPTCHA
+        if (clientCaptcha !== serverCaptcha) {
+            return res.status(400).json({ message: 'Incorrect CAPTCHA' });
+        }
+
     
     // If the account is locked, handle the lockout logic
     if (await isUserLocked(email)){

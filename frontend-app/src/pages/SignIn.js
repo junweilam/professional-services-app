@@ -23,6 +23,12 @@ const SignIn = () => {
 
   const [mistakeCount, setMistakeCount] = useState(0);
   const [captchaSvg, setCaptchaSvg] = useState(''); // State to hold the captcha SVG data
+  const [captchaUrl, setCaptchaUrl] = useState('http://localhost:8080/captcha');
+
+  const refreshCaptcha = () => {
+    // Append a timestamp to the URL to ensure the image is re-fetched and not loaded from cache
+    setCaptchaUrl(`http://localhost:8080/captcha?${new Date().getTime()}`);
+  };
 
   // Fetch captcha when component mounts or when you need to refresh it
   useEffect(() => {
@@ -64,6 +70,13 @@ const SignIn = () => {
       let formValues = { Email: formData.email, Password: formData.password, captcha:formData.captcha, }
       const response = await logIn(formValues);
       console.log(response);
+
+      if (response.message === 'Incorrect CAPTCHA') {
+        // Handle incorrect CAPTCHA
+        console.error('Incorrect CAPTCHA');
+        return;
+      }
+      
       if (response.message === "service reset password") {
         setIsResetPassword(true);
       }
@@ -106,6 +119,8 @@ const SignIn = () => {
     }
   };
 
+  console.log(captchaSvg)
+
   return (
 
     <div className="flex justify-center items-center min-h-screen">
@@ -146,7 +161,7 @@ const SignIn = () => {
             <label htmlFor="captcha" className="block text-gray-600 text-sm font-medium mb-2">
               Captcha
             </label>
-            <div dangerouslySetInnerHTML={{ __html: captchaSvg }} /> {/* Display captcha SVG here */}
+            <img src={captchaUrl} alt="captcha" onClick={refreshCaptcha} />
             <input
               type="text"
               id="captcha"
@@ -157,7 +172,7 @@ const SignIn = () => {
               className="w-full px-4 py-2 border rounded-lg outline-none focus:border-blue-500"
               required
             />
-            <button onClick={fetchCaptcha}>Refresh Captcha</button> {/* Button to refresh captcha */}
+            <button onClick={refreshCaptcha}>Refresh Captcha</button>
           </div>
           {
             isPasswordWrong && (
