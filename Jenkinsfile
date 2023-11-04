@@ -23,6 +23,11 @@ pipeline {
                 }
             }
         }
+        stage('Install react-scripts') {
+            steps {
+                sh 'npm install react-scripts --save-dev'
+            }
+        }
         stage('Frontend run build') {
             steps {
                 dir('frontend-app/') {
