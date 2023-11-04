@@ -23,6 +23,13 @@ pipeline {
             }
         }
 
+        stage('Clean Workspace') {
+                    steps {
+                        sh 'rm -rf frontend/build''
+                        sh 'cd ./frontend && npm test'
+                    }
+                }
+
         stage('Testing') {
             parallel {
                 stage('Install react-scripts') {
