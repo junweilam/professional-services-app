@@ -8,6 +8,9 @@ const secretKey = process.env.JWT_SECRET_KEY;
 const verifyToken = require("./middleware/AuthMiddleware")
 const argon2 = require('argon2');
 const sodium = require('sodium-native');
+const svgCaptcha = require('svg-captcha');
+const session = require('express-session');
+
 
 // Replace these with your own values
 const encryptionKey = Buffer.alloc(sodium.crypto_secretbox_KEYBYTES);
@@ -166,6 +169,13 @@ app.get('/data', async (req, res) => {
     }
 });
 
+// Set up session handling
+app.use(session({
+    secret: 'your secret key',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true } // Set secure to true if using https
+}));
 
 
   
@@ -369,6 +379,15 @@ function setLockoutTimer(email) {
 }
 
 
+// This is your new CAPTCHA endpoint
+app.get('/captcha', (req, res) => {
+    const captcha = svgCaptcha.create();
+    req.session.captcha = captcha.text; // Save captcha text in session to validate later
+    console.log(captcha.text)
+
+    res.type('svg'); // Set the content type to svg
+    res.status(200).send(captcha.data); // Send the captcha svg data to client
+});
 
 app.post('/signin/', async (req, res) => {
 
@@ -486,6 +505,15 @@ app.post('/signin/', async (req, res) => {
         });
     }
 
+});
+
+app.post('/verify-captcha', (req, res) => {
+    const userCaptcha = req.body.captcha;
+    if (req.session.captcha === userCaptcha) {
+        res.json({ success: true });
+    } else {
+        res.status(400).json({ success: false, message: 'Captcha verification failed' });
+    }
 });
 
 app.post('/resend2fa/', async (req, res) => {

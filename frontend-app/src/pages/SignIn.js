@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { logIn } from '../features/apiCalls';
 import { AuthModal } from '../component/AuthModal';
 import { ServiceResetPassword } from '../component/ServiceResetPassword';
+import axios from 'axios';
+
+
 
 
 
@@ -9,6 +12,7 @@ const SignIn = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
+    captcha: '',
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,6 +22,25 @@ const SignIn = () => {
   const [isEmailValid, setIsEmailValid] = useState(false);
 
   const [mistakeCount, setMistakeCount] = useState(0);
+  const [captchaSvg, setCaptchaSvg] = useState(''); // State to hold the captcha SVG data
+
+  // Fetch captcha when component mounts or when you need to refresh it
+  useEffect(() => {
+    fetchCaptcha();
+  }, []);
+
+  // // Function to fetch captcha from the backend
+  const fetchCaptcha = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/captcha', { withCredentials: true });
+      setCaptchaSvg(response.data);  // Update state with the captcha SVG data
+      console.log(response.data)
+    } catch (error) {
+      console.error('Error fetching captcha', error);
+      console.error(error.response); 
+  };
+};
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -38,7 +61,7 @@ const SignIn = () => {
     // Add your form submission logic here
     console.log(formData);
     try {
-      let formValues = { Email: formData.email, Password: formData.password }
+      let formValues = { Email: formData.email, Password: formData.password, captcha:formData.captcha, }
       const response = await logIn(formValues);
       console.log(response);
       if (response.message === "service reset password") {
@@ -118,6 +141,23 @@ const SignIn = () => {
               className="w-full px-4 py-2 border rounded-lg outline-none focus:border-blue-500"
               required
             />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="captcha" className="block text-gray-600 text-sm font-medium mb-2">
+              Captcha
+            </label>
+            <div dangerouslySetInnerHTML={{ __html: captchaSvg }} /> {/* Display captcha SVG here */}
+            <input
+              type="text"
+              id="captcha"
+              name="captcha"
+              value={formData.captcha}
+              onChange={handleInputChange}
+              placeholder="Enter captcha"
+              className="w-full px-4 py-2 border rounded-lg outline-none focus:border-blue-500"
+              required
+            />
+            <button onClick={fetchCaptcha}>Refresh Captcha</button> {/* Button to refresh captcha */}
           </div>
           {
             isPasswordWrong && (
