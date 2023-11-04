@@ -42,7 +42,7 @@ pipeline {
                         sh 'cd ./frontend && npm test'
                     }
                 }
-        }
+            }
         
         
 
