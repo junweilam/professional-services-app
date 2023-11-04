@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { getServicesID, getServicesById, updateServiceById, deleteServiceById, getAuthorization } from '../features/apiCalls';
 import { UpdateServiceSuccess } from '../component/UpdateServiceSuccess';
 import UnauthorizedUserPage from '../component/UnauthorizedUserPage';
+import { TokenExpireModal } from "../component/TokenExpireModal";
+import { CheckToken }from "../features/CheckToken";
 
 const AdminUpdateService = () => {
 
@@ -11,6 +13,13 @@ const AdminUpdateService = () => {
     const [isUpdated, setIsUpdated] = useState(false);
     const [isDeleted, setIsDeleted] = useState(false);
     const [isAuthorized, setIsAuthorized] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+
+    const closeExpiredModal = () => {
+        setShowModal(false);
+        window.location.href = './signin';
+      };
+
 
     const [formData, setFormData] = useState({
         serviceID: '',
@@ -124,6 +133,7 @@ const AdminUpdateService = () => {
             }
         }
         fetchServicesID();
+        CheckToken(setShowModal)
         fetchUserAuthorization();
     }, [])
     return (
@@ -226,6 +236,8 @@ const AdminUpdateService = () => {
             <UpdateServiceSuccess show={isUpdated} onClose={closeSuccessModal} action="Updated" />
             <UpdateServiceSuccess show={isDeleted} onClose={closeSuccessModal} action="Deleted" />
             {/* <TokenExpireModal show={showModal} onClose={closeExpiredModal} /> */}
+
+            <TokenExpireModal show={showModal} onClose={closeExpiredModal} />
         </div>
         ) : (
             <UnauthorizedUserPage isAuthorized={isAuthorized} />
