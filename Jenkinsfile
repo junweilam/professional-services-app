@@ -6,7 +6,9 @@ pipeline {
         }
     }
 
-
+    environment {
+        CI = 'false'
+    }
 
     
     stages {
@@ -25,7 +27,7 @@ pipeline {
             steps {
                 dir('frontend-app/') {
                         sh 'npm install'
-                        sh 'false npm run build'
+                        sh 'npm run build'
                     }
             }
         }
