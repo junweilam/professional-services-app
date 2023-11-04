@@ -54,7 +54,6 @@ pipeline {
                 }
                 stage('Backend run build') {
                     steps {
-                        
                         sh 'cd ./backend-app && npm install'
                         sh 'cd ./backend-app && npm start'
                     }
