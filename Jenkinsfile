@@ -76,15 +76,19 @@ pipeline {
                     }
                 }
 
-            
-        stage('create volume'){
+        stage('Check Docker-Compose') {
             steps {
                 script {
-                    // Create a Docker volume to persist the .cache directory
-                    sh 'docker volume create git-cache-volume'
+                    def dockerComposeVersion = sh(script: 'docker-compose --version', returnStatus: true)
+                    if (dockerComposeVersion == 0) {
+                        echo 'Docker-Compose is installed and available.'
+                    } else {
+                        error('Docker-Compose is not installed. Please install it.')
+                    }
                 }
             }
         }
+            
 
         stage('Set up container') {
             steps {
@@ -93,8 +97,7 @@ pipeline {
                     // sh 'docker-compose up'
                     // sh 'cd ./backend-app && docker-compose down'
                     // sh 'cd ./backend-app && docker-compose -f docker-compose.yml build'
-                    //sh 'cd ./backend-app && docker-compose -f docker-compose.yml up'
-                    sh 'docker-compose -f backend-app/docker-compose.yml up -d --build --force-recreate --renew-anon-volumes -V git-cache-volume:/.cache'
+                    sh 'cd ./backend-app && docker-compose -f docker-compose.yml up'
                     
                 }
             }
