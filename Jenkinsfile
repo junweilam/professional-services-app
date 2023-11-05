@@ -45,12 +45,25 @@ pipeline {
         // }
         stage('Set up container') {
             steps {
-                echo 'set up container'
-                sh''''
-                docker-compose -f backend-app/docker-compose.yml --build -d
-                '''
+                script {
+                    // Build and set up the container
+                    dir('backend-app/') {
+                        sh 'docker-compose -f docker-compose.yml down'
+                        sh 'docker-compose -f docker-compose.yml build'
+                        sh 'docker-compose -f docker-compose.yml up -d'
+                    }
                 }
             }
+        }
+
+        // stage('Set up container') {
+        //     steps {
+        //         echo 'set up container'
+        //         sh''''
+        //         docker-compose -f backend-app/docker-compose.yml --build -d
+        //         '''
+        //         }
+        //     }
         stage('Clean Workspace') {
                     steps {
                         sh 'rm -rf frontend/build'
@@ -76,13 +89,8 @@ pipeline {
                 stage('Backend Docker Build and Up') {
                     steps {
                         script { 
-                            dir('jenkins/') {
-                                // sh 'docker compose -f docker-compose.yml down'
-                                // sh 'docker compose -f docker-compose.yml build'
-                                // sh 'docker compose -f docker-compose.yml up --detach --force-recreate --renew-anon-volumes;'
-                                sh 'docker compose down'
-                                sh 'docker compose build'
-                                sh 'docker compose up'
+                            dir('backend-app/') {
+                            sh 'npm test'
                             }
                         }
                     }
