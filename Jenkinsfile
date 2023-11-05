@@ -98,7 +98,7 @@ pipeline {
                     // sh 'docker-compose up'
                     // sh 'cd ./backend-app && docker-compose down'
                     // sh 'cd ./backend-app && docker-compose -f docker-compose.yml build'
-                    sh 'cd ./backend-app && docker-compose -f docker-compose.yml up --build'
+                    sh 'cd ./backend-app && docker compose -f docker-compose.yml up --build'
                     
                 }
             }
