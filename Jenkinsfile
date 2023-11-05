@@ -54,7 +54,7 @@ pipeline {
         stage('Debug') {
             steps {
                 sh 'echo $PATH'
-                sh 'ls backend@tmp'
+                sh 'ls -l /usr/local/bin/docker-compose'
         }
         }   
 
