@@ -46,6 +46,9 @@ pipeline {
         stage('Set up container') {
             steps {
                 script {
+                    // Install Docker Compose
+                    sh 'curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-Linux-x86_64 -o /usr/local/bin/docker-compose'
+                    sh 'chmod +x /usr/local/bin/docker-compose'
                     // Build and set up the container
                     dir('backend-app/') {
                         sh 'docker-compose -f docker-compose.yml down'
