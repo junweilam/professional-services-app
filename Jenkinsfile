@@ -42,11 +42,9 @@ pipeline {
         stage('Set up container') {
             steps {
                 script {
-                    dir('backend-app/') {
-                        // sh 'docker-compose build'
-                        // sh 'docker-compose up'
-                        sh './node_modules/docker-compose/bin/docker-compose build' 
-                        sh './node_modules/docker-compose/bin/docker-compose up'
+                    dir('jenkins/') {
+                        sh 'docker-compose build'
+                        sh 'docker-compose up'
                     }
                 }
             }
