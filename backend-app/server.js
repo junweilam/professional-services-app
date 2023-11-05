@@ -8,10 +8,6 @@ const secretKey = process.env.JWT_SECRET_KEY;
 const verifyToken = require("./middleware/AuthMiddleware")
 const argon2 = require('argon2');
 const sodium = require('sodium-native');
-const https = require('https')
-const fs = require('fs')
-
-
 
 // Replace these with your own values
 const encryptionKey = Buffer.alloc(sodium.crypto_secretbox_KEYBYTES);
@@ -34,13 +30,6 @@ const axios = require('axios');
 const nodemailer = require('nodemailer');
 
 const app = express();
-
-const options = {
-    key: fs.readFileSync( 'privkey.pem'),
-    cert: fs.readFileSync('fullchian.pem'),
-}
-
-const server = https.createServer(options, app);
 
 var corsOptions = {
     origin: "http://localhost:8081"
@@ -982,7 +971,7 @@ app.get("/", (req, res) => {
 
 // Set port, listen for requests 
 const PORT = process.env.PORT || 8080;
-server.listen(PORT, () => {
+app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}. `);
 });
 
