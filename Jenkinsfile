@@ -3,7 +3,6 @@ pipeline {
         docker {
             image 'node:18.12.0'
             args '-p 3000:3000'
-            echo env.PATH
         }
     }
 
@@ -51,6 +50,7 @@ pipeline {
                     steps {
                         sh 'cd ./frontend-app && npm install'
                         sh 'cd ./frontend-app && npm start'
+                        sh 'env'
                     }
                 }
                 stage('Backend run build') {
