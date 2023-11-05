@@ -46,12 +46,12 @@ pipeline {
             }
         }
 
-        // stage('Install Docker-Compose') {
-        //     steps {
-        //         sh 'apt-get update -y'
-        //         sh 'apt-get install -y docker-compose'
-        //     }
-        // }
+        stage('Install Docker-Compose') {
+            steps {
+                sh 'apt-get update -y'
+                sh 'apt-get install -y docker-compose'
+            }
+        }
 
         // stage('Set up container') {
         //     steps {
