@@ -1,13 +1,13 @@
 pipeline {
     agent {
-        // docker {
-        //     image 'jenkins/inbound-agent'
-        //     args '-p 3000:3000'
-        // }
         docker {
             image 'jenkins/inbound-agent'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
+            args '-p 3000:3000'
         }
+        // docker {
+        //     image 'jenkins/inbound-agent'
+        //     args '-v /var/run/docker.sock:/var/run/docker.sock'
+        // }
     }
 
     // tools {
@@ -19,8 +19,9 @@ pipeline {
 
 
     environment {
+        PATH = "/usr/bin:${env.PATH}"
         CI = 'false'
-        PATH = "/usr/local/bin:${env.PATH}"
+        
         // DB_HOST= credentials('DB_HOST') 
         // DB_USER= credentials('DB_USER')
         // DB_PASSWORD= credentials('DB_PASSWORD') 
@@ -54,7 +55,7 @@ pipeline {
         stage('Debug') {
             steps {
                 sh 'echo $PATH'
-                sh 'ls -1 /usr/local/bin/'
+                sh 'ls -1 /usr/local/bin/docker-compose'
         }
         }   
 
