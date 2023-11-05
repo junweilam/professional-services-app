@@ -1,15 +1,16 @@
 pipeline {
-    agent {
-        docker {
-            image 'docker:dind'
-            //args '-p 3000:3000'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
-        }
-        // docker {
-        //     image 'jenkins/inbound-agent'
-        //     args '-v /var/run/docker.sock:/var/run/docker.sock'
-        // }
-    }
+    agent any
+    // agent {
+    //     docker {
+    //         image 'docker:dind'
+    //         //args '-p 3000:3000'
+    //         args '-v /var/run/docker.sock:/var/run/docker.sock'
+    //     }
+    //     // docker {
+    //     //     image 'jenkins/inbound-agent'
+    //     //     args '-v /var/run/docker.sock:/var/run/docker.sock'
+    //     // }
+    // }
 
     // tools {
     //     // Install Docker Compose
