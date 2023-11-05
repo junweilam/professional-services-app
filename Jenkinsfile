@@ -67,16 +67,16 @@ pipeline {
             }
         }
 
-        stage('Set up container') {
-            steps {
-                // sh 'docker-compose build'
-                // sh 'docker-compose up'
-                sh 'cd ./backend-app && docker-compose -f docker-compose.yml down'
-                sh 'cd ./backend-app && docker-compose -f docker-compose.yml build'
-                sh 'cd ./backend-app && docker-compose -f docker-compose.yml up'
+        // stage('Set up container') {
+        //     steps {
+        //         // sh 'docker-compose build'
+        //         // sh 'docker-compose up'
+        //         sh 'cd ./backend-app && docker-compose -f docker-compose.yml down'
+        //         sh 'cd ./backend-app && docker-compose -f docker-compose.yml build'
+        //         sh 'cd ./backend-app && docker-compose -f docker-compose.yml up'
                     
-            }
-        }
+        //     }
+        // }
 
         // stage('Set up container') {
         //     steps {
