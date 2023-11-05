@@ -55,8 +55,20 @@ pipeline {
             steps {
                 sh 'apt-get update'
                 sh 'apt-get install -y docker-compose'
+            }
+        }
+
+        stage('Print Environment Variables') {
+            steps {
+                sh 'printenv'
+            }
+        }
+        stage('Print PATH Variable') {
+            steps {
+                sh 'echo $PATH'
+            }
+        }
     }
-}
 
         stage('Set up container') {
             steps {
