@@ -2,7 +2,8 @@ pipeline {
     agent {
         docker {
             image 'docker:dind'
-            args '-p 3000:3000'
+            //args '-p 3000:3000'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
         }
         // docker {
         //     image 'jenkins/inbound-agent'
