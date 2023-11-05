@@ -54,7 +54,7 @@ pipeline {
         stage('Debug') {
             steps {
                 sh 'echo $PATH'
-                sh 'docker-compose --version'
+                sh 'ls -1 /usr/local/bin'
         }
         }   
 
