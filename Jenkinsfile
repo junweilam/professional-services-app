@@ -8,6 +8,7 @@ pipeline {
 
     environment {
         CI = 'false'
+        PATH = "$PATH:/usr/bin/docker-compose>"
         // DB_HOST= credentials('DB_HOST') 
         // DB_USER= credentials('DB_USER')
         // DB_PASSWORD= credentials('DB_PASSWORD') 
