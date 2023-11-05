@@ -46,12 +46,12 @@ pipeline {
             }
         }
 
-        stage('Install Docker-Compose') {
-            steps {
-                sh 'apt-get update -y'
-                sh 'apt-get install -y docker-compose'
-            }
-        }
+        // stage('Install Docker-Compose') {
+        //     steps {
+        //         sh 'apt-get update -y'
+        //         sh 'apt-get install -y docker-compose'
+        //     }
+        // }
 
         // stage('Set up container') {
         //     steps {
@@ -59,7 +59,7 @@ pipeline {
         //             // sh 'docker-compose build'
         //             // sh 'docker-compose up'
         //             sh 'cd ./backend-app && docker-compose -f docker-compose.yml down'
-                    sh 'cd ./backend-app && docker-compose -f docker-compose.yml build'
+        //               sh 'cd ./backend-app && docker-compose -f docker-compose.yml build'
         //             sh 'cd ./backend-app && docker-compose -f docker-compose.yml up'
                     
         //         }
