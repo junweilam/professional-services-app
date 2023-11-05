@@ -57,7 +57,6 @@ const Home = () => {
     async function fetchData(){
       try{
         const response = await getServices();
-        console.log(response);
         setServices(response.data);
         
       }catch(err){
@@ -67,10 +66,8 @@ const Home = () => {
     async function fetchUserAuthorization(){
       try{
         let token = {token: localStorage.getItem("token")}
-        console.log(token);
         if(token != null){
           const response = await getAuthorization(token);
-          console.log(response);
           if(response.results == 3){
             setIsAuthorized(true);
           }else{

@@ -11,11 +11,9 @@ export const CheckToken = async (modal) => {
     try {
         // to check if the token is valid
         const response = await (handleAuth(token))
-        console.log(response)
     } catch (err) {
         try{
             const res = await(logOut(token))
-            console.log("logged out")
         }catch(err){
             console.log(err)
         }

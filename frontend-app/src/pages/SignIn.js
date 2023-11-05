@@ -36,11 +36,9 @@ const SignIn = () => {
     }
 
     // Add your form submission logic here
-    console.log(formData);
     try {
       let formValues = { Email: formData.email, Password: formData.password }
       const response = await logIn(formValues);
-      console.log(response);
       if (response.message === "service reset password") {
         setIsResetPassword(true);
       }
@@ -62,19 +60,16 @@ const SignIn = () => {
           setMistakeCount(mistakeCount + 1); // increment mistake count
           setIsPasswordWrong(true);
           setIsEmailValid(false);
-          console.log('Authentication failed');
         } else if (response.error.response.status === 403) {
           setIsEmailValid(true);
           setIsPasswordWrong(false);
         }
       }
       setEmailValue(`${formData.email}`);
-      console.log(`${response.Email}`);
 
     } catch (err) {
       if (err.response && err.response.status === 401) {
         // Handle token expiration: clear token and redirect to login page
-        console.log('Authentication token expired. Logging out...');
         localStorage.removeItem('token'); // Clear token from localStorage
         window.location.href = '/signin'; // Redirect to the login page
       } else {

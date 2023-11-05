@@ -17,7 +17,6 @@ export const CartProvider = ({ children }) => {
   };
 
   const removeFromCart = (item) => {
-    console.log("inside function");
     const updatedCart = cart.filter((cartItem) => cartItem.id !== item.id);
     setCart(updatedCart);
   };

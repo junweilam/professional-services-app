@@ -66,8 +66,6 @@ const SignUp = () => {
       let formValues = {LastName: formData.lastName, FirstName : formData.firstName, Email : formData.email, ContactNo : formData.contactNo, Address : formData.address,Password : formData.password, Authorization : formData.authorization, ConfirmPassword : formData.confirmPassword};
       const response = await registerUser(formValues, formData.id);
 
-      console.log(response);
-
      if (response.error){
       if (response.error.response.status === 401) {
         setEmailStatus(false);

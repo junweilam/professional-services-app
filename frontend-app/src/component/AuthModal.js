@@ -42,9 +42,6 @@ export const AuthModal = ({ isOpen, closeModal, isAuthenticated, setIsAuthentica
     }
   }, [isOpen]);
 
-  
-  console.log(email);
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -65,8 +62,6 @@ export const AuthModal = ({ isOpen, closeModal, isAuthenticated, setIsAuthentica
         setIsExpired(false);
         setIsCountdown(true);
         setCountdown(10);
-        console.log(is2FA);
-        console.log(isResent);
       }
 
     } catch (err) {

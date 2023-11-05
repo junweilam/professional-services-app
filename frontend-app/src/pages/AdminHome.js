@@ -32,7 +32,6 @@ const AdminHome = () => {
                 let token = { token: localStorage.getItem("token") }
                 if (token != null){
                     const response = await getAuthorization(token);
-                    console.log(response);
                     if (response.results == 1) {
                         setIsAuthorized(true);
                     } else {

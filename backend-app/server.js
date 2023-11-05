@@ -19,7 +19,6 @@ sodium.randombytes_buf(nonce);
 const encrypted = Buffer.alloc(sodium.crypto_secretbox_MACBYTES + Buffer.byteLength(secretKey));
 sodium.crypto_secretbox_easy(encrypted, Buffer.from(secretKey), nonce, encryptionKey);
 const encryptedSecret = encrypted.toString('hex');
-console.log('Hashed key:', encryptedSecret);
 
 const crypto = require('crypto');
 const axios = require('axios');
@@ -69,8 +68,6 @@ function generateOTP() {
 function setOTPWithCountdown() {
     // Display the initial OTP
 
-    console.log(`Current OTP: ${otp}`);
-
     // Define the countdown duration in seconds (e.g., 60 seconds)
     const countdownDuration = 300;
 
@@ -80,12 +77,10 @@ function setOTPWithCountdown() {
     // Create a function to update the countdown and set OTP to 0 when it reaches 0
     function updateCountdown() {
         if (countdown > 0) {
-            // console.log(`OTP will reset in ${countdown} seconds.`);
             countdown -= 1;
             setTimeout(updateCountdown, 1000); // Update countdown every 1 second (1000 milliseconds)
         } else {
             otp = 0;
-            console.log('OTP has been reset to 0.');
         }
     }
 
@@ -182,7 +177,6 @@ app.post('/registration/', async (req, res) => {
         // Add email validation using the validateEmail function
         const userEmail = req.body.Email;
         if (!validateEmail(userEmail)) {
-            console.log("Invalid email address");
             return res.status(406).json({ message: "Invalid email address" });
         }
 
@@ -190,14 +184,10 @@ app.post('/registration/', async (req, res) => {
         const lastname = req.body.LastName;
         const firstname = req.body.FirstName;
         if (!validateUsername(lastname, firstname)) {
-            console.log("Invalid username");
             return res.status(411).json({ message: "Invalid username" });
         }
 
-        console.log(req.body.Password)
-        console.log(req.body.ConfirmPassword)
         if (req.body.Password !== req.body.ConfirmPassword) {
-            console.log("Password and Confirm Password do not match");
             return res.status(408).json({ message: "Password and Confirm Password do not match" })
         }
 
@@ -205,21 +195,16 @@ app.post('/registration/', async (req, res) => {
 
         // Hash the password using Argon2
         const hashedPassword = await argon2.hash(password);
-        console.log(hashedPassword);
 
         // Generate SHA-1 hash of the password
         const passwordHash = generateSHA1Hash(password);
-        console.log('Password SHA-1 hash:', passwordHash);
 
         // Check password against Pwned Passwords
         const matchCount = await checkPasswordAgainstPwnedPasswords(passwordHash);
-        console.log('Pwned Passwords match count:', matchCount);
 
         if (matchCount > 1) {
-            console.log("This password has been exposed in data breaches. Please choose a different password.");
             return res.status(409).json({ message: "This password has been exposed in data breaches. Please choose a different password." });
         } else if (matchCount == 0) {
-            console.log("Continue");
             // Proceed with registration logic here
         } else {
             console.log("Error");
@@ -234,34 +219,27 @@ app.post('/registration/', async (req, res) => {
 
         const [eResults, efields] = await pool.execute(checkEmail, [req.body.Email]);
         const [cResults, cfields] = await pool.execute(checkContact, [req.body.ContactNo]);
-        console.log(req.body.ContactNo)
 
         if (eResults.length > 0 && cResults.length > 0) {
             emailFlag = true;
-            console.log("Email and contacts used");
             res.status(401).json({ message: 'Email and contacts already used' });
         }
         else if (cResults.length > 0) {
             contactFlag = true;
-            console.log("Contact Number used");
             res.status(402).json({ message: 'Contact Number already used' });
         }
         else if (req.body.ContactNo.length != 8) {
-            console.log(req.body.ContactNo.length)
             res.status(405).json({ message: "Contact number have to be 8 number" })
         }
         else if (eResults.length > 0) {
-            console.log("Email used");
             res.status(403).json({ message: 'Email already used' });
         }
         else if (password.length <= 8) {
             res.status(404).json({ message: "Password needs to be 8 characters" })
         }
         else {
-            console.log(req.body);
             const q = `insert into users(LastName, FirstName, Email, ContactNo, Address, Password, Authorization) VALUES(?)`;
             const values = [req.body.LastName, req.body.FirstName, req.body.Email, req.body.ContactNo, req.body.Address, hashedPassword, req.body.Authorization];
-            console.log("insert: " + values);
             pool.query(q, [values], (err, data) => {
                 console.log(err, data);
                 if (err) return res.json({ error: "SQL Error" });
@@ -338,7 +316,6 @@ async function updateUserInDatabase (email, mistakeCount) {
     const [results, fields] = await pool.execute(updateQuery, [mistakeCount, email]);
 
     // Check results if needed
-    console.log("User updated successfully:", results);
     return results;
 }
 
@@ -356,7 +333,6 @@ function setLockoutTimer(email) {
 
     pool.execute(updateQuery, [unlockTime, email])
         .then(([results, fields]) => {
-            console.log("LockoutTimestamp updated successfully:", results);
         })
         .catch((error) => {
             console.error("Error updating LockoutTimestamp:", error);
@@ -379,36 +355,25 @@ app.post('/signin/', async (req, res) => {
     
     // If the account is locked, handle the lockout logic
     if (await isUserLocked(email)){
-        console.log("User Account is locked");
         return res.status(405).json({ message: "Account is locked. Please try again later."});
     }
   
     
     try {
-        console.log("In Sign in Route");
         // const { email, password } = req.body;
         const email = (req.body.Email);
         const password = (req.body.Password);
-        console.log(email);
-        console.log(password);
 
         // Check email against database
         const q = "SELECT * FROM users WHERE Email = ?";
         const [results, fields] = await pool.execute(q, [email]);
         // const params = [email, password];
 
-        console.log(results);
-
         const auth = "SELECT Authorization FROM users WHERE Email = ?";
 
 
         // const [results, fields] = await pool.execute(q, params);
         const [authResults, rFields] = await pool.execute(auth, [email]);
-
-        // console.log(params)
-        // console.log(fields)
-        // console.log(rFields)
-        // console.log(authResults[0].Authorization);
 
         // authorizationValue = authResults[0].Authorization;
 
@@ -434,7 +399,6 @@ app.post('/signin/', async (req, res) => {
                         sendEmail(email, otp);
                         setOTPWithCountdown();
                         res.status(200).json({ message: 'Authentication Successful and AuthValue = 1', Email: email });
-                        console.log("Success");
                         resetLoginAttempts(email);
                         updateUserInDatabase(email, 0);
 
@@ -451,7 +415,6 @@ app.post('/signin/', async (req, res) => {
                     else if (results.length > 0 && authorizationValue == 3) {
                         otp = generateOTP();
                         setOTPWithCountdown();
-                        console.log(otp);
                         sendEmail(email, otp);
                         res.status(202).json({ message: 'Authentication Successful and AuthValue = 3', Email: email });
                         resetLoginAttempts(email);
@@ -460,7 +423,6 @@ app.post('/signin/', async (req, res) => {
                 }
                     else {
                         // Invalid authorization value
-                        console.log("Failed");
                         return res.status(401).json({ message: 'Authentication failed' });
                     }
 
@@ -470,7 +432,6 @@ app.post('/signin/', async (req, res) => {
                 
                 const attempts = incrementLoginAttempts(email); // Increment login attempts
                 setLockoutTimer(email); 
-                console.log(`Login attempts for ${email}: ${attempts}`);
               
                 return res.status(402).json({ message: 'Authentication failed: Incorrect password' });
                 
@@ -490,7 +451,6 @@ app.post('/signin/', async (req, res) => {
 
 app.post('/resend2fa/', async (req, res) => {
     try {
-        console.log("inside resend 2fa");
         const email = (req.body.Email);
         otp = generateOTP();
         setOTPWithCountdown();
@@ -510,25 +470,19 @@ app.post('/update-password/', async (req, res) => {
         const password = (req.body.Password);
         // Hash the password using Argon2
         const hashedPassword = await argon2.hash(password);
-        console.log(hashedPassword);
 
         const q = "UPDATE users SET Password = ? WHERE Email = ?";
         const params = [hashedPassword, req.body.Email];
-        console.log(params);
         
         // Generate SHA-1 hash of the password
         const passwordHash = generateSHA1Hash(password);
-        console.log('Password SHA-1 hash:', passwordHash);
 
         // Check password against Pwned Passwords
         const matchCount = await checkPasswordAgainstPwnedPasswords(passwordHash);
-        console.log('Pwned Passwords match count:', matchCount);
 
         if (matchCount > 1) {
-            console.log("This password has been exposed in data breaches. Please choose a different password.");
             return res.status(409).json({ message: "This password has been exposed in data breaches. Please choose a different password." });
         } else if (matchCount == 0) {
-            console.log("Continue");
             // Proceed with registration logic here
         } else {
             console.log("Error");
@@ -554,8 +508,6 @@ app.post('/update-password/', async (req, res) => {
 
 
 app.get('/checkAuth/', verifyToken, async (req, res) => {
-    console.log( res.json)
-
 })
 
 
@@ -563,7 +515,6 @@ app.post('/2fa/', async (req, res) => {
     try {
         userOTP = req.body.OTP;
         email = req.body.Email;
-        console.log(email);
         if (userOTP == otp && authorizationValue == 1) {
             const token = jwt.sign({ authorization: authorizationValue }, secretKey, { expiresIn: '15m' });
 
@@ -584,7 +535,6 @@ app.post('/2fa/', async (req, res) => {
         }
         else if (userOTP == otp && authorizationValue == 3) {
             const token = jwt.sign({ authorization: authorizationValue }, secretKey, { expiresIn: '15m' });
-            console.log(otp);
             const q = 'UPDATE users SET Token = ? WHERE Email = ?';
             const params = [token, req.body.Email];
 
@@ -612,10 +562,7 @@ app.post('/2fa/', async (req, res) => {
 // !!!Admin Route Codes Here!!!
 
 app.post('/adminaddservices/', async (req, res) => {
-    console.log(res.json)
     try {
-        console.log(req.body);
-
         const checkServiceID = "SELECT * FROM services WHERE serviceID = ?";
         const [results, fields] = await pool.execute(checkServiceID, [req.body.ServiceID]);
 
@@ -704,7 +651,6 @@ app.get('/getServicesID/', async (req, res) => {
 */
 
 app.post("/logout/", async (req, res) => {
-    console.log("inside server.js")
     // retrieving token
     const token = req.header("Authorization").split(" ")[1]; // Get token part after 'Bearer '
     try {
@@ -717,7 +663,6 @@ app.post("/logout/", async (req, res) => {
             const updateTokeninDb = 'UPDATE users SET Token = NULL WHERE Token = ?';
             pool.query(updateTokeninDb, [token], (err, data) => {
                 console.log(err)
-                console.log(data)
                 if (err) {
                     return res.json({ error: "SQL error" })
                 } else {
@@ -730,7 +675,6 @@ app.post("/logout/", async (req, res) => {
 
 
         // pool.query('SELECT * FROM users WHERE Token = ?', [token], (error, results) => {
-        //     console.log('SELECT query results:', results);
         //     if (error) {
         //         console.error('Error querying database', error);
         //         return res.status(500).json({ message: 'Internal server error' });
@@ -772,7 +716,6 @@ app.post('/update-service-by-id/', async (req, res) =>{
 app.post('/delete-service-by-id/', async (req,res) => {
     const q = 'DELETE FROM services WHERE serviceID = ?';
     const params = [req.body.ServiceID];
-    console.log(params);
     const [results, fields] = await pool.execute(q,params);
 
     return res.status(200).json({
@@ -813,7 +756,6 @@ app.get('/get-services/', async (req, res) => {
         });
     }
     res.json(services);
-    console.log(services);
 })
 
 app.post('/get-service-by-id/', async (req, res) =>{
@@ -836,7 +778,6 @@ app.post('/create-order/', (req, res) => {
   
     cart.forEach((item) => {
       const values = [userId, item.id, selectedDate, address, status];
-      console.log("values:",values);
       pool.query(insertQuery, values, (err, result) => {
         if (err) {
           console.error(err);
@@ -853,15 +794,12 @@ app.post('/get-userid/', async (req, res) => {
     const token = req.body.token;
 
     const [results, fields] = await pool.execute(q, [token]);
-    console.log(results);
     res.json(results);
 })
 
 app.post('/get-history/', async (req, res) => {
     const q = "SELECT OrderID, ServiceID, OrderTime, DateofService, Status FROM orders WHERE UID = ?";
-    console.log(req.body);
     const uid = req.body.userId;
-    console.log("history-uid:",uid);
     const [results, fields] = await pool.execute(q, [uid]);
 
     const orders = [];
@@ -877,28 +815,21 @@ app.post('/get-history/', async (req, res) => {
         });
     }
     res.json(orders);
-    console.log("order:",orders);
 })
 
 app.post('/get-service/', async (req, res) => {
     const q = "SELECT ServiceName FROM services WHERE serviceID = ?"
-    console.log("req.body:", req.body);
     const serviceID = req.body.sid;
-    console.log("serviceid:",serviceID);
 
     const [results, fields] = await pool.execute(q, [serviceID]);
-    console.log("result",results);
     res.json(results);
 })
 
 app.post('/complete-order/', async (req, res) => {
     const q = "UPDATE orders SET Status = 'Completed' WHERE OrderID = ?"
-    console.log("req.body:", req.body);
     const orderid = req.body.orderid;
-    console.log("orderid:",orderid);
 
     const [results, fields] = await pool.execute(q, [orderid]);
-    console.log("result",results);
     res.json(results);
 })
 
@@ -911,17 +842,13 @@ app.post('/get-serviceuserid/', async (req, res) => {
     const token = req.body.token;
 
     const [results, fields] = await pool.execute(q, [token]);
-    console.log("get-serviceuserid",results);
     res.json(results);
 })
 
 app.post('/get-servieorder/', async (req, res) => {
     const q = "SELECT OrderID, OrderTime, DeliveryAddress, DateofService, Status FROM orders WHERE ServiceID = ?";
-    console.log(req.body);
     const sid = req.body.serviceId;
-    console.log("serviceid:",sid);
     const [results, fields] = await pool.execute(q, [sid]);
-    console.log("results:",results);
     const orders = [];
 
     // Loop through the results and format them
@@ -935,7 +862,6 @@ app.post('/get-servieorder/', async (req, res) => {
         });
     }
     res.json(orders);
-    console.log("order:",orders);
 })
 
 //----------------------------------------------------- Authorization --------------------------------------------------
@@ -972,7 +898,6 @@ app.get("/", (req, res) => {
 // Set port, listen for requests 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}. `);
 });
 
 //-------------------------------------------Payment---------------------------------
@@ -981,7 +906,6 @@ const { match } = require('assert');
 const stripe = Stripe(process.env.STRIPE_KEY)
 
 //app.use("/api/stripe", stripe);
-//console.log("stripe",stripe);
 
 app.post('/create-checkout-session', async (req, res) => {
     const line_items = req.body.cart.map(item => {
@@ -998,8 +922,7 @@ app.post('/create-checkout-session', async (req, res) => {
             quantity: item.quantity,
         };
     });
-    //console.log("stripe inside post",stripe);
-    console.log(line_items);
+    
     const session = await stripe.checkout.sessions.create({
         line_items,
         mode: 'payment',

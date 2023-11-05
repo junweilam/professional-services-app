@@ -27,10 +27,8 @@ const HistoryPage = () => {
       try {
         const response = await getUserId(token);
         let userId = await response[0].UID;
-        console.log(`User ID: ${userId}`);
 
         const response2 = await getOrderHistory({ userId });
-        console.log(response2);
         setOrderhistory(response2);
 
         const updatedOrderHistory = await Promise.all(
@@ -38,7 +36,6 @@ const HistoryPage = () => {
             let sid = await order.serviceid;
             const servicenameResponse = await getService({ sid });
             const servicename = servicenameResponse[0].ServiceName;
-            console.log("sname", servicename);
             return { ...order, servicename }; // Replace serviceid with servicename
           })
         );
@@ -52,10 +49,8 @@ const HistoryPage = () => {
     async function fetchUserAuthorization() {
       try {
         let token = { token: localStorage.getItem("token") }
-        console.log(token);
         if (token != null) {
           const response = await getAuthorization(token);
-          console.log(response);
           if (response.results == 3) {
             setIsAuthorized(true);
           } else {
@@ -81,7 +76,6 @@ const HistoryPage = () => {
     //   try {
     //     let token = { token: localStorage.getItem("token") };
     //     const response = await getAuthorization(token);
-    //     console.log(response);
     //     if (response.results === 3) {
     //       setIsAuthorized(true);
     //     } else {
@@ -94,9 +88,6 @@ const HistoryPage = () => {
 
     // Call fetchUserAuthorization if needed
   }, []);
-
-  console.log("orderhistor:", orderhistory);
-  console.log("servicename", orderhistory.servicename)
 
   return (
     isAuthorized ? (
