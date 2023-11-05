@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'jenkins/inbound-agent'
+            image 'docker:dind'
             args '-p 3000:3000'
         }
         // docker {
