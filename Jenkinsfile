@@ -56,7 +56,7 @@ pipeline {
     //             sh 'apt-get update'
     //             sh 'apt-get install -y docker-compose'
     // }
-}
+
 
         stage('Set up container') {
             steps {
@@ -130,7 +130,7 @@ pipeline {
             }
         }
     
-    
+    }
 
     post {
         success {
