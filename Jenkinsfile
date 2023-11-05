@@ -48,8 +48,8 @@ pipeline {
 
         stage('Install Docker-Compose') {
             steps {
-                sh 'apt-get update -y'
-                sh 'apt-get install -y docker-compose'
+                sh 'sudo apt-get update -y'
+                sh 'sudo apt-get install -y docker-compose'
             }
         }
 
