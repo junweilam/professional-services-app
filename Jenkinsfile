@@ -94,6 +94,7 @@ pipeline {
         stage('Set up container') {
             steps {
                 script {
+                    sh 'cd ./backend-app && git clean -fd'
                     // sh 'docker-compose build'
                     // sh 'docker-compose up'
                     // sh 'cd ./backend-app && docker-compose down'
