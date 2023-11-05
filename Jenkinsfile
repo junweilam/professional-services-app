@@ -39,12 +39,6 @@ pipeline {
             }
         }
 
-        stage('Debug') {
-            steps {
-                sh 'echo $PATH'
-                sh 'which docker-compose'
-            }
-        }
 
         stage('Set up container') {
             steps {
