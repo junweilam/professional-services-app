@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'docker:dind'
+            image 'blueocean-jenkins'
             args '-p 3000:3000'
         }
         // docker {
