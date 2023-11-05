@@ -19,7 +19,7 @@ pipeline {
 
 
     environment {
-        PATH = "/usr/bin:${env.PATH}"
+        PATH = "/usr/local/bin:${env.PATH}"
         CI = 'false'
         
         // DB_HOST= credentials('DB_HOST') 
@@ -59,12 +59,12 @@ pipeline {
             }
         }   
 
-        stage('Install Docker Compose') {
-            steps {
-                sh 'apt-get update'
-                sh 'apt-get install -y docker-compose'
-            }
-        }
+        // stage('Install Docker Compose') {
+        //     steps {
+        //         sh 'apt-get update'
+        //         sh 'apt-get install -y docker-compose'
+        //     }
+        // }
 
 
         stage('Check Docker-Compose Location') {
@@ -84,7 +84,7 @@ pipeline {
                 script {
                     // sh 'docker-compose build'
                     // sh 'docker-compose up'
-                    sh 'cd ./backend-app && /usr/bin/docker-compose -f ./backend-app/docker-compose.yml down'
+                    sh 'cd ./backend-app && /usr/local/bin/docker-compose -f ./backend-app/docker-compose.yml down'
                     //sh 'cd ./backend-app && docker-compose -f docker-compose.yml build'
                     // sh 'cd ./backend-app && docker-compose -f docker-compose.yml up''
                     
