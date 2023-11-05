@@ -66,6 +66,14 @@ pipeline {
         //     }
         // }
 
+        stage('Clean Workspace') {
+                    steps {
+                        sh 'rm -rf frontend/build'
+                        sh 'rm -rf frontend/node_modules'
+                        sh 'rm -rf backend/node_modules'
+                        sh 'rm -rf node_modules'
+                    }
+                }
     
 
 
@@ -101,11 +109,7 @@ pipeline {
         //         '''
         //         }
         //     }
-        stage('Clean Workspace') {
-                    steps {
-                        sh 'rm -rf frontend/build'
-                    }
-                }
+        
         
         // stage('Install react-scripts') {
         //             steps {
