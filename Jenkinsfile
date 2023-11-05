@@ -46,6 +46,12 @@ pipeline {
         stage('Set up container') {
             steps {
                 script {
+
+                    // Start Docker-in-Docker container
+                    sh 'docker run --privileged --name dind -d -v /var/run/docker.sock:/var/run/docker.sock docker:dind'
+
+                    // Wait for Docker-in-Docker to start
+                    sh 'sleep 10'
                     dir('backend-app/') {
                         sh 'docker-compose -f docker-compose.yml down'
                         sh 'docker-compose -f docker-compose.yml build'
