@@ -62,7 +62,7 @@ pipeline {
             steps {
                 script {
                     dir('jenkins/'){
-                         sh 'cd ./backend-app && docker-compose -f docker-compose.yml down'
+                         sh 'docker-compose -f docker-compose.yml down'
                     }
                     // sh 'docker-compose build'
                     // sh 'docker-compose up'
