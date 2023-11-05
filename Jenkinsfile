@@ -29,7 +29,7 @@ pipeline {
                         }
                     }
                 }
-                dir('backend-app/') {
+                dir('./backend-app/') {
                     script {
                         if (!fileExists('package.json')) {
                             error('Missing package.json in the workspace.')
