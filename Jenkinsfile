@@ -6,12 +6,12 @@ pipeline {
         }
     }
 
-    tools {
-        // Install Docker Compose
-        node('master') {
-            tool 'Docker-Compose'
-        }
-    }
+    // tools {
+    //     // Install Docker Compose
+    //     node('master') {
+    //         tool 'Docker-Compose'
+    //     }
+    // }
 
 
     environment {
@@ -47,12 +47,12 @@ pipeline {
             }
         }
 
-        // stage('Install Docker-Compose') {
-        //     steps {
-        //         sh 'apt-get update -y'
-        //         sh 'apt-get install -y docker-compose'
-        //     }
-        // }
+        stage('Install Docker-Compose') {
+            steps {
+                sh 'sudo apt-get update -y'
+                sh 'sudo apt-get install -y docker-compose'
+            }
+        }
 
         stage('Set up container') {
             steps {
