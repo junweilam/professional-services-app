@@ -129,7 +129,7 @@ pipeline {
                 dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
             }
         }
-    }
+    
     
 
     post {
@@ -138,3 +138,5 @@ pipeline {
         }
     }
 
+
+}
