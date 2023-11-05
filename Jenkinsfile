@@ -66,16 +66,6 @@ pipeline {
         //     }
         // }
 
-
-        stage('Check Docker-Compose Location') {
-            steps {
-                script {
-                    def dockerComposeLocation = sh(script: 'which docker-compose', returnStdout: true).trim()
-                    echo "docker-compose is located at: ${dockerComposeLocation}"
-                }
-            }
-        }
-
     
 
 
