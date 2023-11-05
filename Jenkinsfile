@@ -55,7 +55,7 @@ pipeline {
         stage('Debug') {
             steps {
                 sh 'echo $PATH'
-                //sh 'ls -1 /usr/local/bin/docker-compose'
+                sh 'ls -1 /usr/local/bin/docker-compose'
         }
         }   
 
