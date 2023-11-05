@@ -38,6 +38,12 @@ pipeline {
             }
         }
 
+        stage('Check Docker') {
+            steps {
+                sh 'docker --version'
+            }
+        }
+
         stage('Clean Workspace') {
                     steps {
                         sh 'rm -rf frontend/build'
@@ -64,16 +70,19 @@ pipeline {
                     steps {
                         script { 
                             dir('backend-app/') {
-                                sh 'docker compose -f docker-compose.yml down'
-                                sh 'docker compose -f docker-compose.yml build'
-                                sh 'docker compose -f docker-compose.yml up --detach --force-recreate --renew-anon-volumes;'
+                                // sh 'docker compose -f docker-compose.yml down'
+                                // sh 'docker compose -f docker-compose.yml build'
+                                // sh 'docker compose -f docker-compose.yml up --detach --force-recreate --renew-anon-volumes;'
+                                sh 'docker compose down'
+                                sh 'docker compose build'
+                                sh 'docker compose up'
                             }
                         }
                     }
                 }
             }
         }
-        
+
         stage('OWASP DependencyCheck') {
             steps {
                 dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
