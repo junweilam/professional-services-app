@@ -43,8 +43,10 @@ pipeline {
             steps {
                 script {
                     dir('jenkins/') {
-                        sh 'docker-compose build'
-                        sh 'docker-compose up'
+                        // sh 'docker-compose build'
+                        // sh 'docker-compose up'
+                        sh 'docker-compose -f docker-compose.yml build'
+                        sh 'docker-compose -f docker-compose.yml up'
                     }
                 }
             }
