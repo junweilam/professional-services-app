@@ -51,12 +51,33 @@ pipeline {
             }
         }
 
+<<<<<<< HEAD
     //     stage('Install Docker Compose') {
     //         steps {
     //             sh 'apt-get update'
     //             sh 'apt-get install -y docker-compose'
     // }
 }
+=======
+        // stage('Install Docker Compose') {
+        //     steps {
+        //         sh 'apt-get update'
+        //         sh 'apt-get install -y docker-compose'
+        //     }
+        // }
+
+        stage('Print Environment Variables') {
+            steps {
+                sh 'printenv'
+            }
+        }
+        stage('Print PATH Variable') {
+            steps {
+                sh 'echo $PATH'
+            }
+        }
+    
+>>>>>>> 0dee6a8d5066c0bdafae20adbaf35ada7ff521a2
 
         stage('Set up container') {
             steps {
