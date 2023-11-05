@@ -38,16 +38,12 @@ pipeline {
                 }
             }
         }
-        stage('Install Docker-Compose') {
-            steps {
-                sh 'npm install -g docker-compose'  
-            }
-        }
 
         stage('Set up container') {
             steps {
                 script {
                     dir('backend-app/') {
+                        sh 'npm install docker-compose'
                         sh 'docker-compose build'
                         sh 'docker-compose up'
                     }
