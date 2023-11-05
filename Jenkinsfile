@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'node:18.12.0'
+            image 'jenkins/inbound-agent'
             args '-p 3000:3000'
         }
     }
@@ -47,12 +47,12 @@ pipeline {
             }
         }
 
-        stage('Install Docker Compose') {
-            steps {
-                sh 'sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose'
-                sh 'sudo chmod +x /usr/local/bin/docker-compose'
-    }
-}
+//         stage('Install Docker Compose') {
+//             steps {
+//                 sh 'curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose'
+//                 sh 'chmod +x /usr/local/bin/docker-compose'
+//     }
+// }
 
         stage('Set up container') {
             steps {
