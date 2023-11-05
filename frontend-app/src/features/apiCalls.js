@@ -16,7 +16,7 @@ export const registerUser = async (user) => {
 export const logIn = async (user) => {
     try{
         console.log(user);
-        const res = await axios.post("http://54.169.170.167:8080/signin/", user);
+        const res = await axios.post("https://54.169.170.167:8080/signin/", user);
         return res.data;
     }catch(err){
         console.log(err);
