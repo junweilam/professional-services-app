@@ -45,7 +45,6 @@ const CartPage = () => {
       try {
         const response = await getUserId(token);
         userId = response[0].UID;
-        console.log(`User ID: ${userId}`);
       } catch (error) {
         console.error("Error getting user ID:", error);
       }
@@ -63,7 +62,6 @@ const CartPage = () => {
 
         setIsOrderConfirmed(true);
 
-        console.log("Order placed successfully");
       } else {
         console.error("User ID is not defined. Cannot place the order.");
       }

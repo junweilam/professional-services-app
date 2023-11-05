@@ -11,12 +11,9 @@ const ServiceHomePage = () => {
       try {
         const token = { token: localStorage.getItem("token") };
         const response1 = await getServiceUserId(token);
-        console.log("response1", response1[0].ServiceID);
         let serviceId = await response1[0].ServiceID;
-        console.log(`User ID: ${serviceId}`);
 
         const response2 = await getServiceOrder({serviceId}); 
-        console.log("response2", response2);
         setOrders(response2);
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -29,9 +26,7 @@ const ServiceHomePage = () => {
 
   const handleCompleteOrder = async (orderid) => {
     try {
-      console.log('orderid in handleCompleteOrder :', orderid);
       const response = await completeServiceOrder({orderid});
-      console.log('response.success', response);
       if (response) {
         const updatedOrders = orders.map((order) => {
           if (order.orderid === orderid) {
@@ -55,7 +50,6 @@ const ServiceHomePage = () => {
     return 0;
   });
 
-  console.log("orders", orders);
   return (
     <div>
       <h2>Service Orders</h2>

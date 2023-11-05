@@ -2,7 +2,6 @@ import axios from "axios";
 
 export const registerUser = async (user) => {
     try{
-        console.log(user);
         const res = await axios.post("http://localhost:8080/registration/",user);
         return res.data;
     }catch(err){
@@ -15,8 +14,12 @@ export const registerUser = async (user) => {
 
 export const logIn = async (user) => {
     try{
+<<<<<<< HEAD
         console.log(user);
         const res = await axios.post("http://localhost:8080/signin/", user);
+=======
+        const res = await axios.post("https://54.169.170.167:8080/signin/", user);
+>>>>>>> 924fccb77fcf3f939648c77ae150d1346aae543c
         return res.data;
     }catch(err){
         console.log(err);
@@ -33,7 +36,6 @@ export const handleAuth = async (user) => {
                 'access-token' : localStorage.getItem("token")
             }
         })
-        console.log(stress)
         return stress
     }catch(err){
         console.log("err",err)
@@ -46,13 +48,11 @@ export const handleAuth = async (user) => {
 export const logOut = async () => {
     try{
         const token = localStorage.getItem("token");
-        console.log(token);
         const response = await axios.post("http://localhost:8080/logout/",null , {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
           });
-          console.log(response)
           return response
     }catch(err){
         console.log("err from apicalls", err)
@@ -71,7 +71,6 @@ export const resendOTP = async (user) => {
 
 export const authLogIn = async (user) => {
     try{
-        console.log(user);
         const res = await axios.post("http://localhost:8080/2fa/", user);
         return res.data;
     }catch(err){
@@ -84,7 +83,6 @@ export const authLogIn = async (user) => {
 
 export const addServices = async (service) => {
     try{
-        console.log(service);
         const res = await axios.post("http://localhost:8080/adminaddservices/", service);
         return res.data;
     }catch(err){
@@ -97,7 +95,6 @@ export const addServices = async (service) => {
 
 export const payFunction = async (cart) => {
     try{
-        console.log(cart);
         const res = await axios.post(`http://localhost:8080/create-checkout-session`, {
             cart,
         })
@@ -161,7 +158,6 @@ export const deleteServiceById = async (user) => {
 
 export const getOrderHistory = async (uid) =>{
     try{
-        console.log("uid",uid);
         const res = await axios.post('http://localhost:8080/get-history/', uid);
         return res.data;
 
@@ -204,7 +200,6 @@ export const getAuthorization = async (token) => {
 
 export const getService = async (serviceId) => {
     try{
-        console.log("serviceid:", serviceId);
         const res = await axios.post('http://localhost:8080/get-service/', serviceId);
         return res.data;
     }catch(err){
@@ -277,7 +272,6 @@ export const getServiceUserId = async (token) => {
 
 export const getServiceOrder = async (serviceid) =>{
     try{
-        console.log("serviceid",serviceid);
         const res = await axios.post('http://localhost:8080/get-servieorder/', serviceid);
         return res.data;
 
@@ -291,7 +285,6 @@ export const getServiceOrder = async (serviceid) =>{
 
 export const completeServiceOrder = async (orderid) =>{
     try{
-        console.log("orderid",orderid);
         const res = await axios.post('http://localhost:8080/complete-order/', orderid);
         return res.data;
 

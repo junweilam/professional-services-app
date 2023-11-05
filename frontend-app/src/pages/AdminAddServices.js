@@ -70,7 +70,6 @@ const AdminAddServices = () => {
     try {
       let formValues = { ServiceID: formData.id, ServiceName: formData.name, ServiceDesc: formData.description, ServiceAdd: formData.address, Price: formData.price };
       const response = await addServices(formValues);
-      console.log(response);
       if (response.error) {
         if (response.error.response.status === 400) {
           setIsServiceIdUsers(true);
@@ -80,14 +79,11 @@ const AdminAddServices = () => {
         }
       }
       else if (response.message === "success") {
-        console.log("inside");
         setShowSuccessModal(true);
       }
     } catch (err) {
       console.log(err);
     }
-
-    console.log('Form data submitted:', formData);
   };
 
   return (

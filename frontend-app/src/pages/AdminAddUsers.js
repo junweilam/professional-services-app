@@ -26,17 +26,13 @@ const AdminAddUsers = () => {
             const updatedData = { ...prevFormData, [name]: value};
         
         if(updatedData.authorization == 2){
-            console.log("inside");
             setShowServiceOption(true);
-            console.log(updatedData.authorization);
         }else{
             setShowServiceOption(false);
-            console.log(updatedData.authorization);
         }
         return updatedData;
     })
     };
-    console.log(showServiceOption);
 
     
 

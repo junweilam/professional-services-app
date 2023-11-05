@@ -38,7 +38,6 @@ const AdminUpdateService = () => {
                 setIsServiceSelected(true);
                 let fields = { ServiceID: updatedData.serviceID }
                 const response = await getServicesById(fields);
-                console.log(response.results[0]);
                 setServiceSelected(response.results[0].serviceID);
 
                 setFormData((prevFormData) => ({
@@ -79,7 +78,6 @@ const AdminUpdateService = () => {
         e.preventDefault();
         try{
             let value = {ServiceID: serviceSelected}
-            console.log(value);
             const response = await deleteServiceById(value);
             if(response.message === "Deleted service"){
                 setIsDeleted(true);

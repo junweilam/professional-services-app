@@ -17,7 +17,6 @@ instance.interceptors.response.use(
   error => {
     if (error.response && error.response.status === 401) {
       // Handle token expiration here
-      console.log('Token expired. Logging out...');
       localStorage.removeItem('token'); // Remove the token from localStorage
       window.location.href = '/signin'; // Redirect to the login page
     }

@@ -52,7 +52,6 @@ function Navbar() {
   };
 
   const token = localStorage.getItem('token');
-  console.log(token);
   
 
 
@@ -60,9 +59,7 @@ function Navbar() {
     let token = {token: localStorage.getItem("token")}
     try{
         const response = await logOut(token)
-        console.log(response.data.message)
         if(response.data.message === "Logout successful"){
-          console.log("inside")
             // Clear the token from localStorage
             localStorage.removeItem('token');
             // Redirect the user to the login page
@@ -80,7 +77,6 @@ useEffect(() => {
   async function fetchUserAuthorization(){
     try{
       let token = {token: localStorage.getItem("token")}
-      console.log(token);
       if(token != null){
         const response = await getAuthorization(token);
         setAuthorized(response.results)
@@ -91,8 +87,6 @@ useEffect(() => {
   }
   fetchUserAuthorization();
 }, []);
-
-console.log(Authorized)
   
   return (
     <nav className="bg-white border-gray-200 dark:bg-gray-900 relative">
