@@ -1,10 +1,9 @@
 pipeline {
     agent {
-        any
-        // docker {
-        //     image 'node:18.12.0'
-        //     args '-p 3000:3000'
-        // }
+        docker {
+            image 'node:18.12.0'
+            args '-p 3000:3000'
+        }
     }
 
     environment {
@@ -50,7 +49,7 @@ pipeline {
         stage('Set up container') {
             steps {
                 script {
-                    dir('./jenkins/') {
+                    dir('./backend/') {
                         // sh 'docker-compose build'
                         // sh 'docker-compose up'
                         sh 'docker-compose -f docker-compose.yml down'
