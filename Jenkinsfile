@@ -1,18 +1,17 @@
 pipeline {
-    //agent none
-    //agent any
-    agent {
-        docker {
-            //image 'docker:dind'
-            image 'node:18.18.2'
-            args '-p 3000:3000'
-            //args '-v /var/run/docker.sock:/var/run/docker.sock'
-        }
-        // docker {
-        //     image 'jenkins/inbound-agent'
-        //     args '-v /var/run/docker.sock:/var/run/docker.sock'
-        // }
-    }
+    agent any
+    // agent {
+    //     docker {
+    //         //image 'docker:dind'
+    //         image 'node:18.18.2'
+    //         args '-p 3000:3000'
+    //         //args '-v /var/run/docker.sock:/var/run/docker.sock'
+    //     }
+    //     // docker {
+    //     //     image 'jenkins/inbound-agent'
+    //     //     args '-v /var/run/docker.sock:/var/run/docker.sock'
+    //     // }
+    // }
 
     // tools {
     //     // Install Docker Compose
@@ -80,18 +79,7 @@ pipeline {
         //             }
         //         }
 
-        // stage('Check Docker-Compose') {
-        //     steps {
-        //         script {
-        //             def dockerComposeVersion = sh(script: 'docker-compose --version', returnStatus: true)
-        //             if (dockerComposeVersion == 0) {
-        //                 echo 'Docker-Compose is installed and available.'
-        //             } else {
-        //                 error('Docker-Compose is not installed. Please install it.')
-        //             }
-        //         }
-        //     }
-        // }
+    
 
         
             
@@ -118,12 +106,7 @@ pipeline {
         //         }
         //     }
         
-        
-        // stage('Install react-scripts') {
-        //             steps {
-        //                 sh 'npm install react-scripts --save-dev'
-        //             }
-        //         }
+      
 
         
 
@@ -132,15 +115,10 @@ pipeline {
                 stage('Frontend run build') {
                     agent {
                         docker {
-                            //image 'docker:dind'
                             image 'node:18.18.2'
                             args '-p 3000:3000'
-                            //args '-v /var/run/docker.sock:/var/run/docker.sock'
                         }
-                        // docker {
-                        //     image 'jenkins/inbound-agent'
-                        //     args '-v /var/run/docker.sock:/var/run/docker.sock'
-                        // }
+                        
                     }
                     steps {
                         sh 'cd ./frontend-app && npm install'
