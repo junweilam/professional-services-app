@@ -8,7 +8,7 @@ pipeline {
 
     environment {
         CI = 'false'
-        PATH = "$PATH:/usr/bin/docker-compose>"
+        PATH = "$PATH:/usr/bin/docker-compose"
         // DB_HOST= credentials('DB_HOST') 
         // DB_USER= credentials('DB_USER')
         // DB_PASSWORD= credentials('DB_PASSWORD') 
@@ -43,9 +43,10 @@ pipeline {
             steps {
                 script {
                     dir('backend-app/') {
-                        sh 'npm install docker-compose'
-                        sh 'docker-compose build'
-                        sh 'docker-compose up'
+                        // sh 'docker-compose build'
+                        // sh 'docker-compose up'
+                        sh './node_modules/docker-compose/bin/docker-compose build' 
+                        sh './node_modules/docker-compose/bin/docker-compose up'
                     }
                 }
             }
