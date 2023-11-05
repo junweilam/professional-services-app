@@ -28,6 +28,13 @@ pipeline {
                         }
                     }
                 }
+                dir('backend-app/') {
+                    script {
+                        if (!fileExists('package.json')) {
+                            error('Missing package.json in the workspace.')
+                        }
+                    }
+                }
             }
         }
 
@@ -52,12 +59,18 @@ pipeline {
                         sh 'cd ./frontend-app && npm start'
                     }
                 }
-                stage('Backend run build') {
+                stage('Backend Docker Build and Up') {
                     steps {
-                        sh 'cd ./backend-app && npm install'
-                        sh 'cd ./backend-app && npm start'
+                        script { 
+                            dir('backend-app/') {
+                                sh 'docker compose -f docker-compose.yml down'
+                                sh 'docker compose -f docker-compose.yml build'
+                                sh 'docker compose -f docker-compose.yml up --detach --force-recreate --renew-anon-volumes;'
+                            }
+                        }
                     }
                 }
+        }
                 // Add stages for backend build and test here if needed.
             }
         }
