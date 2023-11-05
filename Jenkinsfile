@@ -43,7 +43,14 @@ pipeline {
                 sh 'docker --version'
             }
         }
-
+        stage('Set up container') {
+            steps {
+                echo 'set up container'
+                sh''''
+                docker-compose -f backend-app/docker-compose.yml --build -d
+                '''
+                }
+            }
         stage('Clean Workspace') {
                     steps {
                         sh 'rm -rf frontend/build'
