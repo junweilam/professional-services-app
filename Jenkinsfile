@@ -59,6 +59,14 @@ pipeline {
             }
         }   
 
+        stage('Install Docker Compose') {
+            steps {
+                sh 'apt-get update'
+                sh 'apt-get install -y docker-compose'
+            }
+        }
+
+
         stage('Check Docker-Compose Location') {
             steps {
                 script {
@@ -68,11 +76,7 @@ pipeline {
             }
         }
 
-    //     stage('Install Docker Compose') {
-    //         steps {
-    //             sh 'apt-get update'
-    //             sh 'apt-get install -y docker-compose'
-    // }
+    
 
 
         stage('Set up container') {
