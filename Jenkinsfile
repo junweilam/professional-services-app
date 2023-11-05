@@ -74,8 +74,8 @@ pipeline {
                 script {
                     // sh 'docker-compose build'
                     // sh 'docker-compose up'
-                    sh 'cd ./backend-app && /usr/local/bin/docker-compose -f ./backend-app/docker-compose.yml down'
-                    sh 'cd ./backend-app && /usr/local/bin/docker-compose -f docker-compose.yml build'
+                    sh 'cd ./backend-app && docker-compose -f ./backend-app/docker-compose.yml down'
+                    sh 'cd ./backend-app && docker-compose -f docker-compose.yml build'
                     // sh 'cd ./backend-app && docker-compose -f docker-compose.yml up''
                     
                 }
