@@ -21,6 +21,7 @@ pipeline {
     environment {
         PATH = "/usr/local/bin:${env.PATH}"
         CI = 'false'
+        COMPOSE_HOME = '/usr/local/cache/directory'
         
         // DB_HOST= credentials('DB_HOST') 
         // DB_USER= credentials('DB_USER')
