@@ -20,7 +20,7 @@ pipeline {
 
     environment {
         CI = 'false'
-        PATH = "/usr/local/bin:${env.PATH}"
+        PATH = "/usr/bin:${env.PATH}"
         // DB_HOST= credentials('DB_HOST') 
         // DB_USER= credentials('DB_USER')
         // DB_PASSWORD= credentials('DB_PASSWORD') 
