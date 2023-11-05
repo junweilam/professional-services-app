@@ -79,18 +79,18 @@ pipeline {
         //             }
         //         }
 
-        stage('Check Docker-Compose') {
-            steps {
-                script {
-                    def dockerComposeVersion = sh(script: 'docker-compose --version', returnStatus: true)
-                    if (dockerComposeVersion == 0) {
-                        echo 'Docker-Compose is installed and available.'
-                    } else {
-                        error('Docker-Compose is not installed. Please install it.')
-                    }
-                }
-            }
-        }
+        // stage('Check Docker-Compose') {
+        //     steps {
+        //         script {
+        //             def dockerComposeVersion = sh(script: 'docker-compose --version', returnStatus: true)
+        //             if (dockerComposeVersion == 0) {
+        //                 echo 'Docker-Compose is installed and available.'
+        //             } else {
+        //                 error('Docker-Compose is not installed. Please install it.')
+        //             }
+        //         }
+        //     }
+        // }
 
         
             
