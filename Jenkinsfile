@@ -94,20 +94,7 @@ pipeline {
         
             
 
-        stage('Set up container') {
-            steps {
-                script {
-                    echo env.$PATH
-                    //sh 'cd ./backend-app && git clean -fd'
-                    // sh 'docker-compose build'
-                    // sh 'docker-compose up'
-                    // sh 'cd ./backend-app && docker-compose down'
-                    // sh 'cd ./backend-app && docker-compose -f docker-compose.yml build'
-                    sh 'cd ./backend-app && docker compose -f docker-compose.yml up --build'
-                    
-                }
-            }
-        }
+        
 
         // stage('Set up container') {
         //     steps {
@@ -146,15 +133,30 @@ pipeline {
                         sh 'env'
                     }
                 }
-                stage('Backend Docker Build and Up') {
+                stage('Set up container') {
                     steps {
-                        script { 
-                            dir('backend-app/') {
-                            sh 'npm test'
-                            }
+                        script {
+                            echo env.$PATH
+                            //sh 'cd ./backend-app && git clean -fd'
+                            // sh 'docker-compose build'
+                            // sh 'docker-compose up'
+                            // sh 'cd ./backend-app && docker-compose down'
+                            // sh 'cd ./backend-app && docker-compose -f docker-compose.yml build'
+                            sh 'cd ./backend-app && docker compose -f docker-compose.yml up --build'
+                            
                         }
                     }
                 }
+                // stage('Backend Docker Build and Up') {
+                //     steps {
+                //         script { 
+                            
+                //             dir('backend-app/') {
+                //             sh 'npm test'
+                //             }
+                //         }
+                //     }
+                // }
             }
         }
 
