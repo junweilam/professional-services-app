@@ -1,8 +1,12 @@
 pipeline {
     agent {
+        // docker {
+        //     image 'jenkins/inbound-agent'
+        //     args '-p 3000:3000'
+        // }
         docker {
-            image 'jenkins/inbound-agent'
-            args '-p 3000:3000'
+            image 'docker:20.10'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
 
