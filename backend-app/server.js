@@ -31,12 +31,12 @@ const nodemailer = require('nodemailer');
 const app = express();
 
 var corsOptions = {
-    origin: "http://localhost:8081"
+    origin: "*"
 };
 const whitelist = ["https://localhost:3000"]
 
 // app.use(cors(corsOptions));
-app.use(cors())
+app.use(cors(corsOptions))
 
 // Create a Nodemailer transporter
 const transporter = nodemailer.createTransport({
