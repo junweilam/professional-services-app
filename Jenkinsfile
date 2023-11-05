@@ -68,15 +68,15 @@ pipeline {
         //     }
         // }
 
-        stage('Clean Workspace') {
-                    steps {
-                        sh 'rm -rf frontend/build'
-                        sh 'rm -rf frontend/node_modules'
-                        sh 'rm -rf backend/node_modules'
-                        sh 'rm -rf node_modules'
-                        sh 'rm -rf ~/.cache/docker-compose'
-                    }
-                }
+        // stage('Clean Workspace') {
+        //             steps {
+        //                 sh 'rm -rf frontend/build'
+        //                 sh 'rm -rf frontend/node_modules'
+        //                 sh 'rm -rf backend/node_modules'
+        //                 sh 'rm -rf node_modules'
+        //                 sh 'rm -rf ~/.cache/docker-compose'
+        //             }
+        //         }
 
         stage('Check Docker-Compose') {
             steps {
