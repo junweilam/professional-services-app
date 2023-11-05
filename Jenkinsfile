@@ -20,7 +20,7 @@ pipeline {
 
     environment {
         CI = 'false'
-        PATH = "$PATH:/usr/bin/docker-compose"
+        PATH = "/usr/local/bin:${env.PATH}"
         // DB_HOST= credentials('DB_HOST') 
         // DB_USER= credentials('DB_USER')
         // DB_PASSWORD= credentials('DB_PASSWORD') 
@@ -50,6 +50,13 @@ pipeline {
                 }
             }
         }
+
+        stage('Debug') {
+    steps {
+        sh 'echo $PATH'
+        sh 'ls -l /usr/local/bin/docker-compose'
+    }
+}
 
     //     stage('Install Docker Compose') {
     //         steps {
