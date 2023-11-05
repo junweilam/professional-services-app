@@ -90,12 +90,7 @@ pipeline {
             }
         }
 
-        stage('Check Git in PATH') {
-            steps {
-                sh 'echo $PATH'
-                sh 'which git'
-            }
-        }
+        
             
 
         stage('Set up container') {
