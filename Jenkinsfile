@@ -48,7 +48,6 @@ pipeline {
                 script {
                     // Build and set up the container
                     dir('backend-app/') {
-                        sh 'docker-compose -f docker-compose.yml down'
                         sh 'docker-compose -f docker-compose.yml build'
                         sh 'docker-compose -f docker-compose.yml up -d'
                     }
