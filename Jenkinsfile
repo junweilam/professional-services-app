@@ -6,9 +6,11 @@ pipeline {
         }
     }
 
-    script {
-    sh 'curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose'
-    sh 'chmod +x /usr/local/bin/docker-compose'
+    tools {
+        // Install Docker Compose
+        node('master') {
+            tool 'Docker-Compose'
+        }
     }
 
     environment {
@@ -51,7 +53,7 @@ pipeline {
         //             // sh 'docker-compose build'
         //             // sh 'docker-compose up'
         //             sh 'cd ./backend-app && docker-compose -f docker-compose.yml down'
-        //             sh 'cd ./backend-app && docker-compose -f docker-compose.yml build'
+                    sh 'cd ./backend-app && docker-compose -f docker-compose.yml build'
         //             sh 'cd ./backend-app && docker-compose -f docker-compose.yml up'
                     
         //         }
