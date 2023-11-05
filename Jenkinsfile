@@ -68,7 +68,7 @@ pipeline {
                 sh 'echo $PATH'
             }
         }
-    }
+    
 
         stage('Set up container') {
             steps {
