@@ -72,6 +72,7 @@ pipeline {
                         sh 'rm -rf frontend/node_modules'
                         sh 'rm -rf backend/node_modules'
                         sh 'rm -rf node_modules'
+                        sh 'rm -rf ~/.cache/docker-compose'
                     }
                 }
     
