@@ -6,12 +6,12 @@ pipeline {
         }
     }
 
-    tools {
-        // Install Docker Compose
-        node('master') {
-            tool 'Docker-Compose'
-        }
-    }
+    // tools {
+    //     // Install Docker Compose
+    //     node('master') {
+    //         tool 'Docker-Compose'
+    //     }
+    // }
 
     environment {
         CI = 'false'
