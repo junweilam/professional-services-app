@@ -51,12 +51,12 @@ pipeline {
             }
         }
 
-        stage('Install Docker Compose') {
-            steps {
-                sh 'apt-get update'
-                sh 'apt-get install -y docker-compose'
-            }
-        }
+        // stage('Install Docker Compose') {
+        //     steps {
+        //         sh 'apt-get update'
+        //         sh 'apt-get install -y docker-compose'
+        //     }
+        // }
 
         stage('Print Environment Variables') {
             steps {
