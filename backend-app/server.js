@@ -11,12 +11,7 @@ const sodium = require('sodium-native');
 const https = require('https')
 const fs = require('fs')
 
-const options = {
-    key: fs.readFileSync( 'privkey.pem'),
-    cert: fs.readFileSync('fullchian.pem'),
-}
 
-const server = https.createServer(options, app);
 
 // Replace these with your own values
 const encryptionKey = Buffer.alloc(sodium.crypto_secretbox_KEYBYTES);
@@ -39,6 +34,13 @@ const axios = require('axios');
 const nodemailer = require('nodemailer');
 
 const app = express();
+
+const options = {
+    key: fs.readFileSync( 'privkey.pem'),
+    cert: fs.readFileSync('fullchian.pem'),
+}
+
+const server = https.createServer(options, app);
 
 var corsOptions = {
     origin: "http://localhost:8081"
