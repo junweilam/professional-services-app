@@ -12,7 +12,7 @@ pipeline {
         //     image 'jenkins/inbound-agent'
         //     args '-v /var/run/docker.sock:/var/run/docker.sock'
         // }
-    }
+    // }
 
     // tools {
     //     // Install Docker Compose
