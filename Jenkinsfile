@@ -56,8 +56,17 @@ pipeline {
             steps {
                 sh 'echo $PATH'
                 //sh 'ls -1 /usr/local/bin/docker-compose'
-        }
+            }
         }   
+
+        stage('Check Docker-Compose Location') {
+            steps {
+                script {
+                    def dockerComposeLocation = sh(script: 'which docker-compose', returnStdout: true).trim()
+                    echo "docker-compose is located at: ${dockerComposeLocation}"
+                }
+            }
+        }
 
     //     stage('Install Docker Compose') {
     //         steps {
