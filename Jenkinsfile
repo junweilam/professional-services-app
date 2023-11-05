@@ -40,17 +40,27 @@ pipeline {
         }
 
 
+        // stage('Set up container') {
+        //     steps {
+        //         script {
+        //             // sh 'docker-compose build'
+        //             // sh 'docker-compose up'
+        //             sh 'cd ./backend-app && docker-compose -f docker-compose.yml down'
+        //             sh 'cd ./backend-app && docker-compose -f docker-compose.yml build'
+        //             sh 'cd ./backend-app && docker-compose -f docker-compose.yml up'
+                    
+        //         }
+        //     }
+        // }
+
         stage('Set up container') {
             steps {
-                script {
-                    dir('./backend/') {
-                        // sh 'docker-compose build'
-                        // sh 'docker-compose up'
-                        sh 'docker-compose -f docker-compose.yml down'
-                        sh 'docker-compose -f docker-compose.yml build'
-                        sh 'docker-compose -f docker-compose.yml up'
-                    }
-                }
+                // sh 'docker-compose build'
+                // sh 'docker-compose up'
+                sh 'cd ./backend-app && docker-compose -f docker-compose.yml down'
+                sh 'cd ./backend-app && docker-compose -f docker-compose.yml build'
+                sh 'cd ./backend-app && docker-compose -f docker-compose.yml up'
+                    
             }
         }
 
