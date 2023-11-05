@@ -89,12 +89,19 @@ pipeline {
                 }
             }
         }
+
+        stage('Check Git in PATH') {
+            steps {
+                sh 'echo $PATH'
+                sh 'which git'
+            }
+        }
             
 
         stage('Set up container') {
             steps {
                 script {
-                    sh 'cd ./backend-app && git clean -fd'
+                    //sh 'cd ./backend-app && git clean -fd'
                     // sh 'docker-compose build'
                     // sh 'docker-compose up'
                     // sh 'cd ./backend-app && docker-compose down'
