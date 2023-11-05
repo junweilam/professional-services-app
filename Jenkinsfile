@@ -122,7 +122,7 @@ pipeline {
                     }
                     steps {
                         sh 'cd ./frontend-app && npm install'
-                        sh 'cd ./frontend-app && nohup npm start &'
+                        sh 'cd ./frontend-app && npm start'
                         sh 'env'
                     }
                 }
