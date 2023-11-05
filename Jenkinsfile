@@ -38,6 +38,13 @@ pipeline {
             }
         }
 
+        stage('Install Docker-Compose') {
+            steps {
+                sh 'apt-get update -y'  // Use the appropriate package manager (e.g., apt-get)
+                sh 'apt-get install -y docker-compose'  // Install docker-compose
+            }
+        }
+        
         // stage('Check Docker') {
         //     steps {
         //         sh 'docker --version'
