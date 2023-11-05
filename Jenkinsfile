@@ -129,20 +129,19 @@ pipeline {
 
         stage('Testing') {
             parallel {
-                
                 stage('Frontend run build') {
-                    // agent {
-                    //     docker {
-                    //         //image 'docker:dind'
-                    //         image 'node:18.18.2'
-                    //         args '-p 3000:3000'
-                    //         //args '-v /var/run/docker.sock:/var/run/docker.sock'
-                    //     }
-                    //     // docker {
-                    //     //     image 'jenkins/inbound-agent'
-                    //     //     args '-v /var/run/docker.sock:/var/run/docker.sock'
-                    //     // }
-                    // }
+                    agent {
+                        docker {
+                            //image 'docker:dind'
+                            image 'node:18.18.2'
+                            args '-p 3000:3000'
+                            //args '-v /var/run/docker.sock:/var/run/docker.sock'
+                        }
+                        // docker {
+                        //     image 'jenkins/inbound-agent'
+                        //     args '-v /var/run/docker.sock:/var/run/docker.sock'
+                        // }
+                    }
                     steps {
                         sh 'cd ./frontend-app && npm install'
                         sh 'cd ./frontend-app && npm start'
