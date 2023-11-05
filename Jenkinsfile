@@ -38,11 +38,11 @@ pipeline {
             }
         }
 
-        stage('Check Docker') {
-            steps {
-                sh 'docker --version'
-            }
-        }
+        // stage('Check Docker') {
+        //     steps {
+        //         sh 'docker --version'
+        //     }
+        // }
         stage('Set up container') {
             steps {
                 echo 'set up container'
