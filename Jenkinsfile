@@ -50,11 +50,11 @@ pipeline {
                     }
                 }
         
-        stage('Install react-scripts') {
-                    steps {
-                        sh 'npm install react-scripts --save-dev'
-                    }
-                }
+        // stage('Install react-scripts') {
+        //             steps {
+        //                 sh 'npm install react-scripts --save-dev'
+        //             }
+        //         }
 
         stage('Testing') {
             parallel {
@@ -69,7 +69,7 @@ pipeline {
                 stage('Backend Docker Build and Up') {
                     steps {
                         script { 
-                            dir('backend-app/') {
+                            dir('jenkins/') {
                                 // sh 'docker compose -f docker-compose.yml down'
                                 // sh 'docker compose -f docker-compose.yml build'
                                 // sh 'docker compose -f docker-compose.yml up --detach --force-recreate --renew-anon-volumes;'
