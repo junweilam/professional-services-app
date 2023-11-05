@@ -71,15 +71,16 @@ pipeline {
                         }
                     }
                 }
-        }
-                // Add stages for backend build and test here if needed.
+            }
+            
+            stage('OWASP DependencyCheck') {
+                steps {
+                    dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
+                }
             }
         }
-    stage('OWASP DependencyCheck') {
-        steps {
-            dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
-        }
     }
+    
 
     post {
         success {
