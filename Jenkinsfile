@@ -54,7 +54,7 @@ pipeline {
         stage('Debug') {
             steps {
                 sh 'echo $PATH'
-                sh 'ls -1'
+                sh 'ls backend@tmp'
         }
         }   
 
