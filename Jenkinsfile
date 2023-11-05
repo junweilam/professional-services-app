@@ -5,7 +5,7 @@ pipeline {
         //     args '-p 3000:3000'
         // }
         docker {
-            image 'docker:20.10'
+            image 'jenkins/inbound-agent'
             args '-v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
