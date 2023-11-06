@@ -43,13 +43,13 @@ Upon correct credentials of the user account, an OTP will be sent to the user ac
 
 ## User 
 
-**Add service into cart  **
+**Add service into cart  **  
 ![image](https://github.com/junweilam/professional-services-app/assets/91267859/8b30cb01-5883-46ee-ab7c-04d23335ac4c)
 
-**Click on cart and checkout  **
+**Click on cart and checkout  **  
 ![image](https://github.com/junweilam/professional-services-app/assets/91267859/f92d3983-f226-432b-8c00-2b6426394528)
 
-**Click on Confirm Order then Check out  **
+**Click on Confirm Order then Check out  **  
 ![image](https://github.com/junweilam/professional-services-app/assets/91267859/20ba40bb-8b2f-4961-8557-7e15899d7026)
 
 ## Payment
