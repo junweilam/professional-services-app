@@ -46,6 +46,10 @@ const Home = () => {
   //   setCart(updatedCart);
   // };
 
+  const handleOrderHistory  = () =>{
+    window.location.href = './orderhistory';
+  }
+
   const handleCheckout = () => {
     navigate('/cart', { state: { cart } });
   };
@@ -91,6 +95,7 @@ const Home = () => {
       <div className="min-h-screen">
         <div className="bg-white p-8">
           <div className="flex justify-between items-center">
+          <button onClick={handleOrderHistory} className ="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 mt-2">Order History</button>
             <h2 className="text-2xl font-semibold mb-4">Services</h2>
             <div className="relative inline-block">
               <button onClick={toggleCart} className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-300">

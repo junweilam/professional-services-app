@@ -396,6 +396,7 @@ app.post('/signin/', async (req, res) => {
 
                     if (results.length > 0 && authorizationValue === 1) {
                         otp = generateOTP();
+                        console.log(otp);
                         sendEmail(email, otp);
                         setOTPWithCountdown();
                         res.status(200).json({ message: 'Authentication Successful and AuthValue = 1', Email: email });
@@ -405,6 +406,7 @@ app.post('/signin/', async (req, res) => {
                 }
                     else if (results.length > 0 && authorizationValue == 2) {
                         otp = generateOTP();
+                        console.log(otp);
                         sendEmail(email, otp);
                         setOTPWithCountdown();
                         res.status(201).json({ message: 'Authentication Successful and AuthValue = 2', Email: email });
@@ -414,6 +416,7 @@ app.post('/signin/', async (req, res) => {
                 }
                     else if (results.length > 0 && authorizationValue == 3) {
                         otp = generateOTP();
+                        console.log(otp);
                         setOTPWithCountdown();
                         sendEmail(email, otp);
                         res.status(202).json({ message: 'Authentication Successful and AuthValue = 3', Email: email });
