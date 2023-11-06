@@ -94,4 +94,4 @@ Price = VALUES(Price);
 
 -- Insert dummy admin : Password == Z1Y5hiVCLFk1GX8V91yV
 INSERT INTO users (LastName, FirstName, Email, ContactNo, Address, Password, Authorization) 
-VALUES ("admin1", "admin", "admin1@gmail.com", 99999999, "admin", "$argon2id$v=19$m=65536,t=3,p=4$iAxy+R8m6f/Js+8224+Dzg$yi0+hr1VRZiWHgKZ0mKnnDoXKMxnLhbXl/Iqfmu9IxQ", 1);
+VALUES ("admin1", "admin", "2100891@sit.singaporetech.edu.sg", 99999999, "admin", "$argon2id$v=19$m=65536,t=3,p=4$iAxy+R8m6f/Js+8224+Dzg$yi0+hr1VRZiWHgKZ0mKnnDoXKMxnLhbXl/Iqfmu9IxQ", 1);
